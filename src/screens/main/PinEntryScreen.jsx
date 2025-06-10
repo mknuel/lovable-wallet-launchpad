@@ -94,7 +94,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
         onPinVerified();
       } else {
         console.log("PIN verification failed");
-        setError("Incorrect PIN. Please try again.");
+        setError("Incorrect Pin Code");
         setShowChangePinOption(true);
         // Clear the PIN inputs
         setPin(["", "", "", ""]);
@@ -124,7 +124,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
       {/* Content */}
       <div className="flex-1 flex flex-col px-6 py-8">
         {/* Lock Icon */}
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mb-0">
           <div className="w-16 h-16 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
               <path d="M18.5455 14.6054H5.45471C4.55101 14.6054 3.81836 13.8623 3.81836 12.9457V8.29853C3.81836 3.72272 7.4887 0 12.0001 0C16.5116 0 20.1819 3.72272 20.1819 8.29853V12.9457C20.1819 13.8623 19.4492 14.6054 18.5455 14.6054ZM7.09107 11.286H16.9092V8.29853C16.9092 5.55305 14.707 3.31941 12.0001 3.31941C9.29327 3.31941 7.09107 5.55305 7.09107 8.29853V11.286Z" fill="black"/>
@@ -145,7 +145,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
 
         {/* Error Message */}
         {error && (
-          <div className="text-[#E2502A] text-center text-[12px] font-['Sansation']">
+          <div className="text-[#E2502A] text-center -mt-2 mb-3 text-[12px] font-['Sansation']">
             {error}
           </div>
         )}
