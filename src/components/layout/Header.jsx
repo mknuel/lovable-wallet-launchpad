@@ -32,7 +32,7 @@ const Header = ({
 
   return (
     <nav 
-      className={`items-center border-b-[color:var(--Gray-200,#EEE)] self-stretch flex w-full gap-[40px_172px] bg-white mt-3.5 pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
+      className={`sticky top-0 items-center border-b-[color:var(--Gray-200,#EEE)] self-stretch flex w-full gap-[40px_172px] bg-white mt-3.5 pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
       role="navigation"
       aria-label="Main navigation"
     >
