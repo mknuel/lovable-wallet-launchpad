@@ -1,12 +1,17 @@
-
 import React, { useState, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft } from "lucide-react";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
+import { setWalletLoading, setWalletData, setWalletError } from "../../store/reducers/walletSlice";
 
 const CreatePinScreen = ({ onPinCreated, onBack }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const walletData = useSelector((state) => state.wallet.walletData);
+  const walletLoading = useSelector((state) => state.wallet.isLoading);
+  
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputRefs = useRef([]);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
@@ -16,6 +21,31 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 4);
   }, []);
+
+  // Fetch wallet data when component mounts
+  useEffect(() => {
+    const fetchWallet = async () => {
+      if (!walletData) {
+        dispatch(setWalletLoading(true));
+        try {
+          console.log("Fetching wallet data...");
+          const response = await api.get('/user/wallet');
+          console.log("Wallet response:", response);
+          
+          if (response.success) {
+            dispatch(setWalletData(response.data));
+          } else {
+            dispatch(setWalletError("Failed to fetch wallet"));
+          }
+        } catch (error) {
+          console.error("Error fetching wallet:", error);
+          dispatch(setWalletError(error.message || "Failed to fetch wallet"));
+        }
+      }
+    };
+
+    fetchWallet();
+  }, [dispatch, walletData]);
 
   // Check if all PIN digits are filled
   useEffect(() => {
@@ -73,13 +103,14 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
   };
 
   const handleVerify = async () => {
-    if (!isButtonEnabled || isLoading) return;
+    if (!isButtonEnabled || isLoading || !walletData) return;
 
     setIsLoading(true);
     const pinCode = pin.join("");
     
     try {
       console.log("Creating PIN:", pinCode);
+      console.log("Using appId from wallet:", walletData.appId);
       
       // Check if token exists
       const token = localStorage.getItem('token');
@@ -87,7 +118,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
       console.log("Token preview:", token ? `${token.substring(0, 20)}...` : 'No token');
       
       const response = await api.post('/user/wallet/pincode/create', {
-        appId: "blockloan-mini-app",
+        appId: walletData.appId, // Use appId from wallet data
         pinCode: pinCode
       });
 
@@ -112,6 +143,25 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
       setIsLoading(false);
     }
   };
+
+  // Show loading state while fetching wallet
+  if (walletLoading) {
+    return (
+      <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+        <Header
+          title={t("wallet.title") || "My Wallet"}
+          action={true}
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-[16px] font-['Sansation'] text-[#1D2126]">
+              Loading wallet...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
@@ -154,7 +204,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={index === 0 ? handlePaste : undefined}
-                disabled={isLoading}
+                disabled={isLoading || !walletData}
                 className={`
                   w-[60px] h-[60px] rounded-full text-center text-[20px] font-['Sansation'] font-bold
                   border-none shadow-[1px_2px_10px_1px_rgba(0,0,0,0.10)] outline-none transition-all duration-200
@@ -163,7 +213,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
                       ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white border-transparent"
                       : "bg-white text-black border-gray-300 focus:border-[#DC2366]"
                   }
-                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                  ${isLoading || !walletData ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               />
             ))}
@@ -177,12 +227,12 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
         <div className="px-4 pb-8">
           <button
             onClick={handleVerify}
-            disabled={!isButtonEnabled || isLoading}
+            disabled={!isButtonEnabled || isLoading || !walletData}
             className={`
               w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
               transition-all duration-200 flex items-center justify-center
               ${
-                isButtonEnabled && !isLoading
+                isButtonEnabled && !isLoading && walletData
                   ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }
