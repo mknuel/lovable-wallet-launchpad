@@ -113,21 +113,6 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
     onShowCreatePin();
   };
 
-  const handleNumericKeypadPress = (digit) => {
-    const firstEmptyIndex = pin.findIndex(d => d === "");
-    if (firstEmptyIndex !== -1) {
-      handleInputChange(firstEmptyIndex, digit.toString());
-    }
-  };
-
-  const handleDeletePress = () => {
-    const lastFilledIndex = pin.map((digit, index) => digit !== "" ? index : -1)
-      .filter(index => index !== -1).pop();
-    if (lastFilledIndex !== undefined) {
-      handleInputChange(lastFilledIndex, "");
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
       {/* Header */}
@@ -172,7 +157,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
               <input
                 key={index}
                 ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
+                type="tel"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 maxLength="1"
@@ -202,7 +187,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
 
         {/* Change PIN Button - Only show when there's an error */}
         {showChangePinOption && (
-          <div className="px-4 pb-4">
+          <div className="px-4 pb-8">
             <button
               onClick={handleChangePinClick}
               className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
@@ -213,49 +198,6 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
             </button>
           </div>
         )}
-
-        {/* Numeric Keypad */}
-        <div className="px-4 pb-8">
-          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
-            {/* Numbers 1-9 */}
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-              <button
-                key={num}
-                onClick={() => handleNumericKeypadPress(num)}
-                disabled={isLoading}
-                className="h-16 rounded-lg bg-gray-100 text-[24px] font-['Sansation'] font-bold text-black
-                  hover:bg-gray-200 transition-colors disabled:opacity-50"
-              >
-                {num}
-              </button>
-            ))}
-            
-            {/* Zero and Delete */}
-            <div></div> {/* Empty space */}
-            <button
-              onClick={() => handleNumericKeypadPress(0)}
-              disabled={isLoading}
-              className="h-16 rounded-lg bg-gray-100 text-[24px] font-['Sansation'] font-bold text-black
-                hover:bg-gray-200 transition-colors disabled:opacity-50"
-            >
-              0
-            </button>
-            <button
-              onClick={handleDeletePress}
-              disabled={isLoading}
-              className="h-16 rounded-lg bg-gray-100 flex items-center justify-center
-                hover:bg-gray-200 transition-colors disabled:opacity-50"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M10 11V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M14 11V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M4 7H20" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M6 7H12H18V6C18 4.89543 17.1046 4 16 4H8C6.89543 4 6 4.89543 6 6V7Z" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
