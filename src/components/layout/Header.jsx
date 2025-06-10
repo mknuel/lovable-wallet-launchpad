@@ -11,7 +11,7 @@ export const Header = ({
 }) => {
   return (
     <nav 
-      className={`w-full items-center border-b-[color:var(--Gray-200,#EEE)] dark:border-b-gray-700 flex justify-between bg-white dark:bg-gray-900 pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
+      className={`w-full items-center border-b-[color:var(--Gray-200,#EEE)] dark:border-b-gray-700 flex justify-between bg-white  pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
       role="navigation"
       aria-label="Main navigation"
     >
