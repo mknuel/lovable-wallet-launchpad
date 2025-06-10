@@ -30,8 +30,8 @@ export const StatsCard = ({ stats, className }) => {
         {stats.map((stat, index) => (
           <React.Fragment key={stat.id}>
             <div className="text-center">
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-sm opacity-90 uppercase">{stat.label}</div>
+              <div style={{ fontSize: '40px', fontWeight: '400' }}>{stat.value}</div>
+              <div style={{ fontSize: '15px' }} className="opacity-90 uppercase">{stat.label}</div>
             </div>
             {/* Demarcating line - only show between stats, not after the last one */}
             {index < stats.length - 1 && (
