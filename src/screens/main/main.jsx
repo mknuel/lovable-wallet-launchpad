@@ -9,13 +9,16 @@ const Main = () => {
     const userData = useSelector((state) => state.user);
     
     return (
-        <div className="container">
-            <Header title={t("navigation.mainMenu") || "Main Menu"} action={true}></Header>
-            
-            {/* Main Menu Content */}
-            <div className="flex flex-col gap-6 px-4 py-6">
+        <div className="flex flex-col h-screen max-w-md mx-auto bg-white">
+            {/* Fixed Header */}
+            <div className="flex-shrink-0">
+                <Header title={t("navigation.mainMenu") || "Main Menu"} action={true} />
+            </div>
+
+            {/* Scrollable Main Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6">
                 {/* Stats Card */}
-                <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl p-6 text-white">
+                <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl p-6 text-white mb-6">
                     <div className="flex justify-between items-center">
                         <div className="text-center">
                             <div className="text-2xl font-bold">234</div>
@@ -33,7 +36,7 @@ const Main = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 mb-8">
                     <button className="w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white">
                         MY WALLET
                     </button>
@@ -48,12 +51,15 @@ const Main = () => {
                 </div>
 
                 {/* Next Button */}
-                <button className="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl text-white font-semibold mt-8">
+                <button className="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl text-white font-semibold">
                     NEXT
                 </button>
             </div>
-            
-            <Navigation nav={"Main Menu"}></Navigation> 
+
+            {/* Fixed Navigation */}
+            <div className="flex-shrink-0">
+                <Navigation nav={"Main Menu"} />
+            </div>
         </div>
     );
 }
