@@ -104,12 +104,13 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
             <span className="font-normal">
               You are requested to create your{" "}
             </span>
+            <br/>
             <span className="font-bold">Wallet PIN</span>
           </p>
         </div>
 
         {/* PIN Label */}
-        <div className="text-[16px] font-['Sansation'] font-normal text-[#1D2126] mb-8">
+        <div className="text-[16px] font-['Sansation'] text-center font-normal text-[#1D2126] mb-8">
           Enter your PIN
         </div>
 
