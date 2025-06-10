@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -214,5 +215,3 @@ const Main = () => {
 }
 
 export default Main;
-
-</edits_to_apply>
