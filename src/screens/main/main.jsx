@@ -40,7 +40,8 @@ const Main = () => {
     ];
 
     const handleWalletClick = () => {
-        // Always show create PIN screen when wallet is clicked
+        // Always show create PIN screen when wallet is clicked (for now)
+        setShowPinEntryScreen(false); // Make sure PIN entry is closed
         setShowCreatePinScreen(true);
     };
 
@@ -209,3 +210,5 @@ const Main = () => {
 }
 
 export default Main;
+
+</edits_to_apply>
