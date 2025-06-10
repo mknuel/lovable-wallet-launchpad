@@ -13,7 +13,7 @@ export const StatsCard = ({ stats, className }) => {
       <div 
         className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-t-2xl"
         style={{ 
-          clipPath: 'polygon(0 0, 100% 0, 100% 80%, 65% 80%, 50% 95%, 35% 80%, 0 80%)'
+          clipPath: 'polygon(0 0, 100% 0, 100% 80%, 65% 80%, 50% 65%, 35% 80%, 0 80%)'
         }}
       >
         {/* Background image overlay */}
