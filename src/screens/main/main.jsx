@@ -227,9 +227,9 @@ const Main = () => {
             </div>
 
             {/* Main Content - Scrollable with top margin to account for fixed header */}
-            <div className="flex-1 w-full overflow-y-auto px-4 py-6 mt-[66px] mb-[80px]">
+            <div className="relative w-full overflow-y-auto px-4 py-6 mt-[66px] mb-[80px]">
                 {/* Stats Card */}
-                <div className="w-full mb-6">
+                <div className="w-full max-w-full mb-6">
                     <StatsCard stats={statsData} />
                 </div>
 
