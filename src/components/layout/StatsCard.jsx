@@ -9,15 +9,15 @@ export const StatsCard = ({ stats, className }) => {
       role="region"
       aria-label="Financial statistics"
     >
-      {/* Main card with gradient background */}
+      {/* Main card with background image only */}
       <div 
-        className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-3xl"
+        className="absolute inset-0 rounded-3xl overflow-hidden"
       >
-        {/* Background image overlay */}
+        {/* Background image */}
         <img
           src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/7ddda6956027b1aaf014b9308d85a336a7bdc0a6?placeholderIfAbsent=true"
           alt=""
-          className="absolute h-full w-full object-cover rounded-3xl opacity-30"
+          className="absolute h-full w-full object-cover inset-0"
           role="presentation"
         />
       </div>
