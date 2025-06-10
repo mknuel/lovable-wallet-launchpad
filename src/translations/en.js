@@ -1,3 +1,4 @@
+
 export default {
   // ... existing translations
   currentlang: "English",
@@ -34,7 +35,7 @@ export default {
     title_1: "The Most",
     title_2: "Trusted & Secure",
     title_3: "Crypto Community",
-    content: "Do you want a completely FREE way to earn real money? Money "that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, get a low-interest quick loan at BlockLoans?",
+    content: "Do you want a completely FREE way to earn real money? Money that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, get a low-interest quick loan at BlockLoans?",
     button: "Swipe to get started"
   },
   auth: {
