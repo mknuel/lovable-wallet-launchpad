@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -11,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet } from '../../store/reducers/walletSlice';
 import CreatePinScreen from './CreatePinScreen';
 import PinEntryScreen from './PinEntryScreen';
+import WalletScreen from './WalletScreen';
 
 const Main = () => {
     const {t} = useTranslation();
@@ -21,6 +21,7 @@ const Main = () => {
     const [showCreatePinScreen, setShowCreatePinScreen] = useState(false);
     const [showPinEntryScreen, setShowPinEntryScreen] = useState(false);
     const [showPinConfirmation, setShowPinConfirmation] = useState(false);
+    const [showWalletScreen, setShowWalletScreen] = useState(false);
     
     // Fetch wallet data on component mount
     useEffect(() => {
@@ -50,12 +51,8 @@ const Main = () => {
         }
     }, []);
     
-    // Create stats data from wallet data or use defaults
-    const statsData = walletData ? [
-        { id: 'balance', value: `$${walletData.balance || 0}`, label: 'Balance' },
-        { id: 'currency', value: walletData.balanceCurrency || 'USD', label: 'Currency' },
-        { id: 'status', value: walletData.isPinCodeSet ? 'Secured' : 'Pending', label: 'Status' }
-    ] : [
+    // Use default stats data instead of wallet data
+    const statsData = [
         { id: 'tokens', value: '234', label: 'Tokens' },
         { id: 'crypto', value: '190', label: 'Crypto' },
         { id: 'loans', value: '715', label: 'Loans' }
@@ -109,9 +106,10 @@ const Main = () => {
         setShowCreatePinScreen(false);
         setShowPinConfirmation(true);
         
-        // Hide confirmation after 3 seconds and return to main menu
+        // Hide confirmation after 3 seconds and show wallet screen
         setTimeout(() => {
             setShowPinConfirmation(false);
+            setShowWalletScreen(true);
         }, 3000);
     };
 
@@ -127,6 +125,16 @@ const Main = () => {
         // Clear flags if user backs out
         localStorage.removeItem('needsPinEntry');
     };
+
+    // Show WalletScreen after PIN creation success
+    if (showWalletScreen) {
+        return (
+            <WalletScreen 
+                onBack={() => setShowWalletScreen(false)}
+                walletData={walletData}
+            />
+        );
+    }
 
     // Show CreatePinScreen for first-time users or wallet access without PIN
     if (showCreatePinScreen) {
