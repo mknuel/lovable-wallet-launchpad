@@ -55,7 +55,7 @@ const LoginScreen = () => {
               gender: "male",
             };
             login(response.token, userData);
-            // US-2.2: Redirect to Main Menu after sign-in
+            // Redirect to Main Menu after login - not wallet
             navigate(PATH_MAIN);
           } else {
             console.error("Login failed:", response.data);
