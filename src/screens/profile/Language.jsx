@@ -41,16 +41,16 @@ const LanguageScreen = () => {
 
   console.log(selectedLanguage);
   return (
-    <div className="container bg-white dark:bg-gray-900">
+    <div className="container bg-white dark:bg-[#1a1a1a]">
       <Header title={t("language.title") || "Language"}></Header>
       <div className="body-container w-full h-[calc(100vh-300px)] pb-[38px] px-[8px] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {languageOptions.map((lang, index) => (
           <div key={lang.code}>
             <div
-              className="gender-option dark:bg-gray-800 dark:border-gray-700"
+              className="gender-option dark:bg-[#222222] dark:border-[#222222] bg-white border border-gray-200"
               onClick={() => handleLanguageChange(lang.code)}
             >
-              <label className="gender-label dark:text-white">{lang.label}</label>
+              <label className="gender-label dark:text-white text-black">{lang.label}</label>
               <div className="radio-wrapper">
                 <input
                   type="radio"

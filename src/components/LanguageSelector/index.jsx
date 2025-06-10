@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 import React from "react";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -18,10 +19,10 @@ const LanguageSelector = ({ selectedLanguage, onLanguageChange }) => {
         id="language-select"
         value={selectedLanguage}
         onChange={(e) => onLanguageChange(e.target.value)}
-        className="language-select"
+        className="language-select bg-white dark:bg-[#222222] text-black dark:text-white border-gray-300 dark:border-[#222222]"
       >
         {languageOptions.map((lang) => (
-          <option key={lang.code} value={lang.code}>
+          <option key={lang.code} value={lang.code} className="bg-white dark:bg-[#222222] text-black dark:text-white">
             {lang.label}
           </option>
         ))}

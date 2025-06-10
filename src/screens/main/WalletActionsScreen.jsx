@@ -59,9 +59,9 @@ const WalletActionsScreen = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full bg-white dark:bg-gray-900 overflow-hidden">
+    <div className="flex flex-col min-h-screen w-full max-w-full bg-white dark:bg-[#1a1a1a] overflow-hidden">
       {/* Header - Fixed positioning */}
-      <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900">
+      <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
         <Header
           title={t('wallet.title') || "My Wallet"}
           action={true}
@@ -92,7 +92,7 @@ const WalletActionsScreen = () => {
               <button
                 key={option.id}
                 onClick={() => handleActionSelect(option)}
-                className="w-full max-w-full py-4 px-6 border border-pink-300 dark:border-pink-600 rounded-xl text-pink-600 dark:text-pink-400 font-semibold bg-white dark:bg-gray-800 hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-pink-900/20 dark:hover:to-purple-900/20 transition-colors text-left"
+                className="w-full max-w-full py-4 px-6 border border-pink-300 dark:border-pink-600 rounded-xl text-pink-600 dark:text-pink-400 font-semibold bg-white dark:bg-[#222222] hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-pink-900/20 dark:hover:to-purple-900/20 transition-colors text-left"
               >
                 {option.label}
               </button>
@@ -105,7 +105,7 @@ const WalletActionsScreen = () => {
       </div>
 
       {/* Navigation - Fixed positioning */}
-      <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900">
+      <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
         <Navigation nav={"My Wallet"} />
       </div>
     </div>

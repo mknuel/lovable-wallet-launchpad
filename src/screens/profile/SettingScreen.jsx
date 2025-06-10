@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -99,7 +100,7 @@ const SettingScreen = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container bg-white dark:bg-[#1a1a1a]">
       <Header
         title={t("setting.title") || "My settings"}
         action={true}
@@ -121,32 +122,32 @@ const SettingScreen = () => {
               alt="avatar"
               className="w-[120px] h-[120px] pb-[5px]"
             ></img>
-            <div className="font-bold text-[22px] text-center">
+            <div className="font-bold text-[22px] text-center text-black dark:text-white">
               {userData.firstName} {userData.lastName}
             </div>
-            <div className="font-regular text-[14px]">{userData.phone}</div>
+            <div className="font-regular text-[14px] text-gray-600 dark:text-gray-300">{userData.phone}</div>
           </div>
         </div>
         <div className="flex flex-col gap-2 w-full mt-[20px]">
-          <div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+          <div className="flex flex-col border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
             <div
               className="flex flex-row items-center gap-4 justify-between"
               onClick={() => navigate("/edit-profile")}
             >
               <div className="flex flex-row items-center gap-[13px]">
                 <PeopleIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-                <div className="font-regular text-[14px]">
+                <div className="font-regular text-[14px] text-black dark:text-white">
                   {t("setting.editProfile") || "Edit profile"}
                 </div>
               </div>
-              <ChevronRightIcon sx={{ width: 16, height: 16 }} />
+              <ChevronRightIcon sx={{ width: 16, height: 16 }} className="text-black dark:text-white" />
             </div>
             <div className="flex flex-row items-center gap-4 justify-between">
               <div className="flex flex-row items-center gap-[13px]">
                 <NotificationsActiveIcon
                   sx={{ width: 16, height: 16, color: "#837E7E" }}
                 />
-                <div className="font-regular text-[14px]">
+                <div className="font-regular text-[14px] text-black dark:text-white">
                   {t("setting.notification") || "Notifications"}
                 </div>
               </div>
@@ -160,20 +161,20 @@ const SettingScreen = () => {
                 <LanguageIcon
                   sx={{ width: 16, height: 16, color: "#837E7E" }}
                 />
-                <div className="font-regular text-[14px]">
+                <div className="font-regular text-[14px] text-black dark:text-white">
                   {t("setting.language") || "Language"}
                 </div>
               </div>
-              <div className="text-[14px]">{t("currentlang") || "English"}</div>
+              <div className="text-[14px] text-pink-600 dark:text-pink-400">{t("currentlang") || "English"}</div>
             </div>
           </div>
-          <div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+          <div className="flex flex-col border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
             <div className="flex flex-row items-center gap-4 justify-between">
               <div className="flex flex-row items-center gap-[13px]">
                 <NotificationsActiveIcon
                   sx={{ width: 16, height: 16, color: "#837E7E" }}
                 />
-                <div className="font-regular text-[14px]">
+                <div className="font-regular text-[14px] text-black dark:text-white">
                   {t("setting.lightMode") || "Light Mode"}
                 </div>
               </div>
@@ -186,14 +187,14 @@ const SettingScreen = () => {
             <div className="flex flex-row items-center gap-4 justify-between">
               <div className="flex flex-row items-center gap-[13px]">
                 <LockIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-                <div className="font-regular text-[14px]">
+                <div className="font-regular text-[14px] text-black dark:text-white">
                   {t("setting.privacyPolciy") || "Privacy Policy"}
                 </div>
               </div>
-              <ChevronRightIcon sx={{ width: 16, height: 16 }} />
+              <ChevronRightIcon sx={{ width: 16, height: 16 }} className="text-black dark:text-white" />
             </div>
           </div>
-          <div className="flex flex-col gap-4 border-2 border-[#EFEFEF] rounded-lg p-2">
+          <div className="flex flex-col gap-4 border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
             <div className="flex flex-row items-center gap-4 justify-between">
               <div
                 className="flex flex-row items-center gap-[13px]"
@@ -201,11 +202,11 @@ const SettingScreen = () => {
               >
                 <QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
                 <div className="flex flex-col">
-                  <div className="font-regular text-[14px]">
+                  <div className="font-regular text-[14px] text-black dark:text-white">
                     {t("setting.walletAddress") || "Wallet Address"}
                   </div>
                   <div className="wallet-address-container">
-                    <span className="wallet-address">
+                    <span className="wallet-address text-gray-600 dark:text-gray-300">
                       {/* {formatAddress(currentWalletAccount, 8, 4)} */}
                       {/* {userTonAddress} */}
                       {userTonAddress
@@ -215,7 +216,7 @@ const SettingScreen = () => {
                     {copied ? (
                       <CheckIcon className="settings-icon check-icon" />
                     ) : (
-                      <ContentCopyIcon />
+                      <ContentCopyIcon className="text-gray-600 dark:text-gray-300" />
                     )}
                   </div>
                 </div>
