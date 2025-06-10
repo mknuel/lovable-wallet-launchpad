@@ -119,8 +119,8 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
     }
   };
 
-  // Show loading state only when walletData is null (not when it's being fetched)
-  if (!walletData) {
+  // Only show loading when walletData is explicitly null (not when it's undefined or being passed)
+  if (walletData === null) {
     return (
       <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
         <Header

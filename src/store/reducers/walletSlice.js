@@ -11,8 +11,10 @@ export const fetchWallet = createAsyncThunk(
       const response = await api.get('/user/wallet');
       console.log("Wallet fetch response:", response);
       
-      if (response.success) {
-        return response.data;
+      // The response structure shows data is directly in response, not response.data
+      if (response.success || response.token !== undefined) {
+        console.log("Wallet data received:", response);
+        return response; // Return the response directly since it contains the wallet data
       } else {
         return rejectWithValue(response.message || 'Failed to fetch wallet');
       }
@@ -50,15 +52,18 @@ const walletSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchWallet.pending, (state) => {
+        console.log("Wallet fetch pending...");
         state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchWallet.fulfilled, (state, action) => {
+        console.log("Wallet fetch fulfilled with data:", action.payload);
         state.isLoading = false;
         state.walletData = action.payload;
         state.error = null;
       })
       .addCase(fetchWallet.rejected, (state, action) => {
+        console.log("Wallet fetch rejected:", action.payload);
         state.isLoading = false;
         state.error = action.payload;
       });
