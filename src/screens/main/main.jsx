@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -83,7 +84,7 @@ const Main = () => {
         { 
             id: 'wallet', 
             label: 'My Wallet',
-            onClick: () => navigate(PATH_WALLET)
+            onClick: handleWalletClick
         },
         { 
             id: 'settings', 
@@ -121,18 +122,18 @@ const Main = () => {
         setShowCreatePinScreen(false);
         setShowPinConfirmation(true);
         
-        // Hide confirmation after 3 seconds and show wallet screen
+        // Hide confirmation after 3 seconds and navigate to wallet route
         setTimeout(() => {
             setShowPinConfirmation(false);
-            setShowWalletScreen(true);
+            navigate(PATH_WALLET);
         }, 3000);
     };
 
     const handlePinVerified = () => {
-        // After successful PIN entry, go to wallet screen
+        // After successful PIN entry, go to wallet route
         localStorage.removeItem('needsPinEntry');
         setShowPinEntryScreen(false);
-        setShowWalletScreen(true);
+        navigate(PATH_WALLET);
     };
 
     const handleBackFromPinScreen = () => {
@@ -143,7 +144,7 @@ const Main = () => {
         localStorage.removeItem('needsPinEntry');
     };
 
-    // Show WalletScreen after PIN verification/creation success
+    // Show WalletScreen after PIN verification/creation success (legacy support)
     if (showWalletScreen) {
         return (
             <>
