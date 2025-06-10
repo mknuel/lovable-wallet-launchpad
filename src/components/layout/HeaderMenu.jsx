@@ -19,16 +19,16 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
   };
 
   const menuItems = [
-    { id: 'blockm', label: 'BLOCK M', icon: '🏠', disabled: true },
-    { id: 'blockmud', label: 'BLOCK MUD', icon: '🏪', disabled: true },
-    { id: 'blockmed', label: 'BLOCK MED', icon: '🏥', disabled: true },
-    { id: 'blocked', label: 'BLOCK ED', icon: '🎓', disabled: true },
-    { id: 'blockride', label: 'BLOCK RIDE', icon: '🚗', disabled: true },
-    { id: 'artistnft', label: 'ARTIST NFT', icon: '🎨', disabled: true },
-    { id: 'blockloans', label: 'BLOCKLOANS', icon: '💰', disabled: true },
-    { id: 'blockfarm', label: 'BLOCK FARM', icon: '🌾', disabled: true },
-    { id: 'messages', label: 'MESSAGES', icon: '💬', disabled: true },
-    { id: 'myprofile', label: 'MY PROFILE', icon: '👤', onClick: handleMyProfile },
+    { id: 'blockm', label: 'Block M', icon: '🏠', disabled: true },
+    { id: 'blockmud', label: 'Block Mud', icon: '🏪', disabled: true },
+    { id: 'blockmed', label: 'Block Med', icon: '🏥', disabled: true },
+    { id: 'blocked', label: 'Block Ed', icon: '🎓', disabled: true },
+    { id: 'blockride', label: 'Block Ride', icon: '🚗', disabled: true },
+    { id: 'artistnft', label: 'Artist NFT', icon: '🎨', disabled: true },
+    { id: 'blockloans', label: 'Blockloans', icon: '💰', disabled: true },
+    { id: 'blockfarm', label: 'Block Farm', icon: '🌾', disabled: true },
+    { id: 'messages', label: 'Messages', icon: '💬', disabled: true },
+    { id: 'myprofile', label: 'My Profile', icon: '👤', onClick: handleMyProfile },
   ];
 
   if (!isOpen) return null;
@@ -66,7 +66,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
         <div className="flex flex-col h-full">
           {/* Menu Items */}
           <div className="flex-1 px-4 py-6">
-            <p className="text-[14px] font-['Sansation'] text-[#6B7280] mb-6">
+            <p className="text-[14px] font-['Sansation'] text-[#6B7280] mb-6 text-left">
               You are currently signed in.
             </p>
             
@@ -83,7 +83,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
                   }`}
                 >
                   <span className="text-[18px]">{item.icon}</span>
-                  <span className="text-[14px] font-['Sansation'] font-medium">{item.label}</span>
+                  <span className="text-[14px] font-['Sansation'] font-medium text-left">{item.label}</span>
                 </button>
               ))}
             </div>
@@ -96,7 +96,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
               className="w-full flex items-center gap-4 px-4 py-4 text-left rounded-lg hover:bg-gray-50 transition-colors"
             >
               <span className="text-[18px]">🚪</span>
-              <span className="text-[14px] font-['Sansation'] font-medium text-[#E2502A]">LOGOUT</span>
+              <span className="text-[14px] font-['Sansation'] font-medium text-[#E2502A] text-left">Logout</span>
             </button>
           </div>
         </div>

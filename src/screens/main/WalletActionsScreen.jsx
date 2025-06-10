@@ -84,7 +84,7 @@ const WalletActionsScreen = () => {
               onClick={() => handleActionSelect(option)}
               className="w-full max-w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-colors text-left"
             >
-              {option.label.toUpperCase()}
+              {option.label}
             </button>
           ))}
         </div>
