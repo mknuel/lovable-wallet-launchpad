@@ -143,8 +143,15 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
           </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="text-[#E2502A] text-center mb-2 text-[14px] font-['Sansation']">
+            {error}
+          </div>
+        )}
+
         {/* Title */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <p className="text-[16px] font-['Sansation'] text-[#1D2126] leading-[1.3]">
             <span className="font-normal">
               Verify your PIN
@@ -152,12 +159,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
           </p>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="text-red-500 text-center mb-4 text-[14px] font-['Sansation']">
-            {error}
-          </div>
-        )}
+        
 
         {/* PIN Input */}
         <div className="flex justify-center mb-8">
@@ -191,6 +193,19 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
           </div>
         </div>
 
+        {/* Change PIN Button - Only show when there's an error */}
+        {showChangePinOption && (
+          <div className="px-4 pb-8">
+            <button
+              onClick={handleChangePinClick}
+              className=inline-flex items-center justify-center gap-0.5 px-2 py-1 rounded-full bg-[#FCEEEA] text-[#E2502A]
+                transition-all duration-200"
+            >
+              CREATE NEW PIN
+            </button>
+          </div>
+        )}
+
         {/* Spacer */}
         <div className="flex-1"></div>
 
@@ -213,19 +228,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
           </button>
         </div>
 
-        {/* Change PIN Button - Only show when there's an error */}
-        {showChangePinOption && (
-          <div className="px-4 pb-8">
-            <button
-              onClick={handleChangePinClick}
-              className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-                bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90
-                transition-all duration-200"
-            >
-              CREATE NEW PIN
-            </button>
-          </div>
-        )}
+        
       </div>
     </div>
   );
