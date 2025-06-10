@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -41,13 +40,8 @@ const Main = () => {
     ];
 
     const handleWalletClick = () => {
-        const hasCreatedPin = localStorage.getItem('userHasPin');
-        
-        if (!hasCreatedPin) {
-            setShowCreatePinScreen(true);
-        } else {
-            setShowPinEntryScreen(true);
-        }
+        // Always show create PIN screen when wallet is clicked
+        setShowCreatePinScreen(true);
     };
 
     const menuItems = [
