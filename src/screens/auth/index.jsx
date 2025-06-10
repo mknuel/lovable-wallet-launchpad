@@ -1,7 +1,8 @@
+
 /* eslint-disable no-unused-vars */
 import LogoVertical from "../../assets/images/Logo - Blockloans.png";
 import CommonButton from "../../components/Buttons/CommonButton";
-import { PATH_SETTING } from "../../context/paths";
+import { PATH_MAIN } from "../../context/paths";
 import ThirdwebConnectButton from "../../components/thirdweb/ThirdwebConnectButton";
 import { TonConnectUI, TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
@@ -16,16 +17,23 @@ const Auth = () => {
 
   useEffect(() => {
     if (tonWallet) {
-      navigate(PATH_SETTING);
+      // US-2.3: Redirect to Main Menu after wallet connection
+      navigate(PATH_MAIN);
     }
   }, [tonWallet, navigate]);
 
   const handleConnect = () => {
     tonConnectUI.openModal({
       returnStrategy: 'back',
-      redirectUrl: 'https://blockloan-mini-app.vercel.app/setting'
+      redirectUrl: 'https://blockloan-mini-app.vercel.app/main'
     });
   };
+
+  const handleCreateWallet = () => {
+    // US-2.3: Redirect to Main Menu after wallet creation
+    navigate(PATH_MAIN);
+  };
+
   return (
     <div className="container justify-around">
       <img
@@ -48,13 +56,13 @@ const Auth = () => {
       <div className="flex flex-col justify-center items-center gap-[16px] w-full">
         <ThirdwebConnectButton
           darkMode={document.body.classList.contains("dark-mode")}
-          path={PATH_SETTING}
+          path={PATH_MAIN}
         />
         <CustomTonConnectButton />
         <CommonButton
           height="48px"
           width="312px"
-          onClick={()=>navigate(PATH_SETTING)}
+          onClick={handleCreateWallet}
         >
           CREAT A NEW WALLET
         </CommonButton>

@@ -6,7 +6,7 @@ import OnboardingHeader from "../../components/layout/OnboardingHeader";
 import CommonButton from "../../components/Buttons/CommonButton";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
-import { PATH_SETTING } from "../../context/paths";
+import { PATH_MAIN } from "../../context/paths";
 
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -105,7 +105,8 @@ const Register = () => {
     try {
       api.post("/ssoauth/tgregister", data).then(async (res) => {
         if (res && res.success) {
-          handleLogin(PATH_SETTING);
+          // US-2.1: Redirect to Main Menu after sign-up completion
+          handleLogin(PATH_MAIN);
         }
       });
     } catch (error) {

@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ import Password from "../../components/Password/Password";
 import CommonButton from "../../components/Buttons/CommonButton";
 import OnboardingHeader from "../../components/layout/OnboardingHeader";
 import api from "../../utils/api";
-import { PATH_SETTING } from "../../context/paths";
+import { PATH_MAIN } from "../../context/paths";
 
 import FooterLogo from "../../assets/images/Logo - ThirdWeb.png";
 
@@ -54,7 +55,8 @@ const LoginScreen = () => {
               gender: "male",
             };
             login(response.token, userData);
-            navigate(PATH_SETTING);
+            // US-2.2: Redirect to Main Menu after sign-in
+            navigate(PATH_MAIN);
           } else {
             console.error("Login failed:", response.data);
           }

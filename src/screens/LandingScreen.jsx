@@ -4,7 +4,7 @@ import CommonButton from "../components/Buttons/CommonButton";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
-import { PATH_AUTH } from "../context/paths";
+import { PATH_MAIN } from "../context/paths";
 import LanguageSelector from "../components/LanguageSelector";
 import { useTranslation } from "../hooks/useTranslation";
 import { useLanguage } from "../context/LanguageContext";
@@ -72,7 +72,8 @@ const LandingScreen = () => {
       api.post("/ssoauth/tgregister", data).then(async (res) => {
         // if (res) {
         console.log("Register Res==========>", res);
-        handleLogin(PATH_AUTH);
+        // US-2.1: Redirect to Main Menu after initial sign-up
+        handleLogin(PATH_MAIN);
         // }
       });
     } catch (error) {
@@ -141,7 +142,7 @@ const LandingScreen = () => {
         </div>
         <div className="description-text text-center">
           {t("landing.content") ||
-            "Do you want a completely FREE way to earn real money? Money “that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, convert to local currency with Lendsend, pay for your energy bills, recharge airtime and data for your Mobile service?"}
+            "Do you want a completely FREE way to earn real money? Money "that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, convert to local currency with Lendsend, pay for your energy bills, recharge airtime and data for your Mobile service?"}
         </div>
       </div>
       <div className="flex flex-col justify-end items-center">
