@@ -194,6 +194,25 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
         {/* Spacer */}
         <div className="flex-1"></div>
 
+        {/* Verify Button */}
+        <div className="px-4 pb-8">
+          <button
+            onClick={handleVerify}
+            disabled={!isButtonEnabled || isLoading}
+            className={`
+              w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
+              transition-all duration-200 flex items-center justify-center
+              ${
+                isButtonEnabled && !isLoading
+                  ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }
+            `}
+          >
+            {isLoading ? "VERIFYING..." : "VERIFY"}
+          </button>
+        </div>
+
         {/* Change PIN Button - Only show when there's an error */}
         {showChangePinOption && (
           <div className="px-4 pb-8">

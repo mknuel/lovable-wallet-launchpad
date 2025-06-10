@@ -171,7 +171,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
               <input
                 key={index}
                 ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
+                type="tel"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 maxLength="1"
@@ -198,7 +198,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
         {/* Spacer */}
         <div className="flex-1"></div>
 
-        {/* Verify Button */}
+        {/* Create Button */}
         <div className="px-4 pb-8">
           <button
             onClick={handleVerify}
@@ -213,7 +213,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
               }
             `}
           >
-            {isLoading ? "CREATING..." : "VERIFY"}
+            {isLoading ? "CREATING..." : "CREATE"}
           </button>
         </div>
       </div>
