@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import api from "../../utils/api";
@@ -21,6 +22,11 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
     const allFilled = pin.every((digit) => digit !== "");
     setIsButtonEnabled(allFilled);
   }, [pin]);
+
+  // Log wallet data when it changes
+  useEffect(() => {
+    console.log("CreatePinScreen - walletData:", walletData);
+  }, [walletData]);
 
   const handleInputChange = (index, value) => {
     // Only allow single digits
@@ -113,7 +119,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
     }
   };
 
-  // Show loading state while waiting for wallet data
+  // Show loading state only when walletData is null (not when it's being fetched)
   if (!walletData) {
     return (
       <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
@@ -173,7 +179,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={index === 0 ? handlePaste : undefined}
-                disabled={isLoading || !walletData}
+                disabled={isLoading}
                 className={`
                   w-[60px] h-[60px] rounded-full text-center text-[20px] font-['Sansation'] font-bold
                   border-none shadow-[1px_2px_10px_1px_rgba(0,0,0,0.10)] outline-none transition-all duration-200
@@ -182,7 +188,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
                       ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white border-transparent"
                       : "bg-white text-black border-gray-300 focus:border-[#DC2366]"
                   }
-                  ${isLoading || !walletData ? "opacity-50 cursor-not-allowed" : ""}
+                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               />
             ))}
@@ -196,12 +202,12 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
         <div className="px-4 pb-8">
           <button
             onClick={handleVerify}
-            disabled={!isButtonEnabled || isLoading || !walletData}
+            disabled={!isButtonEnabled || isLoading}
             className={`
               w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
               transition-all duration-200 flex items-center justify-center
               ${
-                isButtonEnabled && !isLoading && walletData
+                isButtonEnabled && !isLoading
                   ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }

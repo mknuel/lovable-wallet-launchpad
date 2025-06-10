@@ -6,21 +6,33 @@ import { MenuSection } from '../../components/layout/MenuSection';
 import { ActionButton } from '../../components/layout/ActionButton';
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
-import { useSelector } from "react-redux";
-import { useGetWalletQuery } from '../../store/api/walletApi';
+import { useSelector, useDispatch } from "react-redux";
+import { fetchWallet } from '../../store/reducers/walletSlice';
 import CreatePinScreen from './CreatePinScreen';
 import PinEntryScreen from './PinEntryScreen';
 
 const Main = () => {
     const {t} = useTranslation();
+    const dispatch = useDispatch();
     const userData = useSelector((state) => state.user);
+    const { walletData, isLoading: walletLoading, error: walletError } = useSelector((state) => state.wallet);
     const navigate = useNavigate();
     const [showCreatePinScreen, setShowCreatePinScreen] = useState(false);
     const [showPinEntryScreen, setShowPinEntryScreen] = useState(false);
     const [showPinConfirmation, setShowPinConfirmation] = useState(false);
     
     // Fetch wallet data on component mount
-    const { data: walletData, error: walletError, isLoading: walletLoading } = useGetWalletQuery();
+    useEffect(() => {
+        console.log("Main component mounted, dispatching fetchWallet...");
+        dispatch(fetchWallet());
+    }, [dispatch]);
+
+    // Log wallet data changes
+    useEffect(() => {
+        console.log("Wallet data updated:", walletData);
+        console.log("Wallet loading:", walletLoading);
+        console.log("Wallet error:", walletError);
+    }, [walletData, walletLoading, walletError]);
     
     // US-2.4 & US-2.6: Check PIN status and redirect accordingly
     useEffect(() => {
@@ -117,7 +129,7 @@ const Main = () => {
                 <CreatePinScreen 
                     onPinCreated={handlePinCreated}
                     onBack={handleBackFromPinScreen}
-                    walletData={walletData?.data}
+                    walletData={walletData}
                 />
                 
                 {/* US-2.5: PIN Creation Confirmation Message */}
