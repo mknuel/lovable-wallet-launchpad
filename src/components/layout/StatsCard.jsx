@@ -5,7 +5,7 @@ export const StatsCard = ({ stats, className }) => {
   return (
     <section 
       className={`relative w-full mx-4 text-white ${className || ''}`}
-      style={{ height: '199px' }}
+      style={{ height: '299px' }}
       role="region"
       aria-label="Financial statistics"
     >
@@ -13,7 +13,7 @@ export const StatsCard = ({ stats, className }) => {
       <div 
         className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-t-2xl"
         style={{ 
-          clipPath: 'polygon(0 0, 100% 0, 100% 80%, 65% 80%, 50% 65%, 35% 80%, 0 80%)'
+          clipPath: 'polygon(0 0, 100% 0, 100% 85%, 90% 85%, 80% 87%, 70% 88%, 60% 89%, 50% 90%, 40% 89%, 30% 88%, 20% 87%, 10% 85%, 0 85%)'
         }}
       >
         {/* Background image overlay */}
