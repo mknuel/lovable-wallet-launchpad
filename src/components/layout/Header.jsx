@@ -14,17 +14,14 @@ export const Header = ({
       aria-label="Main navigation"
     >
       <div className="flex items-center gap-[5px]">
-        <button
-          onClick={onMenuClick}
-          className="p-1 rounded-md hover:bg-gray-100 transition-colors"
-          aria-label="Open menu"
-        >
+        {/* User Avatar */}
+        <div className="w-8 h-8 rounded-full overflow-hidden">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/81d1bc0fbdeb3f3b94c116951e548f83b232bbca?placeholderIfAbsent=true"
-            alt=""
-            className="aspect-[0.92] object-contain w-[22px]"
+            src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/Avatar.png"
+            alt="User avatar"
+            className="w-full h-full object-cover"
           />
-        </button>
+        </div>
       </div>
       <div className="flex items-center gap-2" role="group" aria-label="Action buttons">
         <button
