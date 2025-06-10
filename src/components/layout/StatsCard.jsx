@@ -5,19 +5,19 @@ export const StatsCard = ({ stats, className }) => {
   return (
     <section 
       className={`relative w-full mx-4 text-white ${className || ''}`}
-      style={{ height: '299px' }}
+      style={{ height: '448px' }}
       role="region"
       aria-label="Financial statistics"
     >
       {/* Main card with gradient background */}
       <div 
-        className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl"
+        className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-3xl"
       >
         {/* Background image overlay */}
         <img
           src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/7ddda6956027b1aaf014b9308d85a336a7bdc0a6?placeholderIfAbsent=true"
           alt=""
-          className="absolute h-full w-full object-cover rounded-2xl opacity-30"
+          className="absolute h-full w-full object-cover rounded-3xl opacity-30"
           role="presentation"
         />
       </div>
