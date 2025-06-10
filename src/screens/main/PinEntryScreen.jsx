@@ -125,11 +125,20 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
       <div className="flex-1 flex flex-col px-6 py-8">
         {/* Lock Icon */}
         <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-lg flex items-center justify-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 10V8C6 5.79086 7.79086 4 10 4H14C16.2091 4 18 5.79086 18 8V10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" stroke="white" strokeWidth="2"/>
-              <circle cx="12" cy="15" r="2" fill="white"/>
+          <div className="w-16 h-16 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+              <path d="M18.5455 14.6054H5.45471C4.55101 14.6054 3.81836 13.8623 3.81836 12.9457V8.29853C3.81836 3.72272 7.4887 0 12.0001 0C16.5116 0 20.1819 3.72272 20.1819 8.29853V12.9457C20.1819 13.8623 19.4492 14.6054 18.5455 14.6054ZM7.09107 11.286H16.9092V8.29853C16.9092 5.55305 14.707 3.31941 12.0001 3.31941C9.29327 3.31941 7.09107 5.55305 7.09107 8.29853V11.286Z" fill="black"/>
+              <path d="M12 0V3.31941C14.7069 3.31941 16.9091 5.55305 16.9091 8.29853V11.286H12V14.6054H18.5454C19.4491 14.6054 20.1818 13.8623 20.1818 12.9457V8.29853C20.1818 3.72272 16.5114 0 12 0Z" fill="black"/>
+              <path d="M22.3635 27.7716H1.63635C0.73265 27.7716 0 27.0285 0 26.1119V12.9449C0 12.0283 0.73265 11.2852 1.63635 11.2852H22.3635C23.2672 11.2852 23.9999 12.0283 23.9999 12.9449V26.1119C23.9999 27.0285 23.2672 27.7716 22.3635 27.7716Z" fill="#B53F84"/>
+              <path d="M22.3636 11.2891H12V27.7755H22.3636C23.2673 27.7755 23.9999 27.0324 23.9999 26.1158V12.9488C23.9999 12.0322 23.2673 11.2891 22.3636 11.2891Z" fill="url(#paint0_linear_32069_2987)"/>
+              <path d="M14.726 18.48C14.726 17.5634 13.9934 16.8203 13.0896 16.8203H10.9078C10.0041 16.8203 9.27148 17.5634 9.27148 18.48C9.27148 19.2023 9.72726 19.8152 10.3624 20.0433V20.693C10.3624 21.6096 11.095 22.3527 11.9987 22.3527C12.9024 22.3527 13.6351 21.6096 13.6351 20.693V20.0433C14.2702 19.8152 14.726 19.2023 14.726 18.48Z" fill="black" fillOpacity="0.7"/>
+              <path d="M13.0909 16.8184H12V22.3507C12.9037 22.3507 13.6364 21.6076 13.6364 20.691V20.0413C14.2715 19.8133 14.7273 19.2004 14.7273 18.4781C14.7273 17.5615 13.9946 16.8184 13.0909 16.8184Z" fill="black"/>
+              <defs>
+                <linearGradient id="paint0_linear_32069_2987" x1="12" y1="19.6822" x2="23.9999" y2="19.6822" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#DC2366"/>
+                  <stop offset="1" stopColor="#4F5CAA"/>
+                </linearGradient>
+              </defs>
             </svg>
           </div>
         </div>
