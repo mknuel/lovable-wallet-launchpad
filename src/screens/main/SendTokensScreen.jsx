@@ -58,22 +58,27 @@ const SendTokensScreen = () => {
       console.log('Users fetched:', response);
       
       if (response.data && Array.isArray(response.data)) {
-        const formattedUsers = response.data.map(user => ({
-          id: user.userBasicDetails?._id,
-          name: `${user.userProfileDetails?.firstName || ''} ${user.userProfileDetails?.lastName || ''}`.trim(),
-          firstName: user.userProfileDetails?.firstName || '',
-          lastName: user.userProfileDetails?.lastName || '',
-          email: user.userBasicDetails?.email || '',
-          phone: user.userBasicDetails?.phone || '',
-          avatar: user.userProfileDetails?.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
-        })).filter(user => user.id && user.name); // Filter out invalid users
-        setUsers(formattedUsers);
+        // Filter for active users only and format the data
+        const activeUsers = response.data
+          .filter(user => user.status === 'active')
+          .map(user => ({
+            id: user._id,
+            name: user.userName || user.phone || 'Unknown User',
+            firstName: user.userName || '',
+            lastName: '',
+            email: user.email || '',
+            phone: user.phone || '',
+            avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
+          }))
+          .filter(user => user.id && user.name); // Filter out invalid users
+        
+        setUsers(activeUsers);
       } else {
         setUsers([]);
       }
     } catch (error) {
       console.error('Error fetching users:', error);
-      // Mock data for development
+      // Mock data for development - only active users
       setUsers([
         { id: 1, name: 'Sam Mathew', firstName: 'Sam', lastName: 'Mathew', email: 'sam@example.com', phone: '+1234567890', avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png' },
         { id: 2, name: 'Francine Bianca', firstName: 'Francine', lastName: 'Bianca', email: 'francine@example.com', phone: '+1234567891', avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png' },
@@ -92,22 +97,27 @@ const SendTokensScreen = () => {
       console.log('Search results:', response);
       
       if (response.success && response.data && Array.isArray(response.data)) {
-        const formattedUsers = response.data.map(user => ({
-          id: user.userBasicDetails?._id,
-          name: `${user.userProfileDetails?.firstName || ''} ${user.userProfileDetails?.lastName || ''}`.trim(),
-          firstName: user.userProfileDetails?.firstName || '',
-          lastName: user.userProfileDetails?.lastName || '',
-          email: user.userBasicDetails?.email || '',
-          phone: user.userBasicDetails?.phone || '',
-          avatar: user.userProfileDetails?.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
-        })).filter(user => user.id && user.name); // Filter out invalid users
-        setUsers(formattedUsers);
+        // Filter for active users only and format the data
+        const activeUsers = response.data
+          .filter(user => user.status === 'active')
+          .map(user => ({
+            id: user._id,
+            name: user.userName || user.phone || 'Unknown User',
+            firstName: user.userName || '',
+            lastName: '',
+            email: user.email || '',
+            phone: user.phone || '',
+            avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
+          }))
+          .filter(user => user.id && user.name); // Filter out invalid users
+        
+        setUsers(activeUsers);
       } else {
         setUsers([]);
       }
     } catch (error) {
       console.error('Error searching users:', error);
-      // If search fails, fallback to filtered mock data
+      // If search fails, fallback to filtered mock data - only active users
       const filteredMockUsers = [
         { id: 1, name: 'Sam Mathew', firstName: 'Sam', lastName: 'Mathew', email: 'sam@example.com', phone: '+1234567890', avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png' },
         { id: 2, name: 'Francine Bianca', firstName: 'Francine', lastName: 'Bianca', email: 'francine@example.com', phone: '+1234567891', avatar: '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png' },
@@ -205,7 +215,7 @@ const SendTokensScreen = () => {
                 <div className="text-center py-8">Loading users...</div>
               ) : users.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  {searchQuery ? 'No users found matching your search' : 'No users available'}
+                  {searchQuery ? 'No active users found matching your search' : 'No active users available'}
                 </div>
               ) : (
                 <div className="space-y-4">
