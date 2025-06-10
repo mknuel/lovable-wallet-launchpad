@@ -1,4 +1,5 @@
 
+
 export const PATH_SERVER = "/server";
 
 export const PATH_SPLASH = "/";
@@ -27,3 +28,4 @@ export const PATH_MAIN = "/main";
 export const PATH_WALLET = "/wallet";
 export const PATH_WALLET_ACTIONS = "/wallet-actions";
 export const PATH_SEND_TOKENS = "/send-tokens";
+
