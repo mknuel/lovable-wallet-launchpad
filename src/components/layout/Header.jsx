@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-const Header = ({
+export const Header = ({
   onMenuClick,
   onNotificationClick,
   onSettingsClick,
@@ -53,5 +53,3 @@ const Header = ({
     </nav>
   );
 };
-
-export default Header;
