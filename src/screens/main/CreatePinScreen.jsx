@@ -85,7 +85,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
     
     try {
       console.log("Creating PIN:", pinCode);
-      console.log("Using appId from wallet:", walletData.appId);
+      console.log("Using appId from wallet:", walletData.data?.appId);
       
       // Check if token exists
       const token = localStorage.getItem('token');
@@ -93,7 +93,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
       console.log("Token preview:", token ? `${token.substring(0, 20)}...` : 'No token');
       
       const response = await api.post('/user/wallet/pincode/create', {
-        appId: walletData.appId, // Use appId from wallet data
+        appId: walletData.data?.appId, // Use appId from nested data
         pinCode: pinCode
       });
 
