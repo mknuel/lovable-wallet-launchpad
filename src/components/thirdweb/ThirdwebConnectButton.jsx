@@ -1,4 +1,5 @@
-import { client } from "./thirdwebClient";
+
+import { client, isClientAvailable } from "./thirdwebClient";
 import { ConnectButton, lightTheme, darkTheme } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
 
@@ -26,6 +27,16 @@ const ThirdwebConnectButton = ({ darkMode, path }) => {
       navigate(path);
     }
   };
+
+  // If client is not available, show a message
+  if (!isClientAvailable()) {
+    return (
+      <div className="w-[312px] h-[48px] flex items-center justify-center bg-gray-300 rounded-[50px] text-gray-600">
+        Thirdweb Client ID Required
+      </div>
+    );
+  }
+
   return (
     <>
       <ConnectButton

@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import OnboardingHeader from "../../components/layout/OnboardingHeader";
 import CommonButton from "../../components/Buttons/CommonButton";
@@ -5,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { PATH_SETTING } from "../../context/paths";
 import { useWalletAccount } from "../../context/WalletAccountContext";
 
-import { client } from "../../components/thirdweb/thirdwebClient";
+import { client, isClientAvailable } from "../../components/thirdweb/thirdwebClient";
 import { ConnectButton } from "thirdweb/react";
 import { createWallet } from "thirdweb/wallets";
 import { lightTheme } from "thirdweb/react";
@@ -130,23 +131,27 @@ const ConnectWallet = () => {
             <hr className="w-full"></hr>
           </div>
           <div className="flex flex-col gap-[16px]">
-            {/* <CommonButton>Connect a wallet</CommonButton>
-            <CommonButton>Connect as guest</CommonButton> */}
-            <ConnectButton
-              client={client}
-              wallets={wallets}
-              theme={lightTheme({
-                colors: {
-                  primaryButtonBg: "#DC2366",
-                  primaryButtonText: "#ffffff",
-                },
-              })}
-              connectButton={{ label: "Connect a wallet" }}
-              connectModal={{ size: "compact", showThirdwebBranding: false }}
-              onConnect={(wallet) => {
-                handleConnect(wallet);
-              }}
-            />
+            {isClientAvailable() ? (
+              <ConnectButton
+                client={client}
+                wallets={wallets}
+                theme={lightTheme({
+                  colors: {
+                    primaryButtonBg: "#DC2366",
+                    primaryButtonText: "#ffffff",
+                  },
+                })}
+                connectButton={{ label: "Connect a wallet" }}
+                connectModal={{ size: "compact", showThirdwebBranding: false }}
+                onConnect={(wallet) => {
+                  handleConnect(wallet);
+                }}
+              />
+            ) : (
+              <div className="w-full h-[48px] flex items-center justify-center bg-gray-300 rounded text-gray-600">
+                Thirdweb Client ID Required
+              </div>
+            )}
           </div>
         </div>
       </div>
