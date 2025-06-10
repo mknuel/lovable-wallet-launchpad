@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -227,19 +228,19 @@ const Main = () => {
             </div>
 
             {/* Main Content - Scrollable with top margin to account for fixed header */}
-            <div className="relative w-full overflow-y-auto px-4 py-6 mt-[66px] mb-[80px]">
+            <div className="relative w-full max-w-full overflow-y-auto overflow-x-hidden px-6 py-6 mt-[66px] mb-[80px]">
                 {/* Stats Card */}
                 <div className="w-full max-w-full mb-6">
                     <StatsCard stats={statsData} />
                 </div>
 
                 {/* Menu Section */}
-                <div className="w-full mb-8">
+                <div className="w-full max-w-full mb-8">
                     <MenuSection menuItems={menuItems} />
                 </div>
 
                 {/* Action Button */}
-                <div className="w-full">
+                <div className="w-full max-w-full">
                     <ActionButton 
                         onClick={handleNextClick}
                         ariaLabel="Proceed to next step"

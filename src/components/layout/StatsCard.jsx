@@ -4,7 +4,7 @@ import React from 'react';
 export const StatsCard = ({ stats, className }) => {
   return (
     <section 
-      className={`relative w-full mx-4 text-white ${className || ''}`}
+      className={`relative w-full max-w-full mx-auto text-white ${className || ''}`}
       style={{ height: '200px' }}
       role="region"
       aria-label="Financial statistics"
@@ -23,8 +23,8 @@ export const StatsCard = ({ stats, className }) => {
       </div>
       
       {/* Content */}
-      <div className="relative flex justify-center items-center h-full px-4 py-6">
-        <div className="flex justify-between items-center w-full max-w-md">
+      <div className="relative flex justify-center items-center h-full px-6 py-6">
+        <div className="flex justify-between items-center w-full max-w-sm">
           {stats.map((stat, index) => (
             <React.Fragment key={stat.id}>
               <div className="text-center">
