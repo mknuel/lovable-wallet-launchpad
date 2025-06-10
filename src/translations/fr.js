@@ -19,6 +19,17 @@ export default {
     privacyPolciy: "Politique de confidentialité",
     walletAddress: "Adresse du portefeuille",
   },
+  wallet: {
+    title: "Mon Portefeuille",
+    tokens: "Jetons",
+    crypto: "Crypto",
+    loans: "Prêts",
+    actions: {
+      send: "Envoyez vos jetons à un autre membre de la DAO ou invitez quelqu'un par téléphone pour les recevoir",
+      exchange: "Échangez vos jetons contre EURX (€ Euro) ou une autre cryptomonnaie",
+      loan: "Demander un prêt avec vos jetons"
+    }
+  },
   landing: {
     title_1: "La plus",
     title_2: "Fiable et sécurisée",

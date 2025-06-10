@@ -19,6 +19,17 @@ export default {
     privacyPolciy: "Política de privacidad",
     walletAddress: "Dirección de billetera",
   },
+  wallet: {
+    title: "Mi Billetera",
+    tokens: "Tokens",
+    crypto: "Cripto",
+    loans: "Préstamos",
+    actions: {
+      send: "Envía tus tokens a otro miembro de la DAO o invita a alguien por teléfono para recibirlos",
+      exchange: "Intercambia tus tokens por EURX (€ Euro) u otra criptomoneda",
+      loan: "Solicitar préstamo con tus tokens"
+    }
+  },
   landing: {
     title_1: "La más",
     title_2: "Confiable y segura",

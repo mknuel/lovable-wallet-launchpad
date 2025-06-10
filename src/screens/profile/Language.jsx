@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ const LanguageScreen = () => {
   const navigate = useNavigate();
   const { currentLanguage, changeLanguage } = useLanguage();
   const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   // Update selected language when currentLanguage changes
@@ -26,24 +28,29 @@ const LanguageScreen = () => {
     setSelectedLanguage(langCode);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     // Update the language in the context
     changeLanguage(selectedLanguage);
+    setIsLoading(false);
     navigate(PATH_SETTING);
   };
 
   console.log(selectedLanguage);
   return (
-    <div className="container">
+    <div className="container bg-white dark:bg-gray-900">
       <Header title={t("language.title") || "Language"}></Header>
       <div className="body-container w-full h-[calc(100vh-300px)] pb-[38px] px-[8px] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {languageOptions.map((lang, index) => (
           <div key={lang.code}>
             <div
-              className="gender-option"
+              className="gender-option dark:bg-gray-800 dark:border-gray-700"
               onClick={() => handleLanguageChange(lang.code)}
             >
-              <label className="gender-label">{lang.label}</label>
+              <label className="gender-label dark:text-white">{lang.label}</label>
               <div className="radio-wrapper">
                 <input
                   type="radio"
@@ -63,13 +70,20 @@ const LanguageScreen = () => {
           </div>
         ))}
       </div>
+      
+      {isLoading && (
+        <div className="flex justify-center items-center py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-600"></div>
+        </div>
+      )}
+      
       <CommonButton
         width="310px"
         height="42px"
         onClick={handleSubmit}
-        // disabled={isLoading || !termsAgreed}
+        disabled={isLoading}
       >
-        {t("language.submit") || "Submit"}
+        {isLoading ? "..." : (t("language.submit") || "Submit")}
       </CommonButton>
       <Navigation nav="Profile"></Navigation>
     </div>

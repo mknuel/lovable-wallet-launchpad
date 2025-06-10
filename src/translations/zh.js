@@ -19,6 +19,17 @@ export default {
     privacyPolciy: "隐私政策",
     walletAddress: "钱包地址",
   },
+  wallet: {
+    title: "我的钱包",
+    tokens: "代币",
+    crypto: "加密货币",
+    loans: "贷款",
+    actions: {
+      send: "将您的代币发送给其他DAO成员或邀请他人通过电话接收",
+      exchange: "将您的代币兑换为EURX（€欧元）或其他加密货币",
+      loan: "用您的代币申请贷款"
+    }
+  },
   landing: {
     title_1: "最",
     title_2: "值得信赖和安全的",

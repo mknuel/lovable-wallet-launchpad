@@ -11,7 +11,7 @@ export const Header = ({
 }) => {
   return (
     <nav 
-      className={`w-full items-center border-b-[color:var(--Gray-200,#EEE)] flex justify-between bg-white pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
+      className={`w-full items-center border-b-[color:var(--Gray-200,#EEE)] dark:border-b-gray-700 flex justify-between bg-white dark:bg-gray-900 pl-5 pr-4 py-4 border-b border-solid ${className || ''}`}
       role="navigation"
       aria-label="Main navigation"
     >
@@ -20,15 +20,14 @@ export const Header = ({
         <img
           src={LogoHorizontal}
           alt="BlockLoans Logo"
-          className="h-6"
+          className="h-5"
         />
       </div>
       <div className="flex items-center gap-3">
         {/* Notifications Icon */}
-       
         <button
           onClick={onNotificationClick}
-          className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="View notifications"
         >
           <img
@@ -37,9 +36,11 @@ export const Header = ({
             className="aspect-[1] object-contain w-6 self-stretch shrink-0 my-auto"
           />
         </button>
+        
+        {/* User Avatar */}
         <button
           onClick={onSettingsClick}
-          className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Open settings"
         >
           <img

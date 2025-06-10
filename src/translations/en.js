@@ -19,11 +19,22 @@ export default {
     privacyPolciy: "Privacy policy",
     walletAddress: "Wallet Address",
   },
+  wallet: {
+    title: "My Wallet",
+    tokens: "Tokens",
+    crypto: "Crypto", 
+    loans: "Loans",
+    actions: {
+      send: "Send your tokens to another DAO member or invite someone by phone to receive them",
+      exchange: "Exchange your tokens to EURX (€ Euro) or other Cryptocurrency",
+      loan: "Request Loan with your tokens"
+    }
+  },
   landing: {
     title_1: "The Most",
     title_2: "Trusted & Secure",
     title_3: "Crypto Community",
-    content: "Do you want a completely FREE way to earn real money? Money “that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, get a low-interest quick loan at BlockLoans?",
+    content: "Do you want a completely FREE way to earn real money? Money "that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, get a low-interest quick loan at BlockLoans?",
     button: "Swipe to get started"
   },
   auth: {
@@ -61,7 +72,7 @@ export default {
   getStarted: {
     title: "Lets get you started!",
     description_1: "Just answer a few questions and start earning free money!",
-    description_2: "We'll ask you some quick questions to set up your account, and you’ll be on your way to earning your rewards. It only takes a minute!",
+    description_2: "We'll ask you some quick questions to set up your account, and you'll be on your way to earning your rewards. It only takes a minute!",
     button: "GET STARTED"
   },
   gender: {
