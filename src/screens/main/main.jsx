@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StatusBar } from '../../components/layout/StatusBar';
-import Header from "../../components/layout/Header";
+import { Header } from '../../components/layout/Header';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { MenuSection } from '../../components/layout/MenuSection';
 import { ActionButton } from '../../components/layout/ActionButton';
@@ -56,11 +56,14 @@ const Main = () => {
     };
     
     return (
-     <div className="container">
-           
+        <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
+            {/* Status Bar - Full Width */}
+            <div className="w-full px-4">
+                <StatusBar />
+            </div>
 
-            {/* Fixed Header */}
-            <div className="flex-shrink-0">
+            {/* Header - Full Width */}
+            <div className="w-full">
                 <Header 
                     onMenuClick={handleMenuClick}
                     onNotificationClick={handleNotificationClick}
@@ -68,25 +71,31 @@ const Main = () => {
                 />
             </div>
 
-            {/* Scrollable Main Content */}
-            <div className="w-full overflow-y-auto h-[calc(100vh-170px)] px-4 py-6">
+            {/* Main Content - Scrollable */}
+            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden px-4 py-6">
                 {/* Stats Card */}
-                <StatsCard stats={statsData} className="mb-6" />
+                <div className="w-full mb-6">
+                    <StatsCard stats={statsData} />
+                </div>
 
                 {/* Menu Section */}
-                <MenuSection menuItems={menuItems} className="mb-8" />
+                <div className="w-full mb-8">
+                    <MenuSection menuItems={menuItems} />
+                </div>
 
                 {/* Action Button */}
-                <ActionButton 
-                    onClick={handleNextClick}
-                    ariaLabel="Proceed to next step"
-                >
-                    next
-                </ActionButton>
+                <div className="w-full">
+                    <ActionButton 
+                        onClick={handleNextClick}
+                        ariaLabel="Proceed to next step"
+                    >
+                        next
+                    </ActionButton>
+                </div>
             </div>
 
-            {/* Fixed Navigation */}
-            <div className="flex-shrink-0">
+            {/* Navigation - Full Width */}
+            <div className="w-full">
                 <Navigation nav={"Main Menu"} />
             </div>
         </div>
