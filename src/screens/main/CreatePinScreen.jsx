@@ -3,8 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 
 import Header from "../../components/layout/MainHeader";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const CreatePinScreen = ({ onPinCreated, onBack }) => {
+  const { t } = useTranslation();
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputRefs = useRef([]);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
