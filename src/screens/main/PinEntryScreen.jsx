@@ -198,7 +198,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
           <div className="px-4 pb-8">
             <button
               onClick={handleChangePinClick}
-              className=inline-flex items-center justify-center gap-0.5 px-2 py-1 rounded-full bg-[#FCEEEA] text-[#E2502A]
+              className="inline-flex items-center justify-center gap-0.5 px-2 py-1 rounded-full bg-[#FCEEEA] text-[#E2502A]
                 transition-all duration-200"
             >
               CREATE NEW PIN
