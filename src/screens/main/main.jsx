@@ -123,13 +123,18 @@ const Main = () => {
                 {showPinConfirmation && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
                         <div className="bg-white rounded-lg p-8 mx-4 max-w-sm w-full text-center">
-                            {/* Success Icon */}
+                            {/* Success Icon - Custom SVG */}
                             <div className="flex justify-center mb-6">
-                                <div className="w-16 h-16 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="52" viewBox="0 0 57 52" fill="none">
+                                    <path d="M34.0318 35.0723C32.7112 36.4097 30.9518 37.1455 29.0827 37.1455C27.2139 37.1455 25.4546 36.4097 24.134 35.0723L14.2173 25.0491C12.8946 23.7139 12.1666 21.936 12.1666 20.0467C12.1666 18.1573 12.8946 16.3794 14.2173 15.0446C15.5379 13.7072 17.2973 12.9713 19.1665 12.9713C21.0352 12.9713 22.7946 13.7072 24.1152 15.0446L29.0827 20.0631L42.7957 6.20258C38.3157 2.34189 32.5151 0 26.1663 0C11.9914 0 0.5 11.6153 0.5 25.9426C0.5 40.2704 11.9914 51.8857 26.1663 51.8857C40.3408 51.8857 51.8322 40.2704 51.8322 25.9426C51.8322 23.2613 51.4289 20.6763 50.6821 18.2424L34.0318 35.0723Z" fill="url(#paint0_linear_32219_3944)"/>
+                                    <path d="M29.0842 32.4282C28.4869 32.4282 27.8896 32.1971 27.4346 31.7372L17.5184 21.7137C16.6058 20.7917 16.6058 19.301 17.5184 18.379C18.4306 17.4565 19.905 17.4565 20.8176 18.379L29.0842 26.7347L52.5178 3.04891C53.4299 2.12692 54.9043 2.12692 55.8169 3.04891C56.7291 3.97133 56.7291 5.46163 55.8169 6.38405L30.7338 31.7372C30.2792 32.1971 29.6815 32.4282 29.0842 32.4282Z" fill="#1D2126"/>
+                                    <defs>
+                                        <linearGradient id="paint0_linear_32219_3944" x1="26.1661" y1="0" x2="26.1661" y2="51.8857" gradientUnits="userSpaceOnUse">
+                                            <stop stopColor="#3F5CC8"/>
+                                            <stop offset="1" stopColor="#E12160"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
                             </div>
                             
                             {/* Success Title */}
@@ -209,3 +214,5 @@ const Main = () => {
 }
 
 export default Main;
+
+</edits_to_apply>
