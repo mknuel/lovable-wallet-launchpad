@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -217,7 +216,7 @@ const Main = () => {
     }
     
     return (
-        <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
+        <div className="flex flex-col min-h-screen w-full max-w-full overflow-hidden">
             {/* Header - Fixed positioning */}
             <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
                 <Header 
@@ -228,7 +227,7 @@ const Main = () => {
             </div>
 
             {/* Main Content - Scrollable with top margin to account for fixed header */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden px-4 py-6 mt-[66px] mb-[80px]">
+            <div className="flex-1 w-full overflow-y-auto px-6 py-6 mt-[66px] mb-[80px]">
                 {/* Stats Card */}
                 <div className="w-full mb-6">
                     <StatsCard stats={statsData} />

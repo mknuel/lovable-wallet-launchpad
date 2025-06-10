@@ -19,18 +19,15 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
   const actionOptions = [
     {
       id: 'send',
-      title: 'Send your tokens to another DAO member',
-      subtitle: 'or invite someone by phone to receive them'
+      label: 'Send your tokens to another DAO member or invite someone by phone to receive them'
     },
     {
       id: 'exchange',
-      title: 'Exchange your tokens to EURX (€ Euro)',
-      subtitle: 'or other Cryptocurrency'
+      label: 'Exchange your tokens to EURX (€ Euro) or other Cryptocurrency'
     },
     {
       id: 'loan',
-      title: 'Request Loan with your tokens',
-      subtitle: ''
+      label: 'Request Loan with your tokens'
     }
   ];
 
@@ -46,7 +43,7 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+    <div className="flex flex-col min-h-screen w-full max-w-full bg-white overflow-hidden">
       {/* Header */}
       <Header
         title="My Wallet"
@@ -54,7 +51,7 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
       />
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-8">
+      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden">
         {/* Stats Card */}
         <div className="w-full mb-6">
           <StatsCard stats={statsData} />
@@ -63,41 +60,19 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
         {/* Action Options */}
         <div className="w-full mb-8 space-y-4">
           {actionOptions.map((option) => (
-            <div
+            <button
               key={option.id}
               onClick={() => handleActionSelect(option.id)}
               className={`
-                p-4 rounded-lg border-2 cursor-pointer transition-all duration-200
+                w-full py-4 px-6 rounded-xl font-semibold bg-white transition-colors text-left
                 ${selectedAction === option.id 
-                  ? 'border-[#DC2366] bg-gradient-to-r from-[#DC2366]/10 to-[#4F5CAA]/10' 
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  ? 'border border-pink-300 text-pink-600 bg-gradient-to-r from-pink-50 to-purple-50' 
+                  : 'border border-pink-300 text-pink-600 hover:bg-gray-50'
                 }
               `}
             >
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <h3 className="text-[16px] font-['Sansation'] font-bold text-[#1D2126] mb-1">
-                    {option.title}
-                  </h3>
-                  {option.subtitle && (
-                    <p className="text-[14px] font-['Sansation'] text-[#6B7280]">
-                      {option.subtitle}
-                    </p>
-                  )}
-                </div>
-                <div className={`
-                  w-6 h-6 rounded-full border-2 flex items-center justify-center
-                  ${selectedAction === option.id 
-                    ? 'border-[#DC2366] bg-[#DC2366]' 
-                    : 'border-gray-300'
-                  }
-                `}>
-                  {selectedAction === option.id && (
-                    <div className="w-3 h-3 bg-white rounded-full"></div>
-                  )}
-                </div>
-              </div>
-            </div>
+              {option.label.toUpperCase()}
+            </button>
           ))}
         </div>
 
@@ -105,7 +80,7 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
         <div className="flex-1"></div>
 
         {/* Next Button */}
-        <div className="px-4 pb-8">
+        <div className="w-full">
           <button
             onClick={handleNextClick}
             disabled={!selectedAction}

@@ -56,7 +56,7 @@ const WalletScreen = ({ onBack, walletData }) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+    <div className="flex flex-col min-h-screen w-full max-w-full bg-white overflow-hidden">
       {/* Header - Using MainHeader like profile screen */}
       <Header
         title="My Wallet"
@@ -64,7 +64,7 @@ const WalletScreen = ({ onBack, walletData }) => {
       />
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-8">
+      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden">
         {/* Stats Card */}
         <div className="w-full mb-6">
           <StatsCard stats={statsData} />
@@ -79,7 +79,7 @@ const WalletScreen = ({ onBack, walletData }) => {
         <div className="flex-1"></div>
 
         {/* Action Button */}
-        <div className="px-4 pb-8">
+        <div className="w-full">
           <button
             onClick={handleNextClick}
             className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
