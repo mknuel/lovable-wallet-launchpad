@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 
@@ -14,7 +13,10 @@ export const fetchWallet = createAsyncThunk(
       // The response structure shows data is directly in response, not response.data
       if (response.success || response.token !== undefined) {
         console.log("Wallet data received:", response);
-        return response; // Return the response directly since it contains the wallet data
+        // Extract only the wallet data, excluding success and other metadata
+        const { success, ...walletData } = response;
+        console.log("Extracted wallet data:", walletData);
+        return walletData; // Return only the wallet data
       } else {
         return rejectWithValue(response.message || 'Failed to fetch wallet');
       }
