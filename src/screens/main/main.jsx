@@ -69,7 +69,7 @@ const Main = () => {
             </div>
 
             {/* Scrollable Main Content */}
-            <div className="flex-1 overflow-y-auto px-4 py-6">
+            <div className="flex-1 overflow-y-auto h-[calc(100vh-170px)] px-4 py-6">
                 {/* Stats Card */}
                 <StatsCard stats={statsData} className="mb-6" />
 
