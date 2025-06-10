@@ -43,9 +43,14 @@ export const AuthProvider = ({ children }) => {
     
     // Check if this is a first-time sign-in
     const hasSignedInBefore = localStorage.getItem('hasSignedInBefore');
+    const hasCreatedPin = localStorage.getItem('userHasPin');
+    
     if (!hasSignedInBefore) {
       localStorage.setItem('isFirstTimeSignIn', 'true');
       localStorage.setItem('hasSignedInBefore', 'true');
+    } else if (hasCreatedPin) {
+      // For returning users with PIN, set flag for mandatory PIN entry
+      localStorage.setItem('needsPinEntry', 'true');
     }
     
     dispatch(setUser(userData));
@@ -55,6 +60,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
+    localStorage.removeItem('needsPinEntry'); // Clear PIN entry flag on logout
     
     dispatch(clearUser());
     dispatch(clearAuth());

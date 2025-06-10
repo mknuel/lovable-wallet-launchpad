@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -23,12 +22,13 @@ const Main = () => {
     useEffect(() => {
         const hasCreatedPin = localStorage.getItem('userHasPin');
         const isFirstTimeSignIn = localStorage.getItem('isFirstTimeSignIn');
+        const needsPinEntry = localStorage.getItem('needsPinEntry');
         
         if (isFirstTimeSignIn === 'true' && !hasCreatedPin) {
             // US-2.4: First-time PIN creation prompt
             setShowCreatePinScreen(true);
-        } else if (hasCreatedPin && isFirstTimeSignIn !== 'true') {
-            // US-2.6: Mandatory PIN entry (except first time)
+        } else if (hasCreatedPin && needsPinEntry === 'true') {
+            // US-2.6: Mandatory PIN entry only when flagged (initial redirect after login)
             setShowPinEntryScreen(true);
         }
     }, []);
@@ -87,6 +87,7 @@ const Main = () => {
         // US-2.5 & US-2.7: PIN creation confirmation
         localStorage.setItem('userHasPin', 'true');
         localStorage.removeItem('isFirstTimeSignIn');
+        localStorage.removeItem('needsPinEntry'); // Clear the flag
         setShowCreatePinScreen(false);
         setShowPinConfirmation(true);
         
@@ -97,13 +98,16 @@ const Main = () => {
     };
 
     const handlePinVerified = () => {
-        // US-2.6: After successful PIN entry, direct to main menu
+        // US-2.6: After successful PIN entry, clear the flag and direct to main menu
+        localStorage.removeItem('needsPinEntry');
         setShowPinEntryScreen(false);
     };
 
     const handleBackFromPinScreen = () => {
         setShowCreatePinScreen(false);
         setShowPinEntryScreen(false);
+        // Clear flags if user backs out
+        localStorage.removeItem('needsPinEntry');
     };
 
     // Show CreatePinScreen for first-time users or wallet access without PIN
