@@ -54,7 +54,7 @@ const SendTokensScreen = () => {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/users');
+      const response = await api.get('/users/by/name');
       console.log('Users fetched:', response);
       
       if (response.data && Array.isArray(response.data)) {
