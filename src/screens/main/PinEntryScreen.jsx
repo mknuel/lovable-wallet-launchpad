@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
+import api from "../../utils/api";
 
 const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) => {
   const { t } = useTranslation();
@@ -85,15 +86,21 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
     const enteredPin = pin.join("");
     
     try {
-      console.log("Verifying PIN:", enteredPin);
-      console.log("Against stored PIN:", walletData.data.pinCode);
+      console.log("Validating PIN:", enteredPin);
+      console.log("Using appId from wallet:", walletData.data?.appId);
       
-      // Verify PIN against the stored PIN from walletData
-      if (enteredPin === walletData.data.pinCode) {
-        console.log("PIN verification successful");
+      const response = await api.post('/user/wallet/pincode/validate', {
+        appId: walletData.data?.appId,
+        pinCode: enteredPin
+      });
+
+      console.log("PIN validation response:", response);
+
+      if (response.success) {
+        console.log("PIN validation successful");
         onPinVerified();
       } else {
-        console.log("PIN verification failed");
+        console.log("PIN validation failed");
         setError("Incorrect Pin Code");
         setShowChangePinOption(true);
         // Clear the PIN inputs
@@ -101,9 +108,12 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
-      console.error("Error verifying PIN:", error);
-      setError("An error occurred. Please try again.");
+      console.error("Error validating PIN:", error);
+      setError("Incorrect Pin Code");
       setShowChangePinOption(true);
+      // Clear the PIN inputs
+      setPin(["", "", "", ""]);
+      inputRefs.current[0]?.focus();
     } finally {
       setIsLoading(false);
     }
@@ -158,8 +168,6 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
             </span>
           </p>
         </div>
-
-        
 
         {/* PIN Input */}
         <div className="flex justify-center mb-3">
@@ -227,8 +235,6 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
             {isLoading ? "VERIFYING..." : "VERIFY"}
           </button>
         </div>
-
-        
       </div>
     </div>
   );
