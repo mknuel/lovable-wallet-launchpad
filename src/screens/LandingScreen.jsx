@@ -1,0 +1,161 @@
+import React, { useEffect, useState } from "react";
+import LandingBackground from "../assets/images/landing_background.png";
+import CommonButton from "../components/Buttons/CommonButton";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import api from "../utils/api";
+import { useAuth } from "../context/AuthContext";
+import { PATH_AUTH } from "../context/paths";
+import LanguageSelector from "../components/LanguageSelector";
+import { useTranslation } from "../hooks/useTranslation";
+import { useLanguage } from "../context/LanguageContext";
+
+import { retrieveLaunchParams } from "@telegram-apps/sdk";
+import { isTMA } from "@telegram-apps/bridge";
+
+import { useNavigate } from "react-router-dom";
+
+const role = {
+  id: "614c68de1df56b0018b4699c",
+  name: "Engineer",
+};
+
+const LandingScreen = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { currentLanguage, changeLanguage } = useLanguage();
+  const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
+  const { login } = useAuth();
+  let data = {};
+
+  useEffect(() => {
+    setSelectedLanguage(currentLanguage);
+    console.log("Current Language:", currentLanguage);
+  }, [currentLanguage]);
+
+  const handleLanguageChange = (langCode) => {
+    changeLanguage(langCode);
+    setSelectedLanguage(langCode);
+  };
+
+  if (isTMA()) {
+    console.log("It's Telegram Mini Apps");
+    const initData = retrieveLaunchParams();
+    data = {
+      hash: initData.tgWebAppData.hash,
+      id: initData.tgWebAppData.user.id,
+      username: initData.tgWebAppData.user.username,
+      first_name: initData.tgWebAppData.user.first_name,
+      last_name: initData.tgWebAppData.user.last_name,
+      roleId: role.id,
+      appsChannelKey: "abc",
+      deviceId: "Apple",
+    };
+    console.log("data==========>", data);
+  } else {
+    // initData in Web mode
+    data = {
+      hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce53b98",
+      id: "7916248551",
+      username: "luckyangel1110",
+      first_name: "Lucky",
+      last_name: "Angel",
+      roleId: role.id,
+      appsChannelKey: "abc",
+      deviceId: "Apple",
+    };
+    console.log("It's not Telegram Mini Apps");
+  }
+
+  const handleSwipe = (e) => {
+    e.preventDefault();
+    try {
+      api.post("/ssoauth/tgregister", data).then(async (res) => {
+        // if (res) {
+        console.log("Register Res==========>", res);
+        handleLogin(PATH_AUTH);
+        // }
+      });
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
+
+  async function handleLogin(link) {
+    const loginData = {
+      id: data.id,
+      first_name: data.first_name,
+      deviceId: data.deviceId,
+      hash: data.hash,
+      username: data.username,
+      last_name: data.last_name,
+    };
+    await api
+      .post("/ssoauth/tglogin", loginData)
+      .then((response) => {
+        console.log("Login response:", response);
+        if (response && response.success) {
+          const userData = {
+            userId: response.user._id,
+            userName: response.user.userName,
+            firstName: response.user.profile.firstName,
+            lastName: response.user.profile.lastName,
+            country: "",
+            role: response.user.roles,
+            email: response.user.email,
+            profileId: response.user.profile._id,
+            photo: response.user.profile.photo,
+            gender: "male",
+          };
+          console.log(response);
+          login(response.token, userData);
+          navigate(link);
+        } else {
+          console.error("Login failed:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+      });
+  }
+
+  return (
+    <div className="container justify-around">
+      <LanguageSelector
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={handleLanguageChange}
+      />
+      <div className="logo-container">
+        <img className="logo" src={LandingBackground} alt="logo"></img>
+      </div>
+      <div className="text-container">
+        <div className="title-container">
+          <div className="title-text font-bold text-center">
+            {t("landing.title_1") || "The Most"}
+          </div>
+          <div className="title-text font-bold text-center">
+            {t("landing.title_2") || "Trusted & Secure"}
+          </div>
+          <div className="title-text font-bold text-center">
+            {t("landing.title_3") || "Crypto Community"}
+          </div>
+        </div>
+        <div className="description-text text-center">
+          {t("landing.content") ||
+            "Do you want a completely FREE way to earn real money? Money “that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, convert to local currency with Lendsend, pay for your energy bills, recharge airtime and data for your Mobile service?"}
+        </div>
+      </div>
+      <div className="flex flex-col justify-end items-center">
+        <div className="button-container">
+          <CommonButton onClick={handleSwipe} width="auto" height="48px">
+            <ArrowForwardIcon className="icon mr-0.5" />
+            <span className="font-regular text-[13px]">
+              {t("landing.button") || "SWIPE TO GET STARTED"}
+            </span>
+          </CommonButton>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LandingScreen;
