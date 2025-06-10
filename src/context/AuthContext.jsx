@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -39,6 +40,13 @@ export const AuthProvider = ({ children }) => {
   const login = (token, userData) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userData', JSON.stringify(userData));
+    
+    // Check if this is a first-time sign-in
+    const hasSignedInBefore = localStorage.getItem('hasSignedInBefore');
+    if (!hasSignedInBefore) {
+      localStorage.setItem('isFirstTimeSignIn', 'true');
+      localStorage.setItem('hasSignedInBefore', 'true');
+    }
     
     dispatch(setUser(userData));
     dispatch(setAuth({ token }));

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
 import { StatsCard } from '../../components/layout/StatsCard';
@@ -8,11 +8,24 @@ import { ActionButton } from '../../components/layout/ActionButton';
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector } from "react-redux";
+import CreatePinModal from '../../components/modals/CreatePinModal';
 
 const Main = () => {
     const {t} = useTranslation();
     const userData = useSelector((state) => state.user);
     const navigate = useNavigate();
+    const [showCreatePinModal, setShowCreatePinModal] = useState(false);
+    const [showPinConfirmation, setShowPinConfirmation] = useState(false);
+    
+    // Check if user needs to create PIN on first sign-in (US-2.4)
+    useEffect(() => {
+        const hasCreatedPin = localStorage.getItem('userHasPin');
+        const isFirstTimeSignIn = localStorage.getItem('isFirstTimeSignIn');
+        
+        if (isFirstTimeSignIn === 'true' && !hasCreatedPin) {
+            setShowCreatePinModal(true);
+        }
+    }, []);
     
     const statsData = [
         { id: 'tokens', value: '234', label: 'Tokens' },
@@ -25,6 +38,11 @@ const Main = () => {
             id: 'wallet', 
             label: 'My Wallet',
             onClick: () => console.log('Navigate to wallet')
+        },
+        { 
+            id: 'createPin', 
+            label: 'Create PIN',
+            onClick: () => setShowCreatePinModal(true)
         },
         { 
             id: 'settings', 
@@ -52,6 +70,23 @@ const Main = () => {
 
     const handleNextClick = () => {
         console.log('Next button clicked');
+    };
+
+    const handlePinCreated = () => {
+        // US-2.5: Show confirmation message
+        localStorage.setItem('userHasPin', 'true');
+        localStorage.removeItem('isFirstTimeSignIn');
+        setShowCreatePinModal(false);
+        setShowPinConfirmation(true);
+        
+        // Hide confirmation after 3 seconds
+        setTimeout(() => {
+            setShowPinConfirmation(false);
+        }, 3000);
+    };
+
+    const handleClosePinModal = () => {
+        setShowCreatePinModal(false);
     };
     
     return (
@@ -92,6 +127,26 @@ const Main = () => {
             <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white">
                 <Navigation nav={"Main Menu"} />
             </div>
+
+            {/* Create PIN Modal */}
+            {showCreatePinModal && (
+                <CreatePinModal 
+                    onPinCreated={handlePinCreated}
+                    onClose={handleClosePinModal}
+                />
+            )}
+
+            {/* PIN Confirmation Message (US-2.5) */}
+            {showPinConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+                    <div className="bg-white rounded-lg p-6 mx-4 text-center">
+                        <div className="text-green-600 text-xl mb-4">✓</div>
+                        <p className="text-[16px] font-['Sansation'] text-[#1D2126]">
+                            Your PIN has now been created
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,7 +1,8 @@
+
 /* eslint-disable no-unused-vars */
 import LogoVertical from "../../assets/images/Logo - Blockloans.png";
 import CommonButton from "../../components/Buttons/CommonButton";
-import { PATH_MAIN, PATH_CREATE_PIN } from "../../context/paths";
+import { PATH_MAIN } from "../../context/paths";
 import ThirdwebConnectButton from "../../components/thirdweb/ThirdwebConnectButton";
 import {
   TonConnectUI,
@@ -63,14 +64,7 @@ const Auth = () => {
         />
         <CustomTonConnectButton />
         <CommonButton height="48px" width="312px" onClick={handleCreateWallet}>
-          CREAT A NEW WALLET
-        </CommonButton>
-        <CommonButton
-          height="48px"
-          width="312px"
-          onClick={() => navigate(PATH_CREATE_PIN)}
-        >
-          CREATE PIN (Demo)
+          CREATE A NEW WALLET
         </CommonButton>
       </div>
     </div>
