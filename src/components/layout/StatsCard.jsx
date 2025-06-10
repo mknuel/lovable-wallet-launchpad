@@ -23,7 +23,7 @@ export const StatsCard = ({ stats, className }) => {
       </div>
       
       {/* Content */}
-      <div className="relative flex justify-center items-center h-full px-8 py-6">
+      <div className="relative flex justify-center items-center h-full px-4 py-6">
         <div className="flex justify-between items-center w-full max-w-md">
           {stats.map((stat, index) => (
             <React.Fragment key={stat.id}>
