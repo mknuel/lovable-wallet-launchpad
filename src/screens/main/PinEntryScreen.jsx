@@ -195,7 +195,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
 
         {/* Change PIN Button - Only show when there's an error */}
         {showChangePinOption && (
-          <div className="px-4 pb-8">
+          <div className="px-4 pb-8 mx-auto">
             <button
               onClick={handleChangePinClick}
               className="inline-flex items-center text-xs justify-center gap-0.5 px-2 py-1 rounded-full bg-[#FCEEEA] text-[#E2502A]
