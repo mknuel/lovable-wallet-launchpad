@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -8,6 +7,7 @@ import { ActionButton } from '../../components/layout/ActionButton';
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector } from "react-redux";
+import { useGetWalletQuery } from '../../store/api/walletApi';
 import CreatePinScreen from './CreatePinScreen';
 import PinEntryScreen from './PinEntryScreen';
 
@@ -18,6 +18,9 @@ const Main = () => {
     const [showCreatePinScreen, setShowCreatePinScreen] = useState(false);
     const [showPinEntryScreen, setShowPinEntryScreen] = useState(false);
     const [showPinConfirmation, setShowPinConfirmation] = useState(false);
+    
+    // Fetch wallet data on component mount
+    const { data: walletData, error: walletError, isLoading: walletLoading } = useGetWalletQuery();
     
     // US-2.4 & US-2.6: Check PIN status and redirect accordingly
     useEffect(() => {
@@ -114,6 +117,7 @@ const Main = () => {
                 <CreatePinScreen 
                     onPinCreated={handlePinCreated}
                     onBack={handleBackFromPinScreen}
+                    walletData={walletData?.data}
                 />
                 
                 {/* US-2.5: PIN Creation Confirmation Message */}

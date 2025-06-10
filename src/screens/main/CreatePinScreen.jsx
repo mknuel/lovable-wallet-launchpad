@@ -1,17 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft } from "lucide-react";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
-import { setWalletLoading, setWalletData, setWalletError } from "../../store/reducers/walletSlice";
 
-const CreatePinScreen = ({ onPinCreated, onBack }) => {
+const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const walletData = useSelector((state) => state.wallet.walletData);
-  const walletLoading = useSelector((state) => state.wallet.isLoading);
-  
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputRefs = useRef([]);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
@@ -21,31 +15,6 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 4);
   }, []);
-
-  // Fetch wallet data when component mounts
-  useEffect(() => {
-    const fetchWallet = async () => {
-      if (!walletData) {
-        dispatch(setWalletLoading(true));
-        try {
-          console.log("Fetching wallet data...");
-          const response = await api.get('/user/wallet');
-          console.log("Wallet response:", response);
-          
-          if (response.success) {
-            dispatch(setWalletData(response.data));
-          } else {
-            dispatch(setWalletError("Failed to fetch wallet"));
-          }
-        } catch (error) {
-          console.error("Error fetching wallet:", error);
-          dispatch(setWalletError(error.message || "Failed to fetch wallet"));
-        }
-      }
-    };
-
-    fetchWallet();
-  }, [dispatch, walletData]);
 
   // Check if all PIN digits are filled
   useEffect(() => {
@@ -144,8 +113,8 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
     }
   };
 
-  // Show loading state while fetching wallet
-  if (walletLoading) {
+  // Show loading state while waiting for wallet data
+  if (!walletData) {
     return (
       <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
         <Header
