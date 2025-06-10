@@ -1,7 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/layout/MainHeader";
-import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { PATH_WALLET_ACTIONS } from "../../context/paths";
 import api from "../../utils/api";
@@ -60,14 +59,14 @@ const SendTokensScreen = () => {
       
       if (response.data && Array.isArray(response.data)) {
         const formattedUsers = response.data.map(user => ({
-          id: user.userBasicDetails._id,
-          name: `${user.userProfileDetails.firstName} ${user.userProfileDetails.lastName}`,
-          firstName: user.userProfileDetails.firstName,
-          lastName: user.userProfileDetails.lastName,
-          email: user.userBasicDetails.email,
-          phone: user.userBasicDetails.phone,
-          avatar: user.userProfileDetails.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
-        }));
+          id: user.userBasicDetails?._id,
+          name: `${user.userProfileDetails?.firstName || ''} ${user.userProfileDetails?.lastName || ''}`.trim(),
+          firstName: user.userProfileDetails?.firstName || '',
+          lastName: user.userProfileDetails?.lastName || '',
+          email: user.userBasicDetails?.email || '',
+          phone: user.userBasicDetails?.phone || '',
+          avatar: user.userProfileDetails?.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
+        })).filter(user => user.id && user.name); // Filter out invalid users
         setUsers(formattedUsers);
       } else {
         setUsers([]);
@@ -94,14 +93,14 @@ const SendTokensScreen = () => {
       
       if (response.success && response.data && Array.isArray(response.data)) {
         const formattedUsers = response.data.map(user => ({
-          id: user.userBasicDetails._id,
-          name: `${user.userProfileDetails.firstName} ${user.userProfileDetails.lastName}`,
-          firstName: user.userProfileDetails.firstName,
-          lastName: user.userProfileDetails.lastName,
-          email: user.userBasicDetails.email,
-          phone: user.userBasicDetails.phone,
-          avatar: user.userProfileDetails.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
-        }));
+          id: user.userBasicDetails?._id,
+          name: `${user.userProfileDetails?.firstName || ''} ${user.userProfileDetails?.lastName || ''}`.trim(),
+          firstName: user.userProfileDetails?.firstName || '',
+          lastName: user.userProfileDetails?.lastName || '',
+          email: user.userBasicDetails?.email || '',
+          phone: user.userBasicDetails?.phone || '',
+          avatar: user.userProfileDetails?.photo || '/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png'
+        })).filter(user => user.id && user.name); // Filter out invalid users
         setUsers(formattedUsers);
       } else {
         setUsers([]);
@@ -149,13 +148,28 @@ const SendTokensScreen = () => {
 
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white overflow-hidden">
-      {/* Header - Fixed positioning */}
+      {/* Header - Same style as wallet screens */}
       <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
-        <Header
-          title="Send Tokens"
-          action={false}
-          onBack={handleBackClick}
-        />
+        <header className="w-full h-[66px] flex flex-row items-center justify-between gap-[9px] py-[18px] px-6 z-50">
+          <button onClick={handleBackClick} className="p-0">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#837E7E"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+          <h1 className="flex-1 text-center font-regular text-[16px]">Send Tokens</h1>
+          <div className="w-5"></div> {/* Spacer for symmetry */}
+        </header>
+        <hr className="w-full text-[#EEEEEE] z-50"></hr>
       </div>
 
       {/* Content */}
