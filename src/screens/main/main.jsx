@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -36,12 +35,7 @@ const Main = () => {
     ];
 
     const handleWalletClick = () => {
-        const hasCreatedPin = localStorage.getItem('userHasPin');
-        if (!hasCreatedPin) {
-            setShowCreatePinScreen(true);
-        } else {
-            console.log('Navigate to wallet - PIN already exists');
-        }
+        setShowCreatePinScreen(true);
     };
 
     const menuItems = [
@@ -105,7 +99,7 @@ const Main = () => {
         setShowCreatePinScreen(false);
     };
 
-    // Show CreatePinScreen if user clicked wallet without PIN
+    // Show CreatePinScreen if user clicked wallet
     if (showCreatePinScreen) {
         return (
             <>
