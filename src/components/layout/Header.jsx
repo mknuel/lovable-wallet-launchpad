@@ -25,21 +25,29 @@ export const Header = ({
       </div>
       <div className="flex items-center gap-3">
         {/* Notifications Icon */}
+       
         <button
           onClick={onNotificationClick}
           className="p-1 rounded-md hover:bg-gray-100 transition-colors"
           aria-label="View notifications"
         >
-          <Bell size={20} className="text-gray-600" />
-        </button>
-        {/* User Avatar */}
-        <div className="w-8 h-8 rounded-full overflow-hidden">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/Avatar.png"
-            alt="User avatar"
-            className="w-full h-full object-cover"
+            src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/e3975f79483bc82c73eaf993f32260081d3511e6?placeholderIfAbsent=true"
+            alt=""
+            className="aspect-[1] object-contain w-6 self-stretch shrink-0 my-auto"
           />
-        </div>
+        </button>
+        <button
+          onClick={onSettingsClick}
+          className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          aria-label="Open settings"
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/ad487cab465b08eec6b51dff3014f32abba28313?placeholderIfAbsent=true"
+            alt=""
+            className="aspect-[1] object-contain w-6 self-stretch shrink-0 my-auto"
+          />
+        </button>
       </div>
     </nav>
   );
