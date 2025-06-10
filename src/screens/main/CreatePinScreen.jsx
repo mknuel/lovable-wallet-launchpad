@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
-
+import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
 
@@ -10,6 +10,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputRefs = useRef([]);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize refs
   useEffect(() => {
@@ -71,10 +72,32 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
     inputRefs.current[nextIndex]?.focus();
   };
 
-  const handleVerify = () => {
-    if (isButtonEnabled) {
-      console.log("PIN created:", pin.join(""));
-      onPinCreated();
+  const handleVerify = async () => {
+    if (!isButtonEnabled || isLoading) return;
+
+    setIsLoading(true);
+    const pinCode = pin.join("");
+    
+    try {
+      console.log("Creating PIN:", pinCode);
+      
+      const response = await api.post('/user/wallet/pincode/create', {
+        appId: "blockloan-mini-app", // You may want to make this configurable
+        pinCode: pinCode
+      });
+
+      if (response.success) {
+        console.log("PIN created successfully:", response.data);
+        onPinCreated();
+      } else {
+        console.error("PIN creation failed:", response);
+        // Handle error - you might want to show an error message to user
+      }
+    } catch (error) {
+      console.error("Error creating PIN:", error);
+      // Handle error - you might want to show an error message to user
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,6 +142,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={index === 0 ? handlePaste : undefined}
+                disabled={isLoading}
                 className={`
                   w-[60px] h-[60px] rounded-full text-center text-[20px] font-['Sansation'] font-bold
                   border-none shadow-[1px_2px_10px_1px_rgba(0,0,0,0.10)] outline-none transition-all duration-200
@@ -127,6 +151,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
                       ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white border-transparent"
                       : "bg-white text-black border-gray-300 focus:border-[#DC2366]"
                   }
+                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               />
             ))}
@@ -140,18 +165,18 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
         <div className="px-4 pb-8">
           <button
             onClick={handleVerify}
-            disabled={!isButtonEnabled}
+            disabled={!isButtonEnabled || isLoading}
             className={`
               w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-              transition-all duration-200
+              transition-all duration-200 flex items-center justify-center
               ${
-                isButtonEnabled
+                isButtonEnabled && !isLoading
                   ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }
             `}
           >
-            VERIFY
+            {isLoading ? "CREATING..." : "VERIFY"}
           </button>
         </div>
       </div>
