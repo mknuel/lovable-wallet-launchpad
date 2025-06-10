@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
-import api from "../../utils/api";
 
 const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) => {
   const { t } = useTranslation();
   const [pin, setPin] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
+  const [showChangePinOption, setShowChangePinOption] = useState(false);
   const inputRefs = useRef([]);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +23,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
     setIsButtonEnabled(allFilled);
     if (allFilled) {
       setError(""); // Clear error when all fields are filled
+      setShowChangePinOption(false); // Hide change PIN option when typing
     }
   }, [pin]);
 
@@ -80,6 +81,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
 
     setIsLoading(true);
     setError("");
+    setShowChangePinOption(false);
     const enteredPin = pin.join("");
     
     try {
@@ -93,6 +95,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
       } else {
         console.log("PIN verification failed");
         setError("Incorrect PIN. Please try again.");
+        setShowChangePinOption(true);
         // Clear the PIN inputs
         setPin(["", "", "", ""]);
         inputRefs.current[0]?.focus();
@@ -100,6 +103,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
     } catch (error) {
       console.error("Error verifying PIN:", error);
       setError("An error occurred. Please try again.");
+      setShowChangePinOption(true);
     } finally {
       setIsLoading(false);
     }
@@ -107,6 +111,21 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
 
   const handleChangePinClick = () => {
     onShowCreatePin();
+  };
+
+  const handleNumericKeypadPress = (digit) => {
+    const firstEmptyIndex = pin.findIndex(d => d === "");
+    if (firstEmptyIndex !== -1) {
+      handleInputChange(firstEmptyIndex, digit.toString());
+    }
+  };
+
+  const handleDeletePress = () => {
+    const lastFilledIndex = pin.map((digit, index) => digit !== "" ? index : -1)
+      .filter(index => index !== -1).pop();
+    if (lastFilledIndex !== undefined) {
+      handleInputChange(lastFilledIndex, "");
+    }
   };
 
   return (
@@ -171,6 +190,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
                       : "bg-white text-black border-gray-300 focus:border-[#DC2366]"
                   }
                   ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                  ${error ? "animate-pulse" : ""}
                 `}
               />
             ))}
@@ -180,17 +200,19 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
         {/* Spacer */}
         <div className="flex-1"></div>
 
-        {/* Create PIN Button */}
-        <div className="px-4 pb-4">
-          <button
-            onClick={handleChangePinClick}
-            className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-              bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90
-              transition-all duration-200"
-          >
-            CREATE
-          </button>
-        </div>
+        {/* Change PIN Button - Only show when there's an error */}
+        {showChangePinOption && (
+          <div className="px-4 pb-4">
+            <button
+              onClick={handleChangePinClick}
+              className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
+                bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90
+                transition-all duration-200"
+            >
+              CREATE NEW PIN
+            </button>
+          </div>
+        )}
 
         {/* Numeric Keypad */}
         <div className="px-4 pb-8">
@@ -199,12 +221,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <button
                 key={num}
-                onClick={() => {
-                  const firstEmptyIndex = pin.findIndex(digit => digit === "");
-                  if (firstEmptyIndex !== -1) {
-                    handleInputChange(firstEmptyIndex, num.toString());
-                  }
-                }}
+                onClick={() => handleNumericKeypadPress(num)}
                 disabled={isLoading}
                 className="h-16 rounded-lg bg-gray-100 text-[24px] font-['Sansation'] font-bold text-black
                   hover:bg-gray-200 transition-colors disabled:opacity-50"
@@ -216,12 +233,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
             {/* Zero and Delete */}
             <div></div> {/* Empty space */}
             <button
-              onClick={() => {
-                const firstEmptyIndex = pin.findIndex(digit => digit === "");
-                if (firstEmptyIndex !== -1) {
-                  handleInputChange(firstEmptyIndex, "0");
-                }
-              }}
+              onClick={() => handleNumericKeypadPress(0)}
               disabled={isLoading}
               className="h-16 rounded-lg bg-gray-100 text-[24px] font-['Sansation'] font-bold text-black
                 hover:bg-gray-200 transition-colors disabled:opacity-50"
@@ -229,13 +241,7 @@ const PinEntryScreen = ({ onPinVerified, onBack, walletData, onShowCreatePin }) 
               0
             </button>
             <button
-              onClick={() => {
-                const lastFilledIndex = pin.map((digit, index) => digit !== "" ? index : -1)
-                  .filter(index => index !== -1).pop();
-                if (lastFilledIndex !== undefined) {
-                  handleInputChange(lastFilledIndex, "");
-                }
-              }}
+              onClick={handleDeletePress}
               disabled={isLoading}
               className="h-16 rounded-lg bg-gray-100 flex items-center justify-center
                 hover:bg-gray-200 transition-colors disabled:opacity-50"
