@@ -81,10 +81,17 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
     try {
       console.log("Creating PIN:", pinCode);
       
+      // Check if token exists
+      const token = localStorage.getItem('token');
+      console.log("Token exists:", !!token);
+      console.log("Token preview:", token ? `${token.substring(0, 20)}...` : 'No token');
+      
       const response = await api.post('/user/wallet/pincode/create', {
-        appId: "blockloan-mini-app", // You may want to make this configurable
+        appId: "blockloan-mini-app",
         pinCode: pinCode
       });
+
+      console.log("PIN creation response:", response);
 
       if (response.success) {
         console.log("PIN created successfully:", response.data);
@@ -95,6 +102,11 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
       }
     } catch (error) {
       console.error("Error creating PIN:", error);
+      console.error("Error details:", {
+        status: error.status,
+        message: error.message,
+        data: error.data
+      });
       // Handle error - you might want to show an error message to user
     } finally {
       setIsLoading(false);
