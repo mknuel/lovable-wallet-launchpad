@@ -22,4 +22,13 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.message.includes('@__PURE__')) return
+        warn(warning)
+      }
+    }
+  }
 }));
+
