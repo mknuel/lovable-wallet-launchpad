@@ -1,5 +1,11 @@
 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { StatusBar } from '../../components/layout/StatusBar';
 import Header from "../../components/layout/Header";
+import { StatsCard } from '../../components/layout/StatsCard';
+import { MenuSection } from '../../components/layout/MenuSection';
+import { ActionButton } from '../../components/layout/ActionButton';
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector } from "react-redux";
@@ -7,53 +13,79 @@ import { useSelector } from "react-redux";
 const Main = () => {
     const {t} = useTranslation();
     const userData = useSelector((state) => state.user);
+    const navigate = useNavigate();
+    
+    const statsData = [
+        { id: 'tokens', value: '234', label: 'Tokens' },
+        { id: 'crypto', value: '190', label: 'Crypto' },
+        { id: 'loans', value: '715', label: 'Loans' }
+    ];
+
+    const menuItems = [
+        { 
+            id: 'wallet', 
+            label: 'My Wallet',
+            onClick: () => console.log('Navigate to wallet')
+        },
+        { 
+            id: 'settings', 
+            label: 'Settings',
+            onClick: () => navigate('/setting')
+        },
+        { 
+            id: 'blockloans', 
+            label: 'Blockloans',
+            onClick: () => console.log('Navigate to blockloans')
+        }
+    ];
+
+    const handleMenuClick = () => {
+        console.log('Menu clicked');
+    };
+
+    const handleNotificationClick = () => {
+        console.log('Notifications clicked');
+    };
+
+    const handleSettingsClick = () => {
+        navigate('/setting');
+    };
+
+    const handleNextClick = () => {
+        console.log('Next button clicked');
+    };
     
     return (
         <div className="flex flex-col h-screen w-full mx-auto bg-white">
+            {/* Status Bar */}
+            <div className="flex-shrink-0 px-4 pt-3">
+                <StatusBar />
+            </div>
+
             {/* Fixed Header */}
             <div className="flex-shrink-0">
-                <Header />
+                <Header 
+                    onMenuClick={handleMenuClick}
+                    onNotificationClick={handleNotificationClick}
+                    onSettingsClick={handleSettingsClick}
+                />
             </div>
 
             {/* Scrollable Main Content */}
             <div className="flex-1 overflow-y-auto px-4 py-6">
                 {/* Stats Card */}
-                <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl p-6 text-white mb-6">
-                    <div className="flex justify-between items-center">
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">234</div>
-                            <div className="text-sm opacity-90">TOKENS</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">190</div>
-                            <div className="text-sm opacity-90">CRYPTO</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">715</div>
-                            <div className="text-sm opacity-90">LOANS</div>
-                        </div>
-                    </div>
-                </div>
+                <StatsCard stats={statsData} className="mb-6" />
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-3 mb-8">
-                    <button className="w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white">
-                        MY WALLET
-                    </button>
-                    
-                    <button className="w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white">
-                        SETTINGS
-                    </button>
-                    
-                    <button className="w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white">
-                        BLOCKLOANS
-                    </button>
-                </div>
+                {/* Menu Section */}
+                <MenuSection menuItems={menuItems} className="mb-8" />
 
-                {/* Next Button */}
-                <button className="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full text-white font-semibold">
-                    NEXT
-                </button>
+                {/* Action Button */}
+                <ActionButton 
+                    onClick={handleNextClick}
+                    ariaLabel="Proceed to next step"
+                >
+                    next
+                </ActionButton>
             </div>
 
             {/* Fixed Navigation */}
