@@ -9,6 +9,7 @@ export const PATH_PHONE = "/phone";
 export const PATH_PHONE_VERIFICATION = "/phone-verification";
 export const PATH_HOME = "/home";
 export const PATH_WALLETCONNECT = "/walletConnect";
+export const PATH_CREATE_PIN = "/create-pin";
 
 export const PATH_GETSTARTED = "/get-started";
 export const PATH_GENDER = "/gender";

@@ -1,10 +1,13 @@
-
 /* eslint-disable no-unused-vars */
 import LogoVertical from "../../assets/images/Logo - Blockloans.png";
 import CommonButton from "../../components/Buttons/CommonButton";
-import { PATH_MAIN } from "../../context/paths";
+import { PATH_MAIN, PATH_CREATE_PIN } from "../../context/paths";
 import ThirdwebConnectButton from "../../components/thirdweb/ThirdwebConnectButton";
-import { TonConnectUI, TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
+import {
+  TonConnectUI,
+  TonConnectButton,
+  useTonWallet,
+} from "@tonconnect/ui-react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -24,8 +27,8 @@ const Auth = () => {
 
   const handleConnect = () => {
     tonConnectUI.openModal({
-      returnStrategy: 'back',
-      redirectUrl: 'https://blockloan-mini-app.vercel.app/main'
+      returnStrategy: "back",
+      redirectUrl: "https://blockloan-mini-app.vercel.app/main",
     });
   };
 
@@ -59,12 +62,15 @@ const Auth = () => {
           path={PATH_MAIN}
         />
         <CustomTonConnectButton />
+        <CommonButton height="48px" width="312px" onClick={handleCreateWallet}>
+          CREAT A NEW WALLET
+        </CommonButton>
         <CommonButton
           height="48px"
           width="312px"
-          onClick={handleCreateWallet}
+          onClick={() => navigate(PATH_CREATE_PIN)}
         >
-          CREAT A NEW WALLET
+          CREATE PIN (Demo)
         </CommonButton>
       </div>
     </div>
