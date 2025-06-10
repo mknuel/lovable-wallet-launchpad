@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -59,9 +60,19 @@ const Main = () => {
     ];
 
     const handleWalletClick = () => {
-        // Always show create PIN screen when wallet is clicked (for now)
-        setShowPinEntryScreen(false); // Make sure PIN entry is closed
-        setShowCreatePinScreen(true);
+        if (!walletData?.data) {
+            console.log("No wallet data available");
+            return;
+        }
+
+        // Check if PIN is set based on isPinCodeSet flag
+        if (!walletData.data.isPinCodeSet) {
+            // No PIN set, show create PIN screen
+            setShowCreatePinScreen(true);
+        } else {
+            // PIN is set, show PIN entry screen for verification
+            setShowPinEntryScreen(true);
+        }
     };
 
     const menuItems = [
@@ -114,39 +125,30 @@ const Main = () => {
     };
 
     const handlePinVerified = () => {
-        // US-2.6: After successful PIN entry, clear the flag and direct to main menu
+        // After successful PIN entry, go to wallet screen
         localStorage.removeItem('needsPinEntry');
         setShowPinEntryScreen(false);
+        setShowWalletScreen(true);
     };
 
     const handleBackFromPinScreen = () => {
         setShowCreatePinScreen(false);
         setShowPinEntryScreen(false);
+        setShowWalletScreen(false);
         // Clear flags if user backs out
         localStorage.removeItem('needsPinEntry');
     };
 
-    // Show WalletScreen after PIN creation success
+    // Show WalletScreen after PIN verification/creation success
     if (showWalletScreen) {
         return (
-            <WalletScreen 
-                onBack={() => setShowWalletScreen(false)}
-                walletData={walletData}
-            />
-        );
-    }
-
-    // Show CreatePinScreen for first-time users or wallet access without PIN
-    if (showCreatePinScreen) {
-        return (
             <>
-                <CreatePinScreen 
-                    onPinCreated={handlePinCreated}
+                <WalletScreen 
                     onBack={handleBackFromPinScreen}
                     walletData={walletData}
                 />
                 
-                {/* US-2.5: PIN Creation Confirmation Message */}
+                {/* US-2.5: PIN Creation Confirmation Message - overlay on wallet screen */}
                 {showPinConfirmation && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
                         <div className="bg-white rounded-lg p-8 mx-4 max-w-sm w-full text-center">
@@ -188,12 +190,28 @@ const Main = () => {
         );
     }
 
-    // Show PinEntryScreen for returning users
+    // Show CreatePinScreen for users without PIN
+    if (showCreatePinScreen) {
+        return (
+            <CreatePinScreen 
+                onPinCreated={handlePinCreated}
+                onBack={handleBackFromPinScreen}
+                walletData={walletData}
+            />
+        );
+    }
+
+    // Show PinEntryScreen for users with PIN set
     if (showPinEntryScreen) {
         return (
             <PinEntryScreen 
                 onPinVerified={handlePinVerified}
                 onBack={handleBackFromPinScreen}
+                walletData={walletData}
+                onShowCreatePin={() => {
+                    setShowPinEntryScreen(false);
+                    setShowCreatePinScreen(true);
+                }}
             />
         );
     }
