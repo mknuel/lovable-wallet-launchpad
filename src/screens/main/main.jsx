@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StatusBar } from '../../components/layout/StatusBar';
 import { Header } from '../../components/layout/Header';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { MenuSection } from '../../components/layout/MenuSection';
@@ -57,13 +56,8 @@ const Main = () => {
     
     return (
         <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
-            {/* Status Bar - Full Width */}
-            <div className="w-full px-4">
-                <StatusBar />
-            </div>
-
-            {/* Header - Full Width */}
-            <div className="w-full">
+            {/* Header - Fixed positioning */}
+            <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
                 <Header 
                     onMenuClick={handleMenuClick}
                     onNotificationClick={handleNotificationClick}
@@ -71,8 +65,8 @@ const Main = () => {
                 />
             </div>
 
-            {/* Main Content - Scrollable */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden px-4 py-6">
+            {/* Main Content - Scrollable with top margin to account for fixed header */}
+            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden px-4 py-6 mt-[66px] mb-[80px]">
                 {/* Stats Card */}
                 <div className="w-full mb-6">
                     <StatsCard stats={statsData} />
@@ -94,8 +88,8 @@ const Main = () => {
                 </div>
             </div>
 
-            {/* Navigation - Full Width */}
-            <div className="w-full">
+            {/* Navigation - Fixed positioning */}
+            <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white">
                 <Navigation nav={"Main Menu"} />
             </div>
         </div>

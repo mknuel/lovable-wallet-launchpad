@@ -27,11 +27,17 @@ export const StatsCard = ({ stats, className }) => {
       
       {/* Content */}
       <div className="relative flex justify-between items-center h-full px-6 pt-12">
-        {stats.map((stat) => (
-          <div key={stat.id} className="text-center">
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <div className="text-sm opacity-90 uppercase">{stat.label}</div>
-          </div>
+        {stats.map((stat, index) => (
+          <React.Fragment key={stat.id}>
+            <div className="text-center">
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-sm opacity-90 uppercase">{stat.label}</div>
+            </div>
+            {/* Demarcating line - only show between stats, not after the last one */}
+            {index < stats.length - 1 && (
+              <div className="w-0.5 h-16 bg-white opacity-70" style={{ width: '2px' }} />
+            )}
+          </React.Fragment>
         ))}
       </div>
     </section>
