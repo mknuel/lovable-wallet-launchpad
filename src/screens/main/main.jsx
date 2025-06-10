@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -12,6 +11,7 @@ import { fetchWallet } from '../../store/reducers/walletSlice';
 import CreatePinScreen from './CreatePinScreen';
 import PinEntryScreen from './PinEntryScreen';
 import WalletScreen from './WalletScreen';
+import { PATH_WALLET } from '../../context/paths';
 
 const Main = () => {
     const {t} = useTranslation();
@@ -52,8 +52,12 @@ const Main = () => {
         }
     }, []);
     
-    // Use default stats data instead of wallet data
-    const statsData = [
+    // Use real wallet data for stats
+    const statsData = walletData?.data ? [
+        { id: 'tokens', value: walletData.data.token || '0', label: 'Tokens' },
+        { id: 'crypto', value: walletData.data.balance || '0', label: 'Crypto' },
+        { id: 'loans', value: '0', label: 'Loans' }
+    ] : [
         { id: 'tokens', value: '234', label: 'Tokens' },
         { id: 'crypto', value: '190', label: 'Crypto' },
         { id: 'loans', value: '715', label: 'Loans' }
@@ -79,7 +83,7 @@ const Main = () => {
         { 
             id: 'wallet', 
             label: 'My Wallet',
-            onClick: handleWalletClick
+            onClick: () => navigate(PATH_WALLET)
         },
         { 
             id: 'settings', 

@@ -1,13 +1,32 @@
+
 import BackButton from "../Buttons/BackButton";
 import IconButton from "@mui/material/IconButton";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 
-const Header = ({ title, action }) => {
+const Header = ({ title, action, onBack }) => {
   return (
     <>
       <header className="w-full h-[66px] flex flex-row items-center justify-center gap-[9px] py-[18px] z-50">
         <div>
-          <BackButton></BackButton>
+          {onBack ? (
+            <button onClick={onBack} className="p-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#837E7E"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
+            </button>
+          ) : (
+            <BackButton />
+          )}
         </div>
         <h1 className="w-full text-center font-regular text-[16px]">{title}</h1>
         {action && (

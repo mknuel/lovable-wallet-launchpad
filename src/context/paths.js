@@ -24,3 +24,6 @@ export const PATH_EDIT_PROFILE = "/edit-profile";
 export const PATH_LANGUAGE = "/language";
 
 export const PATH_MAIN = "/main";
+export const PATH_WALLET = "/wallet";
+export const PATH_WALLET_ACTIONS = "/wallet-actions";
+export const PATH_SEND_TOKENS = "/send-tokens";

@@ -1,19 +1,33 @@
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
 import { StatsCard } from "../../components/layout/StatsCard";
 import { MenuSection } from "../../components/layout/MenuSection";
-import { ActionButton } from "../../components/layout/ActionButton";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
-import WalletActionsScreen from "./WalletActionsScreen";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchWallet } from '../../store/reducers/walletSlice';
+import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 
-const WalletScreen = ({ onBack, walletData }) => {
+const WalletScreen = () => {
   const { t } = useTranslation();
-  const [showActionsScreen, setShowActionsScreen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { walletData, isLoading: walletLoading, error: walletError } = useSelector((state) => state.wallet);
 
-  // Use the same default stats data as main menu
-  const statsData = [
+  // Fetch wallet data on component mount
+  useEffect(() => {
+    console.log("WalletScreen component mounted, dispatching fetchWallet...");
+    dispatch(fetchWallet());
+  }, [dispatch]);
+
+  // Use real wallet data for stats
+  const statsData = walletData?.data ? [
+    { id: 'tokens', value: walletData.data.token || '0', label: 'Tokens' },
+    { id: 'crypto', value: walletData.data.balance || '0', label: 'Crypto' },
+    { id: 'loans', value: '0', label: 'Loans' }
+  ] : [
     { id: 'tokens', value: '234', label: 'Tokens' },
     { id: 'crypto', value: '190', label: 'Crypto' },
     { id: 'loans', value: '715', label: 'Loans' }
@@ -39,32 +53,26 @@ const WalletScreen = ({ onBack, walletData }) => {
   ];
 
   const handleNextClick = () => {
-    setShowActionsScreen(true);
+    navigate(PATH_WALLET_ACTIONS);
   };
 
-  const handleBackFromActions = () => {
-    setShowActionsScreen(false);
+  const handleBackClick = () => {
+    navigate(PATH_MAIN);
   };
-
-  if (showActionsScreen) {
-    return (
-      <WalletActionsScreen 
-        onBack={handleBackFromActions}
-        walletData={walletData}
-      />
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white overflow-hidden">
-      {/* Header - Using MainHeader like profile screen */}
-      <Header
-        title="My Wallet"
-        action={true}
-      />
+      {/* Header - Fixed positioning */}
+      <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
+        <Header
+          title="My Wallet"
+          action={true}
+          onBack={handleBackClick}
+        />
+      </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden">
+      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-[66px] mb-[80px]">
         {/* Stats Card */}
         <div className="w-full mb-6">
           <StatsCard stats={statsData} />
@@ -79,7 +87,7 @@ const WalletScreen = ({ onBack, walletData }) => {
         <div className="flex-1"></div>
 
         {/* Action Button */}
-        <div className="w-full">
+        <div className="w-full mb-5">
           <button
             onClick={handleNextClick}
             className="w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide

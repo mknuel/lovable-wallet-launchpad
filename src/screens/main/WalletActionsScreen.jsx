@@ -1,16 +1,31 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
 import { StatsCard } from "../../components/layout/StatsCard";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchWallet } from '../../store/reducers/walletSlice';
+import { PATH_WALLET, PATH_SEND_TOKENS } from "../../context/paths";
 
-const WalletActionsScreen = ({ onBack, walletData }) => {
+const WalletActionsScreen = () => {
   const { t } = useTranslation();
-  const [selectedAction, setSelectedAction] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { walletData } = useSelector((state) => state.wallet);
 
-  // Use the same default stats data
-  const statsData = [
+  // Fetch wallet data on component mount
+  useEffect(() => {
+    dispatch(fetchWallet());
+  }, [dispatch]);
+
+  // Use real wallet data for stats
+  const statsData = walletData?.data ? [
+    { id: 'tokens', value: walletData.data.token || '0', label: 'Tokens' },
+    { id: 'crypto', value: walletData.data.balance || '0', label: 'Crypto' },
+    { id: 'loans', value: '0', label: 'Loans' }
+  ] : [
     { id: 'tokens', value: '234', label: 'Tokens' },
     { id: 'crypto', value: '190', label: 'Crypto' },
     { id: 'loans', value: '715', label: 'Loans' }
@@ -19,39 +34,43 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
   const actionOptions = [
     {
       id: 'send',
-      label: 'Send your tokens to another DAO member or invite someone by phone to receive them'
+      label: 'Send your tokens to another DAO member or invite someone by phone to receive them',
+      action: () => navigate(PATH_SEND_TOKENS)
     },
     {
       id: 'exchange',
-      label: 'Exchange your tokens to EURX (€ Euro) or other Cryptocurrency'
+      label: 'Exchange your tokens to EURX (€ Euro) or other Cryptocurrency',
+      action: () => console.log('Exchange action triggered')
     },
     {
       id: 'loan',
-      label: 'Request Loan with your tokens'
+      label: 'Request Loan with your tokens',
+      action: () => console.log('Loan action triggered')
     }
   ];
 
-  const handleActionSelect = (actionId) => {
-    setSelectedAction(actionId);
+  const handleActionSelect = (option) => {
+    console.log('Action selected:', option.id);
+    option.action();
   };
 
-  const handleNextClick = () => {
-    if (selectedAction) {
-      console.log('Next action for:', selectedAction);
-      // This is where you'll add the next action logic
-    }
+  const handleBackClick = () => {
+    navigate(PATH_WALLET);
   };
 
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white overflow-hidden">
-      {/* Header */}
-      <Header
-        title="My Wallet"
-        action={true}
-      />
+      {/* Header - Fixed positioning */}
+      <div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
+        <Header
+          title="My Wallet"
+          action={true}
+          onBack={handleBackClick}
+        />
+      </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden">
+      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-[66px] mb-[80px]">
         {/* Stats Card */}
         <div className="w-full mb-6">
           <StatsCard stats={statsData} />
@@ -62,14 +81,8 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
           {actionOptions.map((option) => (
             <button
               key={option.id}
-              onClick={() => handleActionSelect(option.id)}
-              className={`
-                w-full py-4 px-6 rounded-xl font-semibold bg-white transition-colors text-left
-                ${selectedAction === option.id 
-                  ? 'border border-pink-300 text-pink-600 bg-gradient-to-r from-pink-50 to-purple-50' 
-                  : 'border border-pink-300 text-pink-600 hover:bg-gray-50'
-                }
-              `}
+              onClick={() => handleActionSelect(option)}
+              className="w-full max-w-full py-4 px-6 border border-pink-300 rounded-xl text-pink-600 font-semibold bg-white hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 transition-colors text-left"
             >
               {option.label.toUpperCase()}
             </button>
@@ -78,28 +91,9 @@ const WalletActionsScreen = ({ onBack, walletData }) => {
 
         {/* Spacer */}
         <div className="flex-1"></div>
-
-        {/* Next Button */}
-        <div className="w-full">
-          <button
-            onClick={handleNextClick}
-            disabled={!selectedAction}
-            className={`
-              w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-              transition-all duration-200 flex items-center justify-center
-              ${
-                selectedAction
-                  ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }
-            `}
-          >
-            NEXT
-          </button>
-        </div>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation - Fixed positioning */}
       <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white">
         <Navigation nav={"My Wallet"} />
       </div>
