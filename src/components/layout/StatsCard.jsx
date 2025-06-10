@@ -5,7 +5,7 @@ export const StatsCard = ({ stats, className }) => {
   return (
     <section 
       className={`relative w-full mx-4 text-white ${className || ''}`}
-      style={{ height: '448px' }}
+      style={{ height: '200px' }}
       role="region"
       aria-label="Financial statistics"
     >
