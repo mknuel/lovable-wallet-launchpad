@@ -131,7 +131,7 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
                 onPaste={index === 0 ? handlePaste : undefined}
                 className={`
                   w-[60px] h-[60px] rounded-full text-center text-[20px] font-['Sansation'] font-bold
-                  border-2 outline-none transition-all duration-200
+                  border-none shadow-[1px_2px_10px_1px_rgba(0,0,0,0.10)] outline-none transition-all duration-200
                   ${
                     digit
                       ? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white border-transparent"
