@@ -1,3 +1,4 @@
+
 import IconButton from "@mui/material/IconButton";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import MessageIcon from "@mui/icons-material/Message";
@@ -10,8 +11,8 @@ const Navigation = ({ nav }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col py-3 w-full absolute bottom-0 z-50 shadow-2xl">
-      <div className="flex flex-row justify-around pb-3">
+    <div className="flex flex-col py-3 w-full bg-white shadow-2xl">
+      <div className="flex flex-row justify-around items-center pb-3 px-4">
         <IconButton
           aria-label="back"
           sx={{
@@ -21,7 +22,7 @@ const Navigation = ({ nav }) => {
             },
             padding: 0,
           }}
-          className="flex flex-col"
+          className="flex flex-col items-center flex-1"
           onClick={() => navigate(PATH_MAIN)}
         >
           <AccountBalanceWalletIcon
@@ -30,10 +31,9 @@ const Navigation = ({ nav }) => {
               height: 20,
               color: nav == "Main Menu" ? "#9C27B0" : "#837E7E",
             }}
-            // color={nav == "Main Menu" ? "secondary" : "#837E7E"}
           />
           <div
-            className="font-bold text-[14px]"
+            className="font-bold text-[14px] text-center"
             style={{
               background:
                 nav == "Main Menu"
@@ -56,7 +56,7 @@ const Navigation = ({ nav }) => {
             },
             padding: 0,
           }}
-          className="flex flex-col"
+          className="flex flex-col items-center flex-1"
         >
           <MessageIcon
             sx={{
@@ -64,10 +64,9 @@ const Navigation = ({ nav }) => {
               height: 20,
               color: nav == "Message" ? "#9C27B0" : "#837E7E",
             }}
-            // color={nav == "Message" ? "secondary" : ""}
           />
           <div
-            className="font-bold text-[14px]"
+            className="font-bold text-[14px] text-center"
             style={{
               background:
                 nav == "Message"
@@ -90,7 +89,7 @@ const Navigation = ({ nav }) => {
             },
             padding: 0,
           }}
-          className="flex flex-col"
+          className="flex flex-col items-center flex-1"
           onClick={() => navigate(PATH_SETTING)}
         >
           <GroupIcon
@@ -99,10 +98,9 @@ const Navigation = ({ nav }) => {
               height: 20,
               color: nav == "Profile" ? "#9C27B0" : "#837E7E",
             }}
-            // color={nav == "Profile" ? "secondary" : ""}
           />
           <div
-            className="font-bold text-[14px]"
+            className="font-bold text-[14px] text-center"
             style={{
               background:
                 nav == "Profile"
@@ -117,7 +115,7 @@ const Navigation = ({ nav }) => {
           </div>
         </IconButton>
       </div>
-      <hr className="w-screen text-[#EEEEEE] z-50"></hr>
+      <hr className="w-full text-[#EEEEEE]"></hr>
     </div>
   );
 };
