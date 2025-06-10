@@ -56,11 +56,8 @@ const Main = () => {
     };
     
     return (
-        <div className="flex flex-col h-screen w-full mx-auto bg-white">
-            {/* Status Bar */}
-            <div className="flex-shrink-0 px-4 pt-3">
-                <StatusBar />
-            </div>
+     <div className="container justify-around">
+           
 
             {/* Fixed Header */}
             <div className="flex-shrink-0">
