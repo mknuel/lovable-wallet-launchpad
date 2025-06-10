@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -49,7 +50,12 @@ const Main = () => {
         }
     }, []);
     
-    const statsData = [
+    // Create stats data from wallet data or use defaults
+    const statsData = walletData ? [
+        { id: 'balance', value: `$${walletData.balance || 0}`, label: 'Balance' },
+        { id: 'currency', value: walletData.balanceCurrency || 'USD', label: 'Currency' },
+        { id: 'status', value: walletData.isPinCodeSet ? 'Secured' : 'Pending', label: 'Status' }
+    ] : [
         { id: 'tokens', value: '234', label: 'Tokens' },
         { id: 'crypto', value: '190', label: 'Crypto' },
         { id: 'loans', value: '715', label: 'Loans' }
