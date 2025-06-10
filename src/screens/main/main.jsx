@@ -1,5 +1,5 @@
 
-import Header from "../../components/layout/MainHeader";
+import Header from "../../components/layout/Header";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector } from "react-redux";
@@ -12,7 +12,7 @@ const Main = () => {
         <div className="flex flex-col h-screen w-full mx-auto bg-white">
             {/* Fixed Header */}
             <div className="flex-shrink-0">
-                <Header title={t("navigation.mainMenu") || "Main Menu"} action={true} />
+                <Header />
             </div>
 
             {/* Scrollable Main Content */}
