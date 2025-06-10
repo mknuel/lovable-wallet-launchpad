@@ -9,7 +9,7 @@ const Main = () => {
     const userData = useSelector((state) => state.user);
     
     return (
-        <div className="flex flex-col h-screen w-full mx-auto bg-white">
+        <div className="flex flex-col h-screen max-w-md mx-auto bg-white">
             {/* Fixed Header */}
             <div className="flex-shrink-0">
                 <Header title={t("navigation.mainMenu") || "Main Menu"} action={true} />
