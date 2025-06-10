@@ -9,12 +9,14 @@ import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector } from "react-redux";
 import CreatePinModal from '../../components/modals/CreatePinModal';
+import CreatePinScreen from './CreatePinScreen';
 
 const Main = () => {
     const {t} = useTranslation();
     const userData = useSelector((state) => state.user);
     const navigate = useNavigate();
     const [showCreatePinModal, setShowCreatePinModal] = useState(false);
+    const [showCreatePinScreen, setShowCreatePinScreen] = useState(false);
     const [showPinConfirmation, setShowPinConfirmation] = useState(false);
     
     // Check if user needs to create PIN on first sign-in (US-2.4)
@@ -33,11 +35,20 @@ const Main = () => {
         { id: 'loans', value: '715', label: 'Loans' }
     ];
 
+    const handleWalletClick = () => {
+        const hasCreatedPin = localStorage.getItem('userHasPin');
+        if (!hasCreatedPin) {
+            setShowCreatePinScreen(true);
+        } else {
+            console.log('Navigate to wallet - PIN already exists');
+        }
+    };
+
     const menuItems = [
         { 
             id: 'wallet', 
             label: 'My Wallet',
-            onClick: () => console.log('Navigate to wallet')
+            onClick: handleWalletClick
         },
         { 
             id: 'createPin', 
@@ -77,6 +88,7 @@ const Main = () => {
         localStorage.setItem('userHasPin', 'true');
         localStorage.removeItem('isFirstTimeSignIn');
         setShowCreatePinModal(false);
+        setShowCreatePinScreen(false);
         setShowPinConfirmation(true);
         
         // Hide confirmation after 3 seconds
@@ -88,6 +100,34 @@ const Main = () => {
     const handleClosePinModal = () => {
         setShowCreatePinModal(false);
     };
+
+    const handleBackFromPinScreen = () => {
+        setShowCreatePinScreen(false);
+    };
+
+    // Show CreatePinScreen if user clicked wallet without PIN
+    if (showCreatePinScreen) {
+        return (
+            <>
+                <CreatePinScreen 
+                    onPinCreated={handlePinCreated}
+                    onBack={handleBackFromPinScreen}
+                />
+                
+                {/* PIN Confirmation Message (US-2.5) */}
+                {showPinConfirmation && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+                        <div className="bg-white rounded-lg p-6 mx-4 text-center">
+                            <div className="text-green-600 text-xl mb-4">✓</div>
+                            <p className="text-[16px] font-['Sansation'] text-[#1D2126]">
+                                Your PIN has now been created
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </>
+        );
+    }
     
     return (
         <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
