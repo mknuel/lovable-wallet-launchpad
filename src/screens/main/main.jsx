@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../components/layout/Header';
@@ -43,11 +44,6 @@ const Main = () => {
             id: 'wallet', 
             label: 'My Wallet',
             onClick: handleWalletClick
-        },
-        { 
-            id: 'createPin', 
-            label: 'Create PIN',
-            onClick: () => setShowCreatePinModal(true)
         },
         { 
             id: 'settings', 
@@ -108,14 +104,36 @@ const Main = () => {
                     onBack={handleBackFromPinScreen}
                 />
                 
-                {/* PIN Confirmation Message (US-2.5) */}
+                {/* PIN Confirmation Message - Updated Design */}
                 {showPinConfirmation && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-                        <div className="bg-white rounded-lg p-6 mx-4 text-center">
-                            <div className="text-green-600 text-xl mb-4">✓</div>
-                            <p className="text-[16px] font-['Sansation'] text-[#1D2126]">
-                                Your PIN has now been created
+                        <div className="bg-white rounded-lg p-8 mx-4 max-w-sm w-full text-center">
+                            {/* Success Icon */}
+                            <div className="flex justify-center mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            {/* Success Title */}
+                            <h2 className="text-[20px] font-['Sansation'] font-bold text-[#1D2126] mb-4">
+                                Success
+                            </h2>
+                            
+                            {/* Success Message */}
+                            <p className="text-[16px] font-['Sansation'] text-[#6B7280] mb-8">
+                                Your pin has now been created successfully!
                             </p>
+                            
+                            {/* OK Button */}
+                            <button
+                                onClick={() => setShowPinConfirmation(false)}
+                                className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation'] font-bold rounded-lg hover:opacity-90 transition-opacity"
+                            >
+                                OK
+                            </button>
                         </div>
                     </div>
                 )}
@@ -170,14 +188,36 @@ const Main = () => {
                 />
             )}
 
-            {/* PIN Confirmation Message (US-2.5) */}
+            {/* PIN Confirmation Message - Updated Design */}
             {showPinConfirmation && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-                    <div className="bg-white rounded-lg p-6 mx-4 text-center">
-                        <div className="text-green-600 text-xl mb-4">✓</div>
-                        <p className="text-[16px] font-['Sansation'] text-[#1D2126]">
-                            Your PIN has now been created
+                    <div className="bg-white rounded-lg p-8 mx-4 max-w-sm w-full text-center">
+                        {/* Success Icon */}
+                        <div className="flex justify-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        {/* Success Title */}
+                        <h2 className="text-[20px] font-['Sansation'] font-bold text-[#1D2126] mb-4">
+                            Success
+                        </h2>
+                        
+                        {/* Success Message */}
+                        <p className="text-[16px] font-['Sansation'] text-[#6B7280] mb-8">
+                            Your pin has now been created successfully!
                         </p>
+                        
+                        {/* OK Button */}
+                        <button
+                            onClick={() => setShowPinConfirmation(false)}
+                            className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation'] font-bold rounded-lg hover:opacity-90 transition-opacity"
+                        >
+                            OK
+                        </button>
                     </div>
                 </div>
             )}
