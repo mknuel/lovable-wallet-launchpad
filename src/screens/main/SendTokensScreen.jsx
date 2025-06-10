@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
@@ -160,7 +159,7 @@ const SendTokensScreen = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-[66px] mb-[80px]">
+      <div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-[66px]">
         {!showAmountInput ? (
           <>
             {/* Search Bar */}
@@ -276,11 +275,6 @@ const SendTokensScreen = () => {
             </div>
           </>
         )}
-      </div>
-
-      {/* Navigation - Fixed positioning */}
-      <div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white">
-        <Navigation nav={"Send Tokens"} />
       </div>
     </div>
   );
