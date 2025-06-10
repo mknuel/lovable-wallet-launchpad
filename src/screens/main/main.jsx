@@ -56,7 +56,7 @@ const Main = () => {
     };
     
     return (
-     <div className="container justify-around">
+     <div className="container">
            
 
             {/* Fixed Header */}
