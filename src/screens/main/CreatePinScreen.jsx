@@ -2,6 +2,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 
+import Header from "../../components/layout/MainHeader";
+
 const CreatePinScreen = ({ onPinCreated, onBack }) => {
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputRefs = useRef([]);
@@ -77,24 +79,10 @@ const CreatePinScreen = ({ onPinCreated, onBack }) => {
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center p-1"
-        >
-          <ArrowLeft size={20} color="#171717" />
-        </button>
-
-        <h1 className="text-[16px] font-['Sansation'] text-[#171717] font-normal">
-          My Wallet
-        </h1>
-
-        <div className="flex flex-col gap-2">
-          <div className="w-1 h-1 bg-[#6C6C6C] rounded-full"></div>
-          <div className="w-1 h-1 bg-[#6C6C6C] rounded-full"></div>
-          <div className="w-1 h-1 bg-[#6C6C6C] rounded-full"></div>
-        </div>
-      </div>
+       <Header
+        title={t("wallet.title") || "My Wallet"}
+        action={true}
+      ></Header>
 
       {/* Content */}
       <div className="flex-1 flex flex-col px-6 py-8">
