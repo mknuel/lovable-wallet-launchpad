@@ -140,10 +140,13 @@ const LandingScreen = () => {
             {t("landing.title_3") || "Crypto Community"}
           </div>
         </div>
-        <div className="description-text text-center">
-          {t("landing.content") ||
-            "Do you want a completely FREE way to earn real money? Money "that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, convert to local currency with Lendsend, pay for your energy bills, recharge airtime and data for your Mobile service?"}
-        </div>
+       
+         
+          <div className="description-text text-center">
+  {t("landing.content") ||
+    "Do you want a completely FREE way to earn real money? Money that you can send to your family in our Blockm Wallet, get a Doctor at BlockMed, a lesson at BlockMed, pay for products at BigMudi, a delivery/ride at BlockRide, convert to local currency with Lendsend, pay for your energy bills, recharge airtime and data for your Mobile service?"}
+</div>
+      
       </div>
       <div className="flex flex-col justify-end items-center">
         <div className="button-container">
