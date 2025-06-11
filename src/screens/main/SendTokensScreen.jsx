@@ -50,9 +50,7 @@ const SendTokensScreen = () => {
 
 	// Search users when search query changes
 	useEffect(() => {
-		if (searchQuery !== "") {
-			debounceSearch(searchQuery);
-		}
+		debounceSearch(searchQuery);
 	}, [searchQuery, debounceSearch]);
 
 	const handleUserSearch = async (query) => {
@@ -119,7 +117,6 @@ const SendTokensScreen = () => {
 			}
 		} catch (error) {
 			console.error("Error fetching users:", error);
-			// No mock data fallback - just set empty array
 			setUsers([]);
 		} finally {
 			activeRequest.current = null;
