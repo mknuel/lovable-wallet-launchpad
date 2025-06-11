@@ -52,6 +52,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 	];
 
 	return (
+      <div className="z-[100]">
 		<AnimatePresence>
 			{isOpen && (
 				<>
@@ -143,6 +144,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 				</>
 			)}
 		</AnimatePresence>
+        </div>
 	);
 };
 
