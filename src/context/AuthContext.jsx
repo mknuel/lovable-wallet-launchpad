@@ -3,8 +3,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { setUser, clearUser } from '../store/reducers/userSlice';
 import { setAuth, clearAuth } from '../store/reducers/authSlice';
+import { PATH_AUTH, PATH_MAIN } from './paths';
 
 const AuthContext = createContext(null);
 
@@ -13,6 +15,8 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Check if user is logged in on mount
@@ -25,9 +29,19 @@ export const AuthProvider = ({ children }) => {
           const parsedUserData = JSON.parse(userData);
           dispatch(setUser(parsedUserData));
           dispatch(setAuth({ token }));
+          
+          // If user is on auth page but is authenticated, redirect to main
+          if (location.pathname === PATH_AUTH || location.pathname === '/') {
+            navigate(PATH_MAIN, { replace: true });
+          }
         } catch (error) {
           console.error('Failed to parse user data:', error);
           logout();
+        }
+      } else {
+        // If no auth data and not on auth page, redirect to auth
+        if (location.pathname !== PATH_AUTH && location.pathname !== '/') {
+          navigate(PATH_AUTH, { replace: true });
         }
       }
       
@@ -35,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     };
     
     checkAuth();
-  }, [dispatch]);
+  }, [dispatch, navigate, location.pathname]);
 
   const login = (token, userData) => {
     localStorage.setItem('token', token);
@@ -55,15 +69,22 @@ export const AuthProvider = ({ children }) => {
     
     dispatch(setUser(userData));
     dispatch(setAuth({ token }));
+    
+    // Navigate to main menu after successful login
+    navigate(PATH_MAIN, { replace: true });
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
-    localStorage.removeItem('needsPinEntry'); // Clear PIN entry flag on logout
+    localStorage.removeItem('needsPinEntry');
+    localStorage.removeItem('isFirstTimeSignIn');
     
     dispatch(clearUser());
     dispatch(clearAuth());
+    
+    // Navigate to auth page
+    navigate(PATH_AUTH, { replace: true });
     
     // Dispatch custom event for unauthorized access
     window.dispatchEvent(new Event('auth:unauthorized'));

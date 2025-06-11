@@ -31,6 +31,42 @@ export default {
       loan: "Request Loan with your tokens"
     }
   },
+  mainMenu: {
+    title: "Main Menu",
+    myWallet: "My Wallet",
+    settings: "Settings",
+    blockloans: "Blockloans",
+    next: "NEXT",
+    loading: "Loading...",
+    pinCreated: "Success",
+    pinCreatedMessage: "Your PIN has now been created successfully!"
+  },
+  pinEntry: {
+    title: "Enter PIN",
+    subtitle: "Please enter your 4-digit PIN to access your wallet",
+    forgotPin: "Forgot PIN?",
+    invalidPin: "Invalid PIN. Please try again.",
+    createNewPin: "Create New PIN"
+  },
+  createPin: {
+    title: "Create PIN",
+    subtitle: "Create a 4-digit PIN to secure your wallet",
+    confirmTitle: "Confirm PIN",
+    confirmSubtitle: "Please re-enter your PIN to confirm",
+    pinMismatch: "PINs do not match. Please try again.",
+    creating: "Creating PIN..."
+  },
+  sendTokens: {
+    title: "Send Tokens",
+    recipientLabel: "Recipient",
+    recipientPlaceholder: "Enter wallet address or phone number",
+    amountLabel: "Amount",
+    amountPlaceholder: "Enter amount to send",
+    send: "SEND",
+    cancel: "CANCEL",
+    success: "Tokens sent successfully!",
+    error: "Failed to send tokens. Please try again."
+  },
   landing: {
     title_1: "The Most",
     title_2: "Trusted & Secure",

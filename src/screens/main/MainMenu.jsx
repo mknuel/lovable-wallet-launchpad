@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
 import { StatsCard } from "../../components/layout/StatsCard";
 import { MenuSection } from "../../components/layout/MenuSection";
-import { ActionButton } from "../../components/layout/ActionButton";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
@@ -52,18 +52,18 @@ const MainMenu = () => {
 
 	const statsData = walletData?.data
 		? [
-				{ id: "tokens", value: walletData.data.token || "0", label: "Tokens" },
+				{ id: "tokens", value: walletData.data.token || "0", label: t("wallet.tokens") },
 				{
 					id: "crypto",
 					value: walletData.data.balance || "0",
-					label: "Crypto",
+					label: t("wallet.crypto"),
 				},
-				{ id: "loans", value: "0", label: "Loans" },
+				{ id: "loans", value: "0", label: t("wallet.loans") },
 		  ]
 		: [
-				{ id: "tokens", value: "0", label: "Tokens" },
-				{ id: "crypto", value: "0", label: "Crypto" },
-				{ id: "loans", value: "0", label: "Loans" },
+				{ id: "tokens", value: "0", label: t("wallet.tokens") },
+				{ id: "crypto", value: "0", label: t("wallet.crypto") },
+				{ id: "loans", value: "0", label: t("wallet.loans") },
 		  ];
 
 	const handleWalletClick = () => {
@@ -80,17 +80,17 @@ const MainMenu = () => {
 	const menuItems = [
 		{
 			id: "wallet",
-			label: "My Wallet",
+			label: t("mainMenu.myWallet"),
 			onClick: handleWalletClick,
 		},
 		{
 			id: "settings",
-			label: "Settings",
+			label: t("mainMenu.settings"),
 			onClick: () => navigate("/setting"),
 		},
 		{
 			id: "blockloans",
-			label: "Blockloans",
+			label: t("mainMenu.blockloans"),
 			onClick: () => console.log("Navigate to blockloans"),
 		},
 	];
@@ -142,7 +142,7 @@ const MainMenu = () => {
 		default:
 			return (
 				<div className="flex items-center flex-col min-h-screen w-full max-w-full overflow-hidden">
-					<div className="w-full fixed top-0 left-0 right-0 z-50 bg-white">
+					<div className="w-full fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
 						<Header
 							onMenuClick={() => console.log("Menu clicked")}
 							onNotificationClick={() => console.log("Notifications clicked")}
@@ -164,19 +164,19 @@ const MainMenu = () => {
 								onClick={() => console.log("Next button clicked")}
 								ariaLabel="Proceed to next step"
 								className="w-full h-[48px]">
-								next
+								{t("mainMenu.next")}
 							</CommonButton>
 						</div>
 					</div>
 
-					<div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white">
-						<Navigation nav={"Main Menu"} />
+					<div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+						<Navigation nav={t("navigation.mainMenu")} />
 					</div>
 
 					{/* PIN Confirmation Modal */}
 					{showPinConfirmation && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-							<div className="bg-white rounded-lg p-8 mx-4 max-w-sm w-full text-center">
+							<div className="bg-white dark:bg-[#222222] rounded-lg p-8 mx-4 max-w-sm w-full text-center">
 								<div className="flex justify-center mb-6">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -187,11 +187,11 @@ const MainMenu = () => {
 										{/* SVG paths remain the same */}
 									</svg>
 								</div>
-								<h2 className="text-[20px] font-['Sansation'] font-bold text-[#1D2126] mb-4">
-									Success
+								<h2 className="text-[20px] font-['Sansation'] font-bold text-[#1D2126] dark:text-white mb-4">
+									{t("mainMenu.pinCreated")}
 								</h2>
-								<p className="text-[16px] font-['Sansation'] text-[#6B7280] mb-8">
-									Your PIN has now been created successfully!
+								<p className="text-[16px] font-['Sansation'] text-[#6B7280] dark:text-gray-300 mb-8">
+									{t("mainMenu.pinCreatedMessage")}
 								</p>
 								<button
 									onClick={() => setShowPinConfirmation(false)}
