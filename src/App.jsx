@@ -60,7 +60,8 @@ function App() {
     };
   }, [dispatch, navigate]);
   return (
-    <div className="App">
+    <div className="app-container">
+      
       <AuthProvider>
         <Routes>
           <Route index element={<MainScreen />} />

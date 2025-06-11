@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -31,207 +30,203 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 
 const PinkSwitch = styled(Switch)(() => ({
-  "& .MuiSwitch-switchBase.Mui-checked": {
-    // Remove `color` and replace with `background`
-    "& .MuiSwitch-thumb": {
-      background: "linear-gradient(to right, #DC2366, #4F5CAA)", // Gradient for thumb
-      // borderRadius: "50%", // Ensure it stays circular
-    },
-  },
-  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-    backgroundColor: "#F487B3", // Track color when checked
-  },
+	"& .MuiSwitch-switchBase.Mui-checked": {
+		// Remove `color` and replace with `background`
+		"& .MuiSwitch-thumb": {
+			background: "linear-gradient(to right, #DC2366, #4F5CAA)", // Gradient for thumb
+			// borderRadius: "50%", // Ensure it stays circular
+		},
+	},
+	"& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+		backgroundColor: "#F487B3", // Track color when checked
+	},
 }));
 
 const SettingScreen = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { currentWalletAccount } = useWalletAccount();
-  const userTonAddress = useTonAddress();
+	const navigate = useNavigate();
+	const { t } = useTranslation();
+	const { currentWalletAccount } = useWalletAccount();
+	const userTonAddress = useTonAddress();
 
-  const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    photo: Avatar,
-    walletAddress: "0x32de343894f8e0124dC4fEe",
-  });
+	const [userData, setUserData] = useState({
+		firstName: "",
+		lastName: "",
+		email: "",
+		phone: "",
+		photo: Avatar,
+		walletAddress: "0x32de343894f8e0124dC4fEe",
+	});
 
-  const [darkMode, setDarkMode] = useState(
-    document.body.classList.contains("dark-mode")
-  );
-  const [copied, setCopied] = useState(false);
-  const [profileId, setProfileId] = useState(null);
+	const [darkMode, setDarkMode] = useState(
+		document.body.classList.contains("dark-mode")
+	);
+	const [copied, setCopied] = useState(false);
+	const [profileId, setProfileId] = useState(null);
 
-  useEffect(() => {
-    if (darkMode) {
-      if (!document.body.classList.contains("dark-mode"))
-        document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  }, [darkMode]);
+	useEffect(() => {
+		if (darkMode) {
+			if (!document.body.classList.contains("dark-mode"))
+				document.body.classList.add("dark-mode");
+		} else {
+			document.body.classList.remove("dark-mode");
+		}
+	}, [darkMode]);
 
-  useEffect(() => {
-    async function fetch() {
-      await api.get("/auth/me").then((res) => {
-        const data = {
-          firstName: res.data.profile.firstName,
-          lastName: res.data.profile.lastName,
-          email: res.data.user.email,
-          phone: res.data.user.phone,
-          photo:
-            res.data.profile.photo === "no-photo.jpg"
-              ? Avatar
-              : res.data.profile.photo,
-          walletAddress: userData.walletAddress,
-        };
-        setUserData(data);
-        setProfileId(res.data.profile._id);
-      });
-    }
-    fetch();
-  }, []);
+	useEffect(() => {
+		async function fetch() {
+			await api.get("/auth/me").then((res) => {
+				const data = {
+					firstName: res.data.profile.firstName,
+					lastName: res.data.profile.lastName,
+					email: res.data.user.email,
+					phone: res.data.user.phone,
+					photo:
+						res.data.profile.photo === "no-photo.jpg"
+							? Avatar
+							: res.data.profile.photo,
+					walletAddress: userData.walletAddress,
+				};
+				setUserData(data);
+				setProfileId(res.data.profile._id);
+			});
+		}
+		fetch();
+	}, []);
 
-  const handleDarkModeToggle = () => {
-    console.log("Dark Mode toggled");
-    setDarkMode(!darkMode);
-  };
+	const handleDarkModeToggle = () => {
+		console.log("Dark Mode toggled");
+		setDarkMode(!darkMode);
+	};
 
-  return (
-    <div className="container bg-white dark:bg-[#1a1a1a]">
-      <Header
-        title={t("setting.title") || "My settings"}
-        action={true}
-      ></Header>
-      <div className="flex flex-col w-full h-[calc(100vh-170px)] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div>
-          <img
-            src={
-              darkMode
-                ? DarkProfileRectangle // Dark
-                : ProfileRectangle // White
-            }
-            alt="Settings background"
-            className="absolute top-0 left-0 -z-10 w-screen h-[265px]"
-          ></img>
-          <div className="flex flex-col justify-center items-center relative bottom-0 pt-[90px]">
-            <img
-              src={userData.photo || Avatar}
-              alt="avatar"
-              className="w-[120px] h-[120px] pb-[5px]"
-            ></img>
-            <div className="font-bold text-[22px] text-center text-black dark:text-white">
-              {userData.firstName} {userData.lastName}
-            </div>
-            <div className="font-regular text-[14px] text-gray-600 dark:text-gray-300">{userData.phone}</div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 w-full mt-[20px]">
-          <div className="flex flex-col border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
-            <div
-              className="flex flex-row items-center gap-4 justify-between"
-              onClick={() => navigate("/edit-profile")}
-            >
-              <div className="flex flex-row items-center gap-[13px]">
-                <PeopleIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-                <div className="font-regular text-[14px] text-black dark:text-white">
-                  {t("setting.editProfile") || "Edit profile"}
-                </div>
-              </div>
-              <ChevronRightIcon sx={{ width: 16, height: 16 }} className="text-black dark:text-white" />
-            </div>
-            <div className="flex flex-row items-center gap-4 justify-between">
-              <div className="flex flex-row items-center gap-[13px]">
-                <NotificationsActiveIcon
-                  sx={{ width: 16, height: 16, color: "#837E7E" }}
-                />
-                <div className="font-regular text-[14px] text-black dark:text-white">
-                  {t("setting.notification") || "Notifications"}
-                </div>
-              </div>
-              <PinkSwitch edge="end" />
-            </div>
-            <div
-              className="flex flex-row items-center gap-4 justify-between"
-              onClick={() => navigate(PATH_LANGUAGE)}
-            >
-              <div className="flex flex-row items-center gap-[13px]">
-                <LanguageIcon
-                  sx={{ width: 16, height: 16, color: "#837E7E" }}
-                />
-                <div className="font-regular text-[14px] text-black dark:text-white">
-                  {t("setting.language") || "Language"}
-                </div>
-              </div>
-              <div className="text-[14px] text-pink-600 dark:text-pink-400">{t("currentlang") || "English"}</div>
-            </div>
-          </div>
-          <div className="flex flex-col border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
-            <div className="flex flex-row items-center gap-4 justify-between">
-              <div className="flex flex-row items-center gap-[13px]">
-                <NotificationsActiveIcon
-                  sx={{ width: 16, height: 16, color: "#837E7E" }}
-                />
-                <div className="font-regular text-[14px] text-black dark:text-white">
-                  {t("setting.lightMode") || "Light Mode"}
-                </div>
-              </div>
-              <PinkSwitch
-                edge="end"
-                checked={!darkMode}
-                onChange={handleDarkModeToggle}
-              />
-            </div>
-            <div className="flex flex-row items-center gap-4 justify-between">
-              <div className="flex flex-row items-center gap-[13px]">
-                <LockIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-                <div className="font-regular text-[14px] text-black dark:text-white">
-                  {t("setting.privacyPolciy") || "Privacy Policy"}
-                </div>
-              </div>
-              <ChevronRightIcon sx={{ width: 16, height: 16 }} className="text-black dark:text-white" />
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 border-2 border-[#EFEFEF] dark:border-[#222222] rounded-lg p-2 bg-white dark:bg-[#222222]">
-            <div className="flex flex-row items-center gap-4 justify-between">
-              <div
-                className="flex flex-row items-center gap-[13px]"
-                onClick={() => copyToClipboard(currentWalletAccount, setCopied)}
-              >
-                <QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
-                <div className="flex flex-col">
-                  <div className="font-regular text-[14px] text-black dark:text-white">
-                    {t("setting.walletAddress") || "Wallet Address"}
-                  </div>
-                  <div className="wallet-address-container">
-                    <span className="wallet-address text-gray-600 dark:text-gray-300">
-                      {/* {formatAddress(currentWalletAccount, 8, 4)} */}
-                      {/* {userTonAddress} */}
-                      {userTonAddress
-                        ? userTonAddress
-                        : formatAddress(currentWalletAccount, 8, 4)}
-                    </span>
-                    {copied ? (
-                      <CheckIcon className="settings-icon check-icon" />
-                    ) : (
-                      <ContentCopyIcon className="text-gray-600 dark:text-gray-300" />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <ThirdwebConnectButton darkMode={darkMode} path={null} />
-          <div className="flex w-full justify-center items-center">
-            <CustomTonConnectButton />
-          </div>
-        </div>
-      </div>
-      <Navigation nav="Profile"></Navigation>
-    </div>
-  );
+	return (
+		<div className="container">
+			<Header
+				title={t("setting.title") || "My settings"}
+				action={true}></Header>
+			<div className="flex flex-col w-full h-[calc(100vh-170px)] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+				<div>
+					<img
+						src={
+							darkMode
+								? DarkProfileRectangle // Dark
+								: ProfileRectangle // White
+						}
+						alt="Settings background"
+						className="absolute top-0 left-0 -z-10 w-screen h-[265px]"></img>
+					<div className="flex flex-col justify-center items-center relative bottom-0 pt-[90px]">
+						<img
+							src={userData.photo || Avatar}
+							alt="avatar"
+							className="w-[120px] h-[120px] pb-[5px]"></img>
+						<div className="font-bold text-[22px] text-center">
+							{userData.firstName} {userData.lastName}
+						</div>
+						<div className="font-regular text-[14px]">{userData.phone}</div>
+					</div>
+				</div>
+				<div className="flex flex-col gap-2 w-full mt-[20px]">
+					<div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+						<div
+							className="flex flex-row items-center gap-4 justify-between"
+							onClick={() => navigate("/edit-profile")}>
+							<div className="flex flex-row items-center gap-[13px]">
+								<PeopleIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
+								<div className="font-regular text-[14px]">
+									{t("setting.editProfile") || "Edit profile"}
+								</div>
+							</div>
+							<ChevronRightIcon sx={{ width: 16, height: 16 }} />
+						</div>
+						<div className="flex flex-row items-center gap-4 justify-between">
+							<div className="flex flex-row items-center gap-[13px]">
+								<NotificationsActiveIcon
+									sx={{ width: 16, height: 16, color: "#837E7E" }}
+								/>
+								<div className="font-regular text-[14px]">
+									{t("setting.notification") || "Notifications"}
+								</div>
+							</div>
+							<PinkSwitch edge="end" />
+						</div>
+						<div
+							className="flex flex-row items-center gap-4 justify-between"
+							onClick={() => navigate(PATH_LANGUAGE)}>
+							<div className="flex flex-row items-center gap-[13px]">
+								<LanguageIcon
+									sx={{ width: 16, height: 16, color: "#837E7E" }}
+								/>
+								<div className="font-regular text-[14px]">
+									{t("setting.language") || "Language"}
+								</div>
+							</div>
+							<div className="text-[14px]">{t("currentlang") || "English"}</div>
+						</div>
+					</div>
+					<div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+						<div className="flex flex-row items-center gap-4 justify-between">
+							<div className="flex flex-row items-center gap-[13px]">
+								<NotificationsActiveIcon
+									sx={{ width: 16, height: 16, color: "#837E7E" }}
+								/>
+								<div className="font-regular text-[14px]">
+									{t("setting.lightMode") || "Light Mode"}
+								</div>
+							</div>
+							<PinkSwitch
+								edge="end"
+								checked={!darkMode}
+								onChange={handleDarkModeToggle}
+							/>
+						</div>
+						<div className="flex flex-row items-center gap-4 justify-between">
+							<div className="flex flex-row items-center gap-[13px]">
+								<LockIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
+								<div className="font-regular text-[14px]">
+									{t("setting.privacyPolciy") || "Privacy Policy"}
+								</div>
+							</div>
+							<ChevronRightIcon sx={{ width: 16, height: 16 }} />
+						</div>
+					</div>
+					<div className="flex flex-col gap-4 border-2 border-[#EFEFEF] rounded-lg p-2">
+						<div className="flex flex-row items-center gap-4 justify-between">
+							<div
+								className="flex flex-row items-center gap-[13px]"
+								onClick={() =>
+									copyToClipboard(currentWalletAccount, setCopied)
+								}>
+								<QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
+								<div className="flex flex-col">
+									<div className="font-regular text-[14px]">
+										{t("setting.walletAddress") || "Wallet Address"}
+									</div>
+									<div className="wallet-address-container">
+										<span className="wallet-address">
+											{/* {formatAddress(currentWalletAccount, 8, 4)} */}
+											{/* {userTonAddress} */}
+											{userTonAddress
+												? userTonAddress
+												: formatAddress(currentWalletAccount, 8, 4)}
+										</span>
+										{copied ? (
+											<CheckIcon className="settings-icon check-icon" />
+										) : (
+											<ContentCopyIcon />
+										)}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<ThirdwebConnectButton darkMode={darkMode} path={null} />
+					<div className="flex w-full justify-center items-center">
+						<CustomTonConnectButton />
+					</div>
+				</div>
+			</div>
+			<Navigation nav="Profile"></Navigation>
+		</div>
+	);
 };
 
 export default SettingScreen;

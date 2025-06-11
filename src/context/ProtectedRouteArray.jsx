@@ -11,7 +11,7 @@ import {
 import EditProfile from "../screens/profile/EditProfile";
 import SettingScreen from "../screens/profile/SettingScreen";
 import LanguageScreen from "../screens/profile/Language";
-import MainScreen from "../screens/main/main";
+import MainScreen from "../screens/main/MainMenu";
 import WalletScreen from "../screens/main/WalletScreen";
 import WalletActionsScreen from "../screens/main/WalletActionsScreen";
 import SendTokensScreen from "../screens/main/SendTokensScreen";

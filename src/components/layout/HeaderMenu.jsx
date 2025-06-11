@@ -1,108 +1,148 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { PATH_SETTING } from "../../context/paths";
+import { motion, AnimatePresence } from "framer-motion";
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { PATH_SETTING } from '../../context/paths';
+// Icons
+import BlockMed from "../../assets/icons/add.svg";
+import BlockM from "../../assets/icons/megaphone.svg";
+import BlockEd from "../../assets/icons/megaphone.svg";
+import BlockMudi from "../../assets/icons/coupon.svg";
+import BlockRide from "../../assets/icons/motocross.svg";
+import ArtistNft from "../../assets/icons/payment.svg";
+import BlockFarm from "../../assets/icons/coins.svg";
+import BlockLoan from "../../assets/icons/coin.svg";
+import Messages from "../../assets/icons/email.svg";
+import Profile from "../../assets/icons/user.svg";
+import Logout from "../../assets/icons/logout.svg";
+import LogoHorizontal from "../../assets/images/Logo_Bloackloans_Horizontal.png";
 
 const HeaderMenu = ({ isOpen, onClose, className }) => {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+	const navigate = useNavigate();
+	const { logout } = useAuth();
 
-  const handleMyProfile = () => {
-    navigate(PATH_SETTING);
-    onClose();
-  };
+	const handleMyProfile = () => {
+		navigate(PATH_SETTING);
+		onClose();
+	};
 
-  const handleLogout = () => {
-    logout();
-    onClose();
-  };
+	const handleLogout = () => {
+		logout();
+		onClose();
+	};
 
-  const menuItems = [
-    { id: 'blockm', label: 'Block M', icon: '🏠', disabled: true },
-    { id: 'blockmud', label: 'Block Mud', icon: '🏪', disabled: true },
-    { id: 'blockmed', label: 'Block Med', icon: '🏥', disabled: true },
-    { id: 'blocked', label: 'Block Ed', icon: '🎓', disabled: true },
-    { id: 'blockride', label: 'Block Ride', icon: '🚗', disabled: true },
-    { id: 'artistnft', label: 'Artist NFT', icon: '🎨', disabled: true },
-    { id: 'blockloans', label: 'Blockloans', icon: '💰', disabled: true },
-    { id: 'blockfarm', label: 'Block Farm', icon: '🌾', disabled: true },
-    { id: 'messages', label: 'Messages', icon: '💬', disabled: true },
-    { id: 'myprofile', label: 'My Profile', icon: '👤', onClick: handleMyProfile },
-  ];
+	const menuItems = [
+		{ id: "blockm", label: "Block M", icon: BlockM, disabled: true },
+		{ id: "blockmud", label: "Block Mud", icon: BlockMudi, disabled: true },
+		{ id: "blockmed", label: "Block Med", icon: BlockMed, disabled: true },
+		{ id: "blocked", label: "Block Ed", icon: BlockEd, disabled: true },
+		{ id: "blockride", label: "Block Ride", icon: BlockRide, disabled: true },
+		{ id: "artistnft", label: "Artist NFT", icon: ArtistNft, disabled: true },
+		{ id: "blockloans", label: "Blockloans", icon: BlockLoan, disabled: true },
+		{ id: "blockfarm", label: "Block Farm", icon: BlockFarm, disabled: true },
+		{ id: "messages", label: "Messages", icon: Messages, disabled: true },
+		{
+			id: "myprofile",
+			label: "My Profile",
+			icon: Profile,
+			onClick: handleMyProfile,
+		},
+	];
 
-  if (!isOpen) return null;
+	return (
+		<AnimatePresence>
+			{isOpen && (
+				<>
+					{/* Backdrop */}
+					<motion.div
+						className="absolute inset-0 h-[100dvh] bg-black/20 z-40"
+						onClick={onClose}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.2 }}
+					/>
 
-  return (
-    <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-      />
-      
-      {/* Sliding Menu */}
-      <div className={`fixed top-0 right-0 h-full w-[80%] bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out shadow-2xl ${className || ''}`}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">M</span>
-            </div>
-            <span className="text-[16px] font-['Sansation'] font-bold text-[#1D2126] dark:text-white">Menu - Tree Map</span>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Close menu"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 5L5 15M5 5L15 15" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
+					{/* Sliding Menu */}
+					<motion.div
+						initial={{ x: "100%" }}
+						animate={{ x: 0 }}
+						exit={{ x: "100%" }}
+						transition={{ duration: 0.3 }}
+						className={`absolute top-0 right-0 h-[100dvh] w-[70%] bg-white z-50 shadow-2xl rounded-l-2xl flex flex-col ${
+							className || ""
+						}`}>
+						{/* Header */}
+						<div className="flex items-center justify-between p-4 pl-5">
+							<div className="flex items-center gap-3">
+								<img
+									src={LogoHorizontal}
+									alt="BlockLoans Logo"
+									className="h-6"
+								/>
+							</div>
+							<button
+								onClick={onClose}
+								className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+								aria-label="Close menu">
+								<svg
+									width="20"
+									height="20"
+									viewBox="0 0 20 20"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M15 5L5 15M5 5L15 15"
+										stroke="#666666"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+								</svg>
+							</button>
+						</div>
 
-        {/* Menu Content */}
-        <div className="flex flex-col h-full">
-          {/* Menu Items */}
-          <div className="flex-1 px-4 py-6">
-            <p className="text-[14px] font-['Sansation'] text-[#6B7280] dark:text-gray-400 mb-6 text-left">
-              You are currently signed in.
-            </p>
-            
-            <div className="space-y-1">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={item.onClick}
-                  disabled={item.disabled}
-                  className={`w-full flex items-center gap-4 px-4 py-4 text-left rounded-lg transition-colors ${
-                    item.disabled 
-                      ? 'text-[#6B7280] dark:text-gray-500 cursor-not-allowed' 
-                      : 'text-[#1D2126] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <span className="text-[18px]">{item.icon}</span>
-                  <span className="text-[14px] font-['Sansation'] font-medium text-left">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+						{/* Menu Content */}
+						<div className="flex-1 overflow-y-auto px-4 pb-2">
+							<div className="space-y-3">
+								{menuItems.map((item) => (
+									<button
+										key={item.id}
+										onClick={item.onClick}
+										disabled={item.disabled}
+										className={`w-full flex items-center gap-3 px-2 py-1 text-left rounded-lg transition-colors ${
+											item.disabled
+												? "cursor-not-allowed opacity-50"
+												: "text-black cursor-pointer hover:bg-gray-50"
+										}`}>
+										<span className="w-8">
+											<img src={item.icon} alt={item.label} />
+										</span>
+										<span className="text-sm uppercase font-medium font-['Sansation']">
+											{item.label}
+										</span>
+									</button>
+								))}
+							</div>
+						</div>
 
-          {/* Logout Button */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-4 px-4 py-4 text-left rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <span className="text-[18px]">🚪</span>
-              <span className="text-[14px] font-['Sansation'] font-medium text-[#E2502A] text-left">Logout</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+						{/* Logout Button */}
+						<div className="border-gray-200 p-4">
+							<button
+								onClick={handleLogout}
+								className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors">
+								<img src={Logout} />
+								<span className="text-sm font-['Sansation'] text-red-600 font-bold">
+									LOGOUT
+								</span>
+							</button>
+						</div>
+					</motion.div>
+				</>
+			)}
+		</AnimatePresence>
+	);
 };
 
 export default HeaderMenu;
