@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
@@ -35,20 +34,17 @@ const MainMenu = () => {
 		dispatch(fetchWallet());
 	}, [dispatch]);
 
-	// Handle wallet data and PIN status
+	// Handle wallet data and PIN status - ONLY for first-time users who need to create a PIN
 	useEffect(() => {
 		if (walletLoading || !walletData) return;
 
 		const hasPin = walletData?.data?.isPinCodeSet;
-		const needsPinEntry = localStorage.getItem("needsPinEntry") === "true";
 
+		// Only redirect to create PIN if user doesn't have one yet
 		if (!hasPin) {
-			// First-time user needs to create PIN
 			setCurrentScreen("createPin");
-		} else if (needsPinEntry) {
-			// Existing user needs to enter PIN
-			setCurrentScreen("enterPin");
 		}
+		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
 	}, [walletData, walletLoading]);
 
 	const statsData = walletData?.data
@@ -77,7 +73,7 @@ const MainMenu = () => {
 		if (!walletData.data.isPinCodeSet) {
 			setCurrentScreen("createPin");
 		} else {
-			localStorage.setItem("needsPinEntry", "true");
+			// User has PIN, so ask them to enter it to access wallet
 			setCurrentScreen("enterPin");
 		}
 	};
