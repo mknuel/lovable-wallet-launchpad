@@ -72,7 +72,7 @@ const WalletScreen = () => {
 	};
 
 	return (
-		<div className="flex flex-col min-h-screen w-full max-w-full bg-white dark:bg-[#1a1a1a]">
+		<div className="flex flex-col min-h-screen w-full max-w-full bg-white ">
 			{/* Header - Fixed positioning */}
 			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
 				<Header title={t("wallet.title")} action={true} onBack={handleBackClick} />
