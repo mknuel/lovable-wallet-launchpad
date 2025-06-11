@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
 import { StatsCard } from "../../components/layout/StatsCard";
@@ -6,7 +6,7 @@ import { MenuSection } from "../../components/layout/MenuSection";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchWallet } from "../../store/reducers/walletSlice";
+import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError } from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
 import PinEntryScreen from "./PinEntryScreen";
 import WalletScreen from "./WalletScreen";
@@ -18,21 +18,24 @@ const MainMenu = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const userData = useSelector((state) => state.user);
-	const {
-		walletData,
-		isLoading: walletLoading,
-		error: walletError,
-	} = useSelector((state) => state.wallet);
+	
+	// Use optimized selectors
+	const walletData = useSelector(selectWalletData);
+	const walletLoading = useSelector(selectWalletLoading);
+	const walletError = useSelector(selectWalletError);
+	
 	const navigate = useNavigate();
 
 	// Simplified state management
-	const [currentScreen, setCurrentScreen] = useState("main"); // 'main', 'createPin', 'enterPin', 'wallet'
+	const [currentScreen, setCurrentScreen] = useState("main");
 	const [showPinConfirmation, setShowPinConfirmation] = useState(false);
 
-	// Fetch wallet data on component mount
+	// Fetch wallet data on component mount - only if not already loading/loaded
 	useEffect(() => {
-		dispatch(fetchWallet());
-	}, [dispatch]);
+		if (!walletData && !walletLoading) {
+			dispatch(fetchWallet());
+		}
+	}, [dispatch, walletData, walletLoading]);
 
 	// Handle wallet data and PIN status - ONLY for first-time users who need to create a PIN
 	useEffect(() => {
@@ -47,25 +50,28 @@ const MainMenu = () => {
 		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
 	}, [walletData, walletLoading]);
 
-	const statsData = walletData?.data
-		? [
-				{
-					id: "tokens",
-					value: walletData.data.token || "0",
-					label: t("wallet.tokens"),
-				},
-				{
-					id: "crypto",
-					value: walletData.data.balance || "0",
-					label: t("wallet.crypto"),
-				},
-				{ id: "loans", value: "0", label: t("wallet.loans") },
-		  ]
-		: [
-				{ id: "tokens", value: "0", label: t("wallet.tokens") },
-				{ id: "crypto", value: "0", label: t("wallet.crypto") },
-				{ id: "loans", value: "0", label: t("wallet.loans") },
-		  ];
+	// Memoize stats data to prevent unnecessary recalculations
+	const statsData = useMemo(() => {
+		return walletData?.data
+			? [
+					{
+						id: "tokens",
+						value: walletData.data.token || "0",
+						label: t("wallet.tokens"),
+					},
+					{
+						id: "crypto",
+						value: walletData.data.balance || "0",
+						label: t("wallet.crypto"),
+					},
+					{ id: "loans", value: "0", label: t("wallet.loans") },
+			  ]
+			: [
+					{ id: "tokens", value: "0", label: t("wallet.tokens") },
+					{ id: "crypto", value: "0", label: t("wallet.crypto") },
+					{ id: "loans", value: "0", label: t("wallet.loans") },
+			  ];
+	}, [walletData, t]);
 
 	const handleWalletClick = () => {
 		if (!walletData?.data) return;
@@ -78,7 +84,8 @@ const MainMenu = () => {
 		}
 	};
 
-	const menuItems = [
+	// Memoize menu items to prevent unnecessary re-renders
+	const menuItems = useMemo(() => [
 		{
 			id: "wallet",
 			label: t("mainMenu.myWallet"),
@@ -94,7 +101,7 @@ const MainMenu = () => {
 			label: t("mainMenu.blockloans"),
 			onClick: () => console.log("Navigate to blockloans"),
 		},
-	];
+	], [t, handleWalletClick, navigate]);
 
 	const handlePinCreated = () => {
 		localStorage.setItem("userHasPin", "true");
@@ -201,3 +208,5 @@ const MainMenu = () => {
 };
 
 export default MainMenu;
+
+</edits_to_apply>
