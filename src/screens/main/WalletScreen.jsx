@@ -44,21 +44,21 @@ const WalletScreen = () => {
 				{ id: "loans", value: "715", label: t("wallet.loans") },
 		  ];
 
-	// Wallet-specific menu items
+	// Wallet-specific menu items with shorter labels
 	const menuItems = [
 		{
 			id: "send",
-			label: t("wallet.actions.send"),
+			label: "Send tokens",
 			onClick: () => console.log("Send tokens clicked"),
 		},
 		{
 			id: "exchange",
-			label: t("wallet.actions.exchange"),
+			label: "Exchange tokens",
 			onClick: () => console.log("Exchange tokens clicked"),
 		},
 		{
 			id: "loan",
-			label: t("wallet.actions.loan"),
+			label: "Request Loan with your tokens",
 			onClick: () => console.log("Request loan clicked"),
 		},
 	];
