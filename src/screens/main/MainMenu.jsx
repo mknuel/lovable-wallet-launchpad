@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
@@ -208,5 +209,3 @@ const MainMenu = () => {
 };
 
 export default MainMenu;
-
-</edits_to_apply>
