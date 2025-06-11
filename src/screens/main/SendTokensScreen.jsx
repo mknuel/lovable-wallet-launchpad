@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
 import { PATH_WALLET_ACTIONS } from "../../context/paths";
@@ -18,19 +17,19 @@ const SendTokensScreen = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
 
-	// Fetch initial users on component mount
+	// Refs to prevent duplicate requests
+	const activeRequest = useRef(null);
+	const lastSearchQuery = useRef("");
+
+	// Fetch initial users on component mount - only once
 	useEffect(() => {
-		fetchUsers();
+		handleUserSearch("");
 	}, []);
 
 	// Debounced search function
 	const debounceSearch = useCallback(
 		debounce((query) => {
-			if (query.trim()) {
-				searchUsers(query);
-			} else {
-				fetchUsers();
-			}
+			handleUserSearch(query);
 		}, 500),
 		[]
 	);
@@ -53,11 +52,38 @@ const SendTokensScreen = () => {
 		};
 	}
 
-	const fetchUsers = async () => {
+	const handleUserSearch = async (query) => {
+		// Prevent duplicate requests
+		if (activeRequest.current) {
+			console.log("Request already in progress, cancelling...");
+			return;
+		}
+
+		// Don't make the same request twice
+		if (lastSearchQuery.current === query) {
+			console.log("Same query, skipping request");
+			return;
+		}
+
+		lastSearchQuery.current = query;
+
 		try {
-			setIsLoading(true);
-			const response = await api.get("/users");
-			console.log("Users fetched:", response);
+			if (query.trim()) {
+				setIsSearching(true);
+			} else {
+				setIsLoading(true);
+			}
+
+			const endpoint = query.trim() 
+				? `/users/by/name?name=${encodeURIComponent(query)}`
+				: "/users";
+
+			console.log(`Fetching users from: ${endpoint}`);
+
+			activeRequest.current = api.get(endpoint);
+			const response = await activeRequest.current;
+
+			console.log("Users response:", response);
 
 			if (response.data && Array.isArray(response.data)) {
 				// Filter for active users only and format the data
@@ -75,65 +101,8 @@ const SendTokensScreen = () => {
 					.filter((user) => user.id && user.name); // Filter out invalid users
 
 				setUsers(activeUsers);
-			} else {
-				setUsers([]);
-			}
-		} catch (error) {
-			console.error("Error fetching users:", error);
-			// Mock data for development - only active users
-			setUsers([
-				{
-					id: 1,
-					name: "Sam Mathew",
-					firstName: "Sam",
-					lastName: "Mathew",
-					email: "sam@example.com",
-					phone: "+1234567890",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 2,
-					name: "Francine Bianca",
-					firstName: "Francine",
-					lastName: "Bianca",
-					email: "francine@example.com",
-					phone: "+1234567891",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 3,
-					name: "Bianca Sullivan",
-					firstName: "Bianca",
-					lastName: "Sullivan",
-					email: "bianca@example.com",
-					phone: "+1234567892",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 4,
-					name: "Bianca Bradley",
-					firstName: "Bianca",
-					lastName: "Bradley",
-					email: "bianca2@example.com",
-					phone: "+1234567893",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-			]);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const searchUsers = async (query) => {
-		try {
-			setIsSearching(true);
-			const response = await api.get(
-				`/users/by/name?name=${encodeURIComponent(query)}`
-			);
-			console.log("Search results:", response);
-
-			if (response.success && response.data && Array.isArray(response.data)) {
-				// Filter for active users only and format the data
+			} else if (response.success && response.data && Array.isArray(response.data)) {
+				// Handle search response format
 				const activeUsers = response.data
 					.filter((user) => user.status === "active")
 					.map((user) => ({
@@ -145,16 +114,16 @@ const SendTokensScreen = () => {
 						phone: user.phone || "",
 						avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
 					}))
-					.filter((user) => user.id && user.name); // Filter out invalid users
+					.filter((user) => user.id && user.name);
 
 				setUsers(activeUsers);
 			} else {
 				setUsers([]);
 			}
 		} catch (error) {
-			console.error("Error searching users:", error);
-			// If search fails, fallback to filtered mock data - only active users
-			const filteredMockUsers = [
+			console.error("Error fetching users:", error);
+			// Mock data for development - only active users
+			const mockUsers = [
 				{
 					id: 1,
 					name: "Sam Mathew",
@@ -191,13 +160,22 @@ const SendTokensScreen = () => {
 					phone: "+1234567893",
 					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
 				},
-			].filter(
-				(user) =>
-					user.firstName.toLowerCase().includes(query.toLowerCase()) ||
-					user.lastName.toLowerCase().includes(query.toLowerCase())
-			);
-			setUsers(filteredMockUsers);
+			];
+
+			if (query.trim()) {
+				// Filter mock data for search
+				const filteredUsers = mockUsers.filter(
+					(user) =>
+						user.firstName.toLowerCase().includes(query.toLowerCase()) ||
+						user.lastName.toLowerCase().includes(query.toLowerCase())
+				);
+				setUsers(filteredUsers);
+			} else {
+				setUsers(mockUsers);
+			}
 		} finally {
+			activeRequest.current = null;
+			setIsLoading(false);
 			setIsSearching(false);
 		}
 	};
