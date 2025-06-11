@@ -141,8 +141,8 @@ const MainMenu = () => {
 
 		default:
 			return (
-				<div className="flex items-center flex-col min-h-screen w-full max-w-full overflow-hidden">
-					<div className="w-full fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+				<div className="flex items-center flex-col min-h-screen w-full max-w-full ">
+					<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
 						<Header
 							onMenuClick={() => console.log("Menu clicked")}
 							onNotificationClick={() => console.log("Notifications clicked")}
@@ -169,7 +169,7 @@ const MainMenu = () => {
 						</div>
 					</div>
 
-					<div className="w-full fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+					<div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
 						<Navigation nav={t("navigation.mainMenu")} />
 					</div>
 
