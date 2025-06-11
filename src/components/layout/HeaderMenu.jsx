@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -132,7 +133,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 							<button
 								onClick={handleLogout}
 								className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors">
-								<img src={Logout} />
+								<img src={Logout} alt="Logout" className="w-5 h-5" />
 								<span className="text-sm font-['Sansation'] text-red-600 font-bold">
 									LOGOUT
 								</span>

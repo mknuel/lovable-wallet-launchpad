@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
 import { StatsCard } from "../../components/layout/StatsCard";
+import { MenuSection } from "../../components/layout/MenuSection";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
@@ -41,32 +42,27 @@ const WalletActionsScreen = () => {
 				{ id: "loans", value: "0", label: t("wallet.loans") || "Loans" },
 		  ];
 
-	const actionOptions = [
+	const menuItems = [
 		{
 			id: "send",
 			label:
 				t("wallet.actions.send") ||
 				"Send your tokens to another DAO member or invite someone by phone to receive them",
-			action: () => navigate(PATH_SEND_TOKENS),
+			onClick: () => navigate(PATH_SEND_TOKENS),
 		},
 		{
 			id: "exchange",
 			label:
 				t("wallet.actions.exchange") ||
 				"Exchange your tokens to EURX (€ Euro) or other Cryptocurrency",
-			action: () => console.log("Exchange action triggered"),
+			onClick: () => console.log("Exchange action triggered"),
 		},
 		{
 			id: "loan",
 			label: t("wallet.actions.loan") || "Request Loan with your tokens",
-			action: () => console.log("Loan action triggered"),
+			onClick: () => console.log("Loan action triggered"),
 		},
 	];
-
-	const handleActionSelect = (option) => {
-		console.log("Action selected:", option.id);
-		option.action();
-	};
 
 	const handleBackClick = () => {
 		navigate(PATH_WALLET);
@@ -99,17 +95,10 @@ const WalletActionsScreen = () => {
 					</div>
 				)}
 
-				{/* Action Options */}
+				{/* Menu Section */}
 				{!loading && (
-					<div className="w-full mb-8 space-y-4">
-						{actionOptions.map((option) => (
-							<button
-								key={option.id}
-								onClick={() => handleActionSelect(option)}
-								className="w-full max-w-full py-4 px-6 border border-pink-300 dark:border-pink-600 rounded-xl text-pink-600 dark:text-pink-400 font-semibold bg-white  hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-pink-900/20 dark:hover:to-purple-900/20 transition-colors text-left">
-								{option.label}
-							</button>
-						))}
+					<div className="w-full mb-8">
+						<MenuSection menuItems={menuItems} />
 					</div>
 				)}
 
