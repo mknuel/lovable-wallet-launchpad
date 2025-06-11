@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { setUser, clearUser } from '../store/reducers/userSlice';
 import { setAuth, clearAuth } from '../store/reducers/authSlice';
-import { PATH_AUTH, PATH_MAIN } from './paths';
+import { PATH_AUTH, PATH_MAIN, PATH_LOGIN } from './paths';
 
 const AuthContext = createContext(null);
 
@@ -30,8 +30,8 @@ export const AuthProvider = ({ children }) => {
           dispatch(setUser(parsedUserData));
           dispatch(setAuth({ token }));
           
-          // If user is on auth page but is authenticated, redirect to main
-          if (location.pathname === PATH_AUTH || location.pathname === '/') {
+          // If user is on auth pages but is authenticated, redirect to main
+          if (location.pathname === PATH_AUTH || location.pathname === PATH_LOGIN || location.pathname === '/') {
             navigate(PATH_MAIN, { replace: true });
           }
         } catch (error) {
@@ -39,8 +39,8 @@ export const AuthProvider = ({ children }) => {
           logout();
         }
       } else {
-        // If no auth data and not on auth page, redirect to auth
-        if (location.pathname !== PATH_AUTH && location.pathname !== '/') {
+        // If no auth data and not on auth pages, redirect to auth
+        if (location.pathname !== PATH_AUTH && location.pathname !== PATH_LOGIN && location.pathname !== '/') {
           navigate(PATH_AUTH, { replace: true });
         }
       }
