@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
@@ -128,20 +127,20 @@ const MainMenu = () => {
 	switch (currentScreen) {
 		case "enterPin":
 			return (
-				<CreatePinScreen
-					onPinCreated={handlePinCreated}
-					onBack={handleBack}
-					walletData={walletData}
-				/>
-			);
-
-		case "createPin":
-			return (
 				<PinEntryScreen
 					onPinVerified={handlePinVerified}
 					onBack={handleBack}
 					walletData={walletData}
 					onShowCreatePin={() => setCurrentScreen("createPin")}
+				/>
+			);
+
+		case "createPin":
+			return (
+				<CreatePinScreen
+					onPinCreated={handlePinCreated}
+					onBack={handleBack}
+					walletData={walletData}
 				/>
 			);
 
