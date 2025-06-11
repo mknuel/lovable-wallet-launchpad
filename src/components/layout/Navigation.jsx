@@ -12,7 +12,7 @@ const Navigation = ({ nav }) => {
   const { t } = useTranslation();
   
   return (
-    <div className="flex flex-col py-3 w-full bg-white shadow-2xl z-40">
+    <div className="flex flex-col py-3 w-full bg-white shadow-2xl z-30">
       <div className="flex flex-row justify-around items-center pb-3 px-4">
         <IconButton
           aria-label="back"
