@@ -20,23 +20,22 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (tonWallet) {
-      // US-2.3: Redirect to Main Menu after wallet connection
-      navigate(PATH_MAIN);
-    }
-  }, [tonWallet, navigate]);
+		if (tonWallet) {
+			// US-2.3: Redirect to Main Menu after wallet connection
+			// navigate(PATH_MAIN);
+		}
+	}, [tonWallet, navigate]);
 
-  const handleConnect = () => {
-    tonConnectUI.openModal({
-      returnStrategy: "back",
-      redirectUrl: "https://blockloan-mini-app.vercel.app/main",
-    });
-  };
+	const handleConnect = () => {
+		tonConnectUI.openModal({
+			returnStrategy: "back",
+			redirectUrl: "https://blockloan-mini-app.vercel.app/main",
+		});
+	};
 
-  const handleCreateWallet = () => {
-    // US-2.3: Redirect to Main Menu after wallet creation
-    navigate(PATH_MAIN);
-  };
+	const handleCreateWallet = () => {
+		// navigate(PATH_MAIN);
+	};
 
   return (
     <div className="container justify-around">

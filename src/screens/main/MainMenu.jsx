@@ -13,6 +13,7 @@ import PinEntryScreen from "./PinEntryScreen";
 import WalletScreen from "./WalletScreen";
 import { PATH_WALLET } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
+import Success from "../../assets/icons/pin-success.svg";
 
 const MainMenu = () => {
 	const { t } = useTranslation();
@@ -52,7 +53,11 @@ const MainMenu = () => {
 
 	const statsData = walletData?.data
 		? [
-				{ id: "tokens", value: walletData.data.token || "0", label: t("wallet.tokens") },
+				{
+					id: "tokens",
+					value: walletData.data.token || "0",
+					label: t("wallet.tokens"),
+				},
 				{
 					id: "crypto",
 					value: walletData.data.balance || "0",
@@ -175,27 +180,20 @@ const MainMenu = () => {
 
 					{/* PIN Confirmation Modal */}
 					{showPinConfirmation && (
-						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-							<div className="bg-white dark:bg-[#222222] rounded-lg p-8 mx-4 max-w-sm w-full text-center">
-								<div className="flex justify-center mb-6">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="57"
-										height="52"
-										viewBox="0 0 57 52"
-										fill="none">
-										{/* SVG paths remain the same */}
-									</svg>
+						<div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center z-60">
+							<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
+								<div className="flex justify-center mb-3">
+									<img src={Success} />
 								</div>
-								<h2 className="text-[20px] font-['Sansation'] font-bold text-[#1D2126] dark:text-white mb-4">
+								<h2 className="text-[20px] font-['Sansation'] font-bold text-black mb-2">
 									{t("mainMenu.pinCreated")}
 								</h2>
-								<p className="text-[16px] font-['Sansation'] text-[#6B7280] dark:text-gray-300 mb-8">
+								<p className="text-[16px] font-['Sansation'] text-[#616161] mb-8 w-[80%] mx-auto">
 									{t("mainMenu.pinCreatedMessage")}
 								</p>
 								<button
 									onClick={() => setShowPinConfirmation(false)}
-									className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation'] font-bold rounded-lg hover:opacity-90 transition-opacity">
+									className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation']  rounded-lg hover:opacity-90 transition-opacity">
 									OK
 								</button>
 							</div>

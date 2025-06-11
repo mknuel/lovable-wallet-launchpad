@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { PATH_AUTH } from "./paths";
+import { PATH_MAIN } from "./paths";
 import { useAuth } from "./AuthContext";
 
 const ProtectedRoute = ({ children }) => {
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
 
 	// Only redirect after loading is complete and we know the user is not authenticated
 	if (!isAuthenticated) {
-		return <Navigate to={PATH_AUTH} replace />;
+		return <Navigate to={PATH_MAIN} replace />;
 	}
 
 	return children;

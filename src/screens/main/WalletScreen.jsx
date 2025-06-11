@@ -75,11 +75,15 @@ const WalletScreen = () => {
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white ">
 			{/* Header - Fixed positioning */}
 			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
-				<Header title={t("wallet.title")} action={true} onBack={handleBackClick} />
+				<Header
+					title={t("wallet.title")}
+					action={true}
+					onBack={handleBackClick}
+				/>
 			</div>
 
 			{/* Content */}
-			<div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-3 mb-[40px]">
+			<div className="flex-1 flex flex-col px-6 py-8 overflow-hidden mt-3 ">
 				{/* Stats Card */}
 				<div className="w-full mb-6">
 					<StatsCard stats={statsData} />
@@ -87,6 +91,10 @@ const WalletScreen = () => {
 
 				{/* Menu Section */}
 				<div className="w-full mb-8">
+					<p className="text-center mb-3 break-words">
+						You can <strong>Send, Exchange and get</strong> a Loan with your
+						tokens!
+					</p>
 					<MenuSection menuItems={menuItems} />
 				</div>
 

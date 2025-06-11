@@ -178,7 +178,7 @@ const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
 								onPaste={index === 0 ? handlePaste : undefined}
 								disabled={isLoading}
 								className={`
-                  w-[60px] h-[60px] rounded-lg text-center text-[20px] font-['Sansation'] font-bold
+                  w-[60px] h-[60px] rounded-full text-center text-[20px] font-['Sansation'] font-bold
                   border-none shadow-[1px_2px_10px_1px_rgba(0,0,0,0.10)] outline-none transition-all duration-200
                   ${
 										digit

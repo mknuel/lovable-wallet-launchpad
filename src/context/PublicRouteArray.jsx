@@ -15,28 +15,28 @@ import Register from "../screens/auth/Register";
 import WalletConnect from "../screens/auth/ConnectWallet";
 
 export const PublicRouteArray = [
-  {
-    path: PATH_SPLASH,
-    element: <SplashScreen />,
-  },
-  {
-    path: PATH_LANDING,
-    element: <LandingScreen />,
-  },
-  {
-    path: PATH_AUTH,
-    element: <Auth />,
-  },
-  {
-    path: PATH_REGISTER,
-    element: <Register />,
-  },
-  {
-    path: PATH_LOGIN,
-    element: <LoginScreen />,
-  },
-  {
-    path: PATH_WALLETCONNECT,
-    element: <WalletConnect />,
-  },
+	{
+		path: PATH_SPLASH,
+		element: <SplashScreen />,
+	},
+	{
+		path: PATH_LANDING,
+		element: <LandingScreen />,
+	},
+	{
+		path: PATH_AUTH,
+		element: <Auth />,
+	},
+	{
+		path: PATH_REGISTER,
+		element: <Register />,
+	},
+	{
+		path: PATH_LOGIN,
+		element: <LoginScreen />,
+	},
+	{
+		path: PATH_WALLETCONNECT,
+		element: <WalletConnect />,
+	},
 ];
