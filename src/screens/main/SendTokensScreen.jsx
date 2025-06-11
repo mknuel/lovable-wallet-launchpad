@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -20,24 +21,7 @@ const SendTokensScreen = () => {
 	// Refs to prevent duplicate requests
 	const activeRequest = useRef(null);
 	const lastSearchQuery = useRef("");
-
-	// Fetch initial users on component mount - only once
-	useEffect(() => {
-		handleUserSearch("");
-	}, []);
-
-	// Debounced search function
-	const debounceSearch = useCallback(
-		debounce((query) => {
-			handleUserSearch(query);
-		}, 500),
-		[]
-	);
-
-	// Search users when search query changes
-	useEffect(() => {
-		debounceSearch(searchQuery);
-	}, [searchQuery, debounceSearch]);
+	const hasInitiallyLoaded = useRef(false);
 
 	// Simple debounce function
 	function debounce(func, wait) {
@@ -51,6 +35,31 @@ const SendTokensScreen = () => {
 			timeout = setTimeout(later, wait);
 		};
 	}
+
+	// Debounced search function
+	const debounceSearch = useCallback(
+		debounce((query) => {
+			if (hasInitiallyLoaded.current) {
+				handleUserSearch(query);
+			}
+		}, 500),
+		[]
+	);
+
+	// Auto-load users on component mount
+	useEffect(() => {
+		if (!hasInitiallyLoaded.current) {
+			handleUserSearch("");
+			hasInitiallyLoaded.current = true;
+		}
+	}, []);
+
+	// Search users when search query changes (but not on initial load)
+	useEffect(() => {
+		if (hasInitiallyLoaded.current) {
+			debounceSearch(searchQuery);
+		}
+	}, [searchQuery, debounceSearch]);
 
 	const handleUserSearch = async (query) => {
 		// Prevent duplicate requests
@@ -122,57 +131,8 @@ const SendTokensScreen = () => {
 			}
 		} catch (error) {
 			console.error("Error fetching users:", error);
-			// Mock data for development - only active users
-			const mockUsers = [
-				{
-					id: 1,
-					name: "Sam Mathew",
-					firstName: "Sam",
-					lastName: "Mathew",
-					email: "sam@example.com",
-					phone: "+1234567890",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 2,
-					name: "Francine Bianca",
-					firstName: "Francine",
-					lastName: "Bianca",
-					email: "francine@example.com",
-					phone: "+1234567891",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 3,
-					name: "Bianca Sullivan",
-					firstName: "Bianca",
-					lastName: "Sullivan",
-					email: "bianca@example.com",
-					phone: "+1234567892",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-				{
-					id: 4,
-					name: "Bianca Bradley",
-					firstName: "Bianca",
-					lastName: "Bradley",
-					email: "bianca2@example.com",
-					phone: "+1234567893",
-					avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-				},
-			];
-
-			if (query.trim()) {
-				// Filter mock data for search
-				const filteredUsers = mockUsers.filter(
-					(user) =>
-						user.firstName.toLowerCase().includes(query.toLowerCase()) ||
-						user.lastName.toLowerCase().includes(query.toLowerCase())
-				);
-				setUsers(filteredUsers);
-			} else {
-				setUsers(mockUsers);
-			}
+			// No mock data fallback - just set empty array
+			setUsers([]);
 		} finally {
 			activeRequest.current = null;
 			setIsLoading(false);
