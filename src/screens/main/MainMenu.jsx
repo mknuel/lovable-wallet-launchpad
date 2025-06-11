@@ -107,11 +107,6 @@ const MainMenu = () => {
 		localStorage.setItem("userHasPin", "true");
 		localStorage.removeItem("needsPinEntry");
 		setShowPinConfirmation(true);
-
-		setTimeout(() => {
-			setShowPinConfirmation(false);
-			navigate(PATH_WALLET);
-		}, 3000);
 	};
 
 	const handlePinVerified = () => {
@@ -195,7 +190,10 @@ const MainMenu = () => {
 									{t("mainMenu.pinCreatedMessage")}
 								</p>
 								<button
-									onClick={() => setShowPinConfirmation(false)}
+									onClick={() => {
+			setShowPinConfirmation(false);
+			navigate(PATH_WALLET);
+		}}
 									className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation']  rounded-lg hover:opacity-90 transition-opacity">
 									OK
 								</button>
