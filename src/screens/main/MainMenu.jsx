@@ -126,7 +126,7 @@ const MainMenu = () => {
 
 	// Render appropriate screen based on current state
 	switch (currentScreen) {
-		case "createPin":
+		case "enterPin":
 			return (
 				<CreatePinScreen
 					onPinCreated={handlePinCreated}
@@ -135,7 +135,7 @@ const MainMenu = () => {
 				/>
 			);
 
-		case "enterPin":
+		case "createPin":
 			return (
 				<PinEntryScreen
 					onPinVerified={handlePinVerified}
