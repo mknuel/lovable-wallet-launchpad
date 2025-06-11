@@ -7,7 +7,6 @@ export const StatsCard = ({ stats, className }) => {
 			className={`relative w-full max-w-full mx-auto text-white stats-box ${
 				className || ""
 			}`}
-			style={{ height: "200px" }}
 			role="region"
 			aria-label="Financial statistics">
 			{/* Main card with background image only */}
