@@ -57,7 +57,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 				<>
 					{/* Backdrop */}
 					<motion.div
-						className="fixed top-0 inset-0 h-[100dvh] bg-black/20 z-40"
+						className="fixed top-0 inset-0 h-[100dvh] bg-black/20 z-[9998]"
 						onClick={onClose}
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -71,7 +71,7 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 						animate={{ x: 0, opacity: 1 }}
 						exit={{ x: "100%", opacity: 0 }}
 						transition={{ duration: 0.3 }}
-						className={`fixed top-0 right-0 h-[100dvh] w-[70%] bg-white z-100 shadow-2xl rounded-l-2xl flex flex-col ${
+						className={`fixed top-0 right-0 h-[100dvh] w-[70%] bg-white z-[9999] shadow-2xl rounded-l-2xl flex flex-col ${
 							className || ""
 						}`}>
 						{/* Header */}

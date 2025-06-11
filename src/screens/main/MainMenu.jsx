@@ -178,12 +178,12 @@ const MainMenu = () => {
 						<Navigation nav={t("navigation.mainMenu")} />
 					</div>
 
-					{/* PIN Confirmation Modal */}
+					{/* PIN Confirmation Modal - Fixed z-index */}
 					{showPinConfirmation && (
-						<div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center z-60">
+						<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
 							<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
 								<div className="flex justify-center mb-3">
-									<img src={Success} />
+									<img src={Success} alt="Success" />
 								</div>
 								<h2 className="text-[20px] font-['Sansation'] font-bold text-black mb-2">
 									{t("mainMenu.pinCreated")}
