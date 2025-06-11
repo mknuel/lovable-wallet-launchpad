@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -21,7 +20,6 @@ const SendTokensScreen = () => {
 	// Refs to prevent duplicate requests
 	const activeRequest = useRef(null);
 	const lastSearchQuery = useRef("");
-	const hasInitiallyLoaded = useRef(false);
 
 	// Simple debounce function
 	function debounce(func, wait) {
@@ -39,42 +37,32 @@ const SendTokensScreen = () => {
 	// Debounced search function
 	const debounceSearch = useCallback(
 		debounce((query) => {
-			if (hasInitiallyLoaded.current) {
-				handleUserSearch(query);
-			}
+			handleUserSearch(query);
 		}, 500),
 		[]
 	);
 
 	// Auto-load users on component mount
 	useEffect(() => {
-		if (!hasInitiallyLoaded.current) {
-			handleUserSearch("");
-			hasInitiallyLoaded.current = true;
-		}
+		console.log("Component mounted, loading initial users...");
+		handleUserSearch("");
 	}, []);
 
-	// Search users when search query changes (but not on initial load)
+	// Search users when search query changes
 	useEffect(() => {
-		if (hasInitiallyLoaded.current) {
+		if (searchQuery !== "") {
 			debounceSearch(searchQuery);
 		}
 	}, [searchQuery, debounceSearch]);
 
 	const handleUserSearch = async (query) => {
-		// Prevent duplicate requests
-		if (activeRequest.current) {
-			console.log("Request already in progress, cancelling...");
+		// Reset last search query tracking for fresh searches
+		if (query !== lastSearchQuery.current) {
+			lastSearchQuery.current = query;
+		} else if (activeRequest.current) {
+			console.log("Same query already in progress, skipping...");
 			return;
 		}
-
-		// Don't make the same request twice
-		if (lastSearchQuery.current === query) {
-			console.log("Same query, skipping request");
-			return;
-		}
-
-		lastSearchQuery.current = query;
 
 		try {
 			if (query.trim()) {
