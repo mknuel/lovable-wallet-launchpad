@@ -178,7 +178,7 @@ const MainMenu = () => {
 
 					{/* PIN Confirmation Modal - Fixed z-index */}
 					{showPinConfirmation && (
-						<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+						<div className="fixed top-0 left-0 w-full h-[100dvh] inset-0 bg-black/50 flex items-center justify-center z-[9999]">
 							<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
 								<div className="flex justify-center mb-3">
 									<img src={Success} alt="Success" />
