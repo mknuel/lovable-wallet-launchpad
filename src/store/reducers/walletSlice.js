@@ -54,11 +54,6 @@ export const fetchWallet = createAsyncThunk(
   }
 );
 
-// Selector for getting wallet data with memoization
-export const selectWalletData = (state) => state.wallet.walletData;
-export const selectWalletLoading = (state) => state.wallet.isLoading;
-export const selectWalletError = (state) => state.wallet.error;
-
 const initialState = {
   walletData: null,
   isLoading: false,
@@ -110,6 +105,11 @@ const walletSlice = createSlice({
       });
   },
 });
+
+// Selector for getting wallet data with memoization
+export const selectWalletData = (state) => state.wallet.walletData;
+export const selectWalletLoading = (state) => state.wallet.isLoading;
+export const selectWalletError = (state) => state.wallet.error;
 
 export const { 
   setWalletLoading, 
