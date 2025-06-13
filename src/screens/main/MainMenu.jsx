@@ -8,7 +8,6 @@ import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError } from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
-import PinEntryScreen from "./PinEntryScreen";
 import WalletScreen from "./WalletScreen";
 import { PATH_WALLET } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
@@ -18,12 +17,12 @@ const MainMenu = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const userData = useSelector((state) => state.user);
-	
+
 	// Use optimized selectors
 	const walletData = useSelector(selectWalletData);
 	const walletLoading = useSelector(selectWalletLoading);
 	const walletError = useSelector(selectWalletError);
-	
+
 	const navigate = useNavigate();
 
 	// Simplified state management
@@ -77,41 +76,37 @@ const MainMenu = () => {
 		if (!walletData?.data) return;
 
 		if (!walletData.data.isPinCodeSet) {
-			setCurrentScreen("createPin");
-		} else {
-			// User has PIN, so ask them to enter it to access wallet
-			setCurrentScreen("enterPin");
+			return setCurrentScreen("createPin");
 		}
+		navigate(PATH_WALLET);
 	};
 
 	// Memoize menu items to prevent unnecessary re-renders
-	const menuItems = useMemo(() => [
-		{
-			id: "wallet",
-			label: t("mainMenu.myWallet"),
-			onClick: handleWalletClick,
-		},
-		{
-			id: "settings",
-			label: t("mainMenu.settings"),
-			onClick: () => navigate("/setting"),
-		},
-		{
-			id: "blockloans",
-			label: t("mainMenu.blockloans"),
-			onClick: () => console.log("Navigate to blockloans"),
-		},
-	], [t, handleWalletClick, navigate]);
+	const menuItems = useMemo(
+		() => [
+			{
+				id: "wallet",
+				label: t("mainMenu.myWallet"),
+				onClick: handleWalletClick,
+			},
+			{
+				id: "settings",
+				label: t("mainMenu.settings"),
+				onClick: () => navigate("/setting"),
+			},
+			{
+				id: "blockloans",
+				label: t("mainMenu.blockloans"),
+				onClick: () => console.log("Navigate to blockloans"),
+			},
+		],
+		[t, handleWalletClick, navigate]
+	);
 
 	const handlePinCreated = () => {
 		localStorage.setItem("userHasPin", "true");
-		localStorage.removeItem("needsPinEntry");
-		setShowPinConfirmation(true);
-	};
 
-	const handlePinVerified = () => {
-		localStorage.removeItem("needsPinEntry");
-		navigate(PATH_WALLET);
+		setShowPinConfirmation(true);
 	};
 
 	const handleBack = () => {
@@ -121,16 +116,6 @@ const MainMenu = () => {
 	// Render appropriate screen based on current state
 	switch (currentScreen) {
 		case "createPin":
-			return (
-				<PinEntryScreen
-					onPinVerified={handlePinVerified}
-					onBack={handleBack}
-					walletData={walletData}
-					onShowCreatePin={() => setCurrentScreen("createPin")}
-				/>
-			);
-
-		case "enterPin":
 			return (
 				<CreatePinScreen
 					onPinCreated={handlePinCreated}
@@ -177,7 +162,7 @@ const MainMenu = () => {
 					</div>
 
 					{/* PIN Confirmation Modal - Fixed z-index */}
-					{showPinConfirmation||true && (
+					{showPinConfirmation && (
 						<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
 							<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
 								<div className="flex justify-center mb-3">
@@ -191,9 +176,9 @@ const MainMenu = () => {
 								</p>
 								<button
 									onClick={() => {
-			setShowPinConfirmation(false);
-			navigate(PATH_WALLET);
-		}}
+										setShowPinConfirmation(false);
+										navigate(PATH_WALLET);
+									}}
 									className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation']  rounded-lg hover:opacity-90 transition-opacity">
 									OK
 								</button>
