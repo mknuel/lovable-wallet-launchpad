@@ -13,16 +13,14 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;
 
   return (
-    <div className={`absolute inset-0 bg-white rounded-lg shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out ${
-      isOpen ? 'animate-in slide-in-from-top-2 fade-in scale-in' : 'animate-out slide-out-to-top-2 fade-out scale-out'
-    }`}
-    style={{
-      background: 'white',
-      border: '1px solid transparent',
-      backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-      backgroundOrigin: 'border-box',
-      backgroundClip: 'padding-box, border-box'
-    }}>
+    <div className="absolute inset-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-hidden transition-all duration-300 ease-out transform"
+         style={{
+           background: 'white',
+           border: '1px solid transparent',
+           backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
+           backgroundOrigin: 'border-box',
+           backgroundClip: 'padding-box, border-box'
+         }}>
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         

@@ -38,16 +38,14 @@ export const SearchableCurrencyDropdown = ({
   if (!isOpen) return null;
 
   return (
-    <div className={`absolute inset-0 bg-white rounded-lg shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out ${
-      isOpen ? 'animate-in slide-in-from-top-2 fade-in scale-in' : 'animate-out slide-out-to-top-2 fade-out scale-out'
-    }`}
-    style={{
-      background: 'white',
-      border: '1px solid transparent',
-      backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-      backgroundOrigin: 'border-box',
-      backgroundClip: 'padding-box, border-box'
-    }}>
+    <div className="absolute inset-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-hidden transition-all duration-300 ease-out transform"
+         style={{
+           background: 'white',
+           border: '1px solid transparent',
+           backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
+           backgroundOrigin: 'border-box',
+           backgroundClip: 'padding-box, border-box'
+         }}>
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
@@ -81,7 +79,7 @@ export const SearchableCurrencyDropdown = ({
         
         <div className="text-gray-400 text-sm mb-3">Your tokens</div>
         
-        <div className="max-h-60 overflow-y-auto scrollbar-hide">
+        <div className="max-h-40 overflow-y-auto scrollbar-hide">
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token) => (
               <button
@@ -129,7 +127,7 @@ export const SearchableCurrencyDropdown = ({
               </button>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-8 animate-in fade-in duration-300">
+            <div className="flex flex-col items-center justify-center py-8">
               <X className="w-8 h-8 text-gray-400 mb-2" />
               <div className="text-gray-400 text-sm">Nothing found</div>
             </div>
