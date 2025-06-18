@@ -139,6 +139,13 @@ body.dark-mode {
   max-width: 500px;
   margin: 0 auto;
 }
+.gradient-text {
+  background: linear-gradient(to right, #DC2366, #4F5CAA);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
 
 /* Header Styles */
 .header {

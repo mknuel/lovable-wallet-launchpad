@@ -12,27 +12,29 @@ const defaultNavItems = [
 
 export const SwapBottomNavigation = ({ items = defaultNavItems }) => {
   return (
-    <nav 
-      className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h-[66px] w-full flex-col items-center justify-center mt-6 px-5 py-[23px]"
-      aria-label="Bottom navigation"
-    >
-      <ul className="flex max-w-full w-80 items-center justify-between">
-        {items.map((item) => (
-          <li key={item.id} className="self-stretch flex flex-col items-center w-[65px] my-auto">
-            <button
-              onClick={item.onClick}
-              className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label={item.label}
-            >
-              <img
-                src={item.icon}
-                alt=""
-                className={`aspect-[1] object-contain ${item.id === 'dial3' ? 'w-4' : 'w-5'}`}
-              />
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
+		<nav
+			className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h- w-full flex-col items-center justify-center px-5 py-[23px] mt-0"
+			aria-label="Bottom navigation">
+			<ul className="flex max-w-full w-80 items-center justify-between">
+				{items.map((item) => (
+					<li
+						key={item.id}
+						className="self-stretch flex flex-col items-center w-[65px] my-auto">
+						<button
+							onClick={item.onClick}
+							className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+							aria-label={item.label}>
+							<img
+								src={item.icon}
+								alt=""
+								className={`aspect-[1] object-contain ${
+									item.id === "dial3" ? "w-4" : "w-5"
+								}`}
+							/>
+						</button>
+					</li>
+				))}
+			</ul>
+		</nav>
+	);
 };

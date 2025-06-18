@@ -15,6 +15,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer utilities {
+  .bg-pink-purple-gradient {
+    @apply bg-gradient-to-r from-[#DC2366] to-[#4F5CAA];
+  }
+}
+
+
 /* a {
   font-weight: 500;
   color: #646cff;
