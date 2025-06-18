@@ -16,7 +16,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
     <div className="absolute inset-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-hidden transition-all duration-300 ease-out transform"
          style={{
            background: 'white',
-           border: '1px solid transparent',
+           border: '2px solid transparent',
            backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
            backgroundOrigin: 'border-box',
            backgroundClip: 'padding-box, border-box'

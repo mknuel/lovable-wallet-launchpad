@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import CommonButton from '../Buttons/CommonButton';
+import { SlippagePopup } from './SlippagePopup';
 
 export const TransactionDetails = ({ 
   price, 
@@ -11,13 +12,20 @@ export const TransactionDetails = ({
   onNext,
   onRefresh 
 }) => {
+  const [showSlippagePopup, setShowSlippagePopup] = useState(false);
+  const [currentSlippage, setCurrentSlippage] = useState(slippage || '< 0.1%');
+
+  const handleSlippageChange = (newSlippage) => {
+    setCurrentSlippage(newSlippage);
+  };
+
   return (
     <div className="flex flex-col w-full mt-6 space-y-4">
       {/* Price */}
       <div className="flex items-center justify-between p-4 rounded-lg"
            style={{
              background: 'white',
-             border: '1px solid transparent',
+             border: '2px solid transparent',
              backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
              backgroundOrigin: 'border-box',
              backgroundClip: 'padding-box, border-box'
@@ -45,7 +53,13 @@ export const TransactionDetails = ({
         
         <div className="flex justify-between items-center">
           <span className="text-gray-500">Slippage:</span>
-          <span className="text-green-600 font-medium">{slippage} (max. 20%)</span>
+          <button 
+            onClick={() => setShowSlippagePopup(true)}
+            className="font-medium hover:underline transition-all"
+            style={{ color: '#04BA6E' }}
+          >
+            {currentSlippage} (max. 20%)
+          </button>
         </div>
       </div>
 
@@ -58,6 +72,14 @@ export const TransactionDetails = ({
           NEXT
         </CommonButton>
       </div>
+
+      {/* Slippage Popup */}
+      <SlippagePopup
+        isOpen={showSlippagePopup}
+        onClose={() => setShowSlippagePopup(false)}
+        currentSlippage={currentSlippage}
+        onSlippageChange={handleSlippageChange}
+      />
     </div>
   );
 };
