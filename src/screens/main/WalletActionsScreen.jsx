@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
@@ -7,7 +8,7 @@ import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading } from '../../store/reducers/walletSlice';
-import { PATH_WALLET, PATH_SEND_TOKENS } from "../../context/paths";
+import { PATH_WALLET, PATH_SEND_TOKENS, PATH_SWAP_CURRENCY } from "../../context/paths";
 
 const WalletActionsScreen = () => {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ const WalletActionsScreen = () => {
       label:
         t("wallet.actions.exchange") ||
         "Exchange your tokens to EURX (€ Euro) or other Cryptocurrency",
-      onClick: () => console.log("Exchange action triggered"),
+      onClick: () => navigate(PATH_SWAP_CURRENCY),
     },
     {
       id: "loan",
