@@ -1,28 +1,7 @@
 
 import React, { useState } from 'react';
-
-const defaultCurrencies = [
-  { 
-    symbol: 'EURX', 
-    name: 'Euro X', 
-    icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/119a9054d51c65e9828b64eabde205cbf2466758?placeholderIfAbsent=true' 
-  },
-  { 
-    symbol: 'BTC', 
-    name: 'Bitcoin', 
-    icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/e22501b45966a9039103126ba509ad16472873e3?placeholderIfAbsent=true' 
-  },
-  { 
-    symbol: 'ETH', 
-    name: 'Ethereum', 
-    icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/e22501b45966a9039103126ba509ad16472873e3?placeholderIfAbsent=true' 
-  },
-  { 
-    symbol: 'USDT', 
-    name: 'Tether', 
-    icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/e22501b45966a9039103126ba509ad16472873e3?placeholderIfAbsent=true' 
-  },
-];
+import { CurrencyDropdown } from './CurrencyDropdown';
+import { SearchableCurrencyDropdown } from './SearchableCurrencyDropdown';
 
 export const CurrencyCard = ({
   type,
@@ -34,6 +13,7 @@ export const CurrencyCard = ({
   placeholder = "0.0000"
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleCurrencyClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -42,6 +22,7 @@ export const CurrencyCard = ({
   const handleCurrencySelection = (currency) => {
     onCurrencySelect(currency);
     setIsDropdownOpen(false);
+    setSearchTerm('');
   };
 
   const calculateUsdValue = (amount) => {
@@ -50,7 +31,7 @@ export const CurrencyCard = ({
   };
 
   return (
-    <div className="border border-[#DC2366] flex flex-col w-full max-w-xs mx-auto p-4 rounded-lg mt-6">
+    <div className="border-2 border-[#DC2366] flex flex-col w-full max-w-xs mx-auto p-4 rounded-lg mt-6 relative">
       <label className="text-[#3c3c43] text-sm font-['Sansation'] mb-2">
         {type === 'from' ? 'From' : 'To'}
       </label>
@@ -60,11 +41,9 @@ export const CurrencyCard = ({
           <div className="flex items-center gap-2 relative">
             {selectedCurrency ? (
               <>
-                <img
-                  src={selectedCurrency.icon}
-                  alt={`${selectedCurrency.name} icon`}
-                  className="w-12 h-12 object-contain"
-                />
+                <div className="w-12 h-12 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center text-white font-bold">
+                  {selectedCurrency.symbol.substring(0, 2)}
+                </div>
                 <button
                   className="flex items-center gap-2 font-['Sansation']"
                   onClick={handleCurrencyClick}
@@ -100,27 +79,20 @@ export const CurrencyCard = ({
               </button>
             )}
 
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
-                <ul className="py-2">
-                  {defaultCurrencies.map((currency) => (
-                    <li key={currency.symbol}>
-                      <button
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2 font-['Sansation']"
-                        onClick={() => handleCurrencySelection(currency)}
-                      >
-                        <img
-                          src={currency.icon}
-                          alt={`${currency.name} icon`}
-                          className="w-6 h-6"
-                        />
-                        <span>{currency.symbol}</span>
-                        <span className="text-sm text-gray-500">{currency.name}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {type === 'from' ? (
+              <CurrencyDropdown
+                isOpen={isDropdownOpen}
+                onClose={() => setIsDropdownOpen(false)}
+                onSelect={handleCurrencySelection}
+              />
+            ) : (
+              <SearchableCurrencyDropdown
+                isOpen={isDropdownOpen}
+                onClose={() => setIsDropdownOpen(false)}
+                onSelect={handleCurrencySelection}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+              />
             )}
           </div>
           

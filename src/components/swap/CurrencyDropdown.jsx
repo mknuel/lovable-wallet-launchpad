@@ -1,0 +1,43 @@
+
+import React from 'react';
+
+const defaultCurrencies = [
+  { symbol: 'EARN', name: 'Earn Token', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
+  { symbol: 'LOAN', name: 'Loan Token', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
+  { symbol: 'RIDE', name: 'Ride Token', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
+  { symbol: 'EURX', name: 'Euro X', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
+  { symbol: 'MUDI', name: 'Mudi Token', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
+];
+
+export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
+      <div className="p-4">
+        <div className="text-gray-400 text-sm mb-3">Select currency</div>
+        
+        <div className="max-h-60 overflow-y-auto">
+          {defaultCurrencies.map((currency) => (
+            <button
+              key={currency.symbol}
+              onClick={() => onSelect(currency)}
+              className="w-full p-3 mb-2 border-2 border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex justify-between items-center">
+                <div className="text-left">
+                  <div className="text-[#DC2366] font-bold text-lg">{currency.symbol}</div>
+                  <div className="text-gray-400 text-sm">{currency.address}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[#DC2366] font-bold text-lg">{currency.value.toFixed(2)} $</div>
+                  <div className="text-gray-400 text-sm">{currency.balance.toFixed(4)}</div>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

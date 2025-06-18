@@ -42,7 +42,7 @@ export const SwapForm = ({ onSubmit }) => {
   const isFormValid = fromCurrency && toCurrency && fromAmount && parseFloat(fromAmount) > 0;
 
   return (
-    <form onSubmit={handleFormSubmit} className="flex flex-col w-full">
+    <form onSubmit={handleFormSubmit} className="flex flex-col w-full flex-1">
       <CurrencyCard
         type="from"
         selectedCurrency={fromCurrency}
