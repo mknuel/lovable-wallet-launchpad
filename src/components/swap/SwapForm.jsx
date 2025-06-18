@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { CurrencyCard } from './CurrencyCard';
+import { TransactionDetails } from './TransactionDetails';
 import CommonButton from '../Buttons/CommonButton';
 
 export const SwapForm = ({ onSubmit }) => {
@@ -59,6 +60,8 @@ export const SwapForm = ({ onSubmit }) => {
         onAmountChange={() => {}}
         onCurrencySelect={handleToCurrencySelect}
       />
+
+      <TransactionDetails />
 
       <div className="mt-auto pt-8 pb-4">
         <CommonButton
