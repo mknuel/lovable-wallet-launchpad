@@ -13,7 +13,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
@@ -22,7 +22,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
             <button
               key={currency.symbol}
               onClick={() => onSelect(currency)}
-              className="w-full p-3 mb-2 border-2 border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
+              className="w-full p-3 mb-2 border border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
             >
               <div className="flex justify-between items-center">
                 <div className="text-left">

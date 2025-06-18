@@ -31,27 +31,27 @@ export const CurrencyCard = ({
   };
 
   return (
-    <div className="border-2 border-[#DC2366] flex flex-col w-full max-w-xs mx-auto p-4 rounded-lg mt-6 relative">
+    <div className="border border-[#DC2366] flex flex-col w-full p-4 rounded-lg mt-6 relative">
       <label className="text-[#3c3c43] text-sm font-['Sansation'] mb-2">
         {type === 'from' ? 'From' : 'To'}
       </label>
       
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2 relative">
+          <div className="flex items-center gap-2 relative flex-1">
             {selectedCurrency ? (
               <>
                 <div className="w-12 h-12 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center text-white font-bold">
                   {selectedCurrency.symbol.substring(0, 2)}
                 </div>
                 <button
-                  className="flex items-center gap-2 font-['Sansation']"
+                  className="flex items-center gap-2 font-['Sansation'] flex-1"
                   onClick={handleCurrencyClick}
                   aria-expanded={isDropdownOpen}
                 >
                   <span>{selectedCurrency.symbol}</span>
                   <svg 
-                    className={`w-3 h-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`w-3 h-3 transition-transform ml-auto ${isDropdownOpen ? 'rotate-180' : ''}`}
                     fill="currentColor" 
                     viewBox="0 0 20 20"
                   >
@@ -61,7 +61,7 @@ export const CurrencyCard = ({
               </>
             ) : (
               <button
-                className="flex items-center gap-2 font-['Sansation']"
+                className="flex items-center gap-2 font-['Sansation'] flex-1"
                 onClick={handleCurrencyClick}
                 aria-expanded={isDropdownOpen}
               >
@@ -70,7 +70,7 @@ export const CurrencyCard = ({
                 </div>
                 <span>Select</span>
                 <svg 
-                  className={`w-3 h-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                  className={`w-3 h-3 transition-transform ml-auto ${isDropdownOpen ? 'rotate-180' : ''}`}
                   fill="currentColor" 
                   viewBox="0 0 20 20"
                 >
@@ -96,7 +96,7 @@ export const CurrencyCard = ({
             )}
           </div>
           
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-end ml-4">
             {type === 'from' ? (
               <input
                 type="number"

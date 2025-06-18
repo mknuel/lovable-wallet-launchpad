@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Search } from 'lucide-react';
 
 const mockTokens = [
   { symbol: 'EARN', name: 'Earn Token', balance: 1500.0000, value: 2000.00, address: '0xG97...g7R4' },
@@ -38,22 +38,32 @@ export const SearchableCurrencyDropdown = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
       <div className="p-4">
+        <div className="text-gray-400 text-sm mb-3">Select currency</div>
+        
         <div className="relative mb-4">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+            <Search 
+              className="w-5 h-5" 
+              style={{
+                background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent'
+              }}
+            />
+          </div>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search currency"
-            className="w-full p-3 border-2 border-transparent bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-[10px] text-white placeholder-white/70 outline-none"
-            style={{
-              background: 'linear-gradient(white, white) padding-box, linear-gradient(to right, #DC2366, #4F5CAA) border-box'
-            }}
+            className="w-full pl-10 pr-3 py-3 border border-[#DC2366] rounded-[10px] text-gray-700 placeholder-gray-400 outline-none focus:border-[#DC2366]"
           />
         </div>
         
-        <div className="text-gray-400 text-sm mb-3">Select currency</div>
+        <div className="text-gray-400 text-sm mb-3">Your tokens</div>
         
         <div className="max-h-60 overflow-y-auto">
           {filteredTokens.length > 0 ? (
@@ -61,7 +71,7 @@ export const SearchableCurrencyDropdown = ({
               <button
                 key={token.symbol}
                 onClick={() => onSelect(token)}
-                className="w-full p-3 mb-2 border-2 border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
+                className="w-full p-3 mb-2 border border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
                   <div className="text-left">
