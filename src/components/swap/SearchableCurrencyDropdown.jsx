@@ -39,11 +39,12 @@ export const SearchableCurrencyDropdown = ({
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
-      <div className="relative bg-white rounded-[15px] shadow-lg p-1"
+      <div className="relative bg-white shadow-lg p-1"
            style={{
              background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+             borderRadius: '8px'
            }}>
-        <div className="bg-white rounded-[14px] p-4">
+        <div className="bg-white p-4" style={{ borderRadius: '7px' }}>
           <div className="text-gray-400 text-sm mb-3">Select currency</div>
           
           <div className="relative mb-4">
@@ -63,9 +64,10 @@ export const SearchableCurrencyDropdown = ({
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search currency"
-              className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-[10px] text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400"
+              className="w-full pl-10 pr-3 py-3 border border-gray-300 text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400"
               style={{
-                borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+                borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1',
+                borderRadius: '8px'
               }}
             />
           </div>
@@ -78,9 +80,10 @@ export const SearchableCurrencyDropdown = ({
                 <button
                   key={token.symbol}
                   onClick={() => onSelect(token)}
-                  className="w-full p-3 mb-2 border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
+                  className="w-full p-3 mb-2 border border-gray-300 hover:bg-gray-50 transition-colors"
                   style={{
-                    borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+                    borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1',
+                    borderRadius: '8px'
                   }}
                 >
                   <div className="flex justify-between items-center">

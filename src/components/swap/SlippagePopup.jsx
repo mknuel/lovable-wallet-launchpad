@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 
 export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChange }) => {
   const [selectedSlippage, setSelectedSlippage] = useState(currentSlippage);
   const [customSlippage, setCustomSlippage] = useState('');
   const [isCustom, setIsCustom] = useState(false);
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
-  const presetSlippages = [0.1, 0.5, 1.0];
+  const presetSlippages = [0.1, 0.5, 1.0, 5.0];
 
   useEffect(() => {
     if (isOpen) {
@@ -15,6 +16,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
       setIsCustom(!isPreset);
       if (!isPreset) {
         setCustomSlippage(currentSlippage.toString());
+        setShowCustomInput(true);
       }
       setSelectedSlippage(currentSlippage);
     }
@@ -24,6 +26,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
     setSelectedSlippage(value);
     setIsCustom(false);
     setCustomSlippage('');
+    setShowCustomInput(false);
   };
 
   const handleCustomChange = (value) => {
@@ -35,92 +38,151 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
     }
   };
 
-  const handleSave = () => {
+  const handlePenClick = () => {
+    setShowCustomInput(!showCustomInput);
+    if (!showCustomInput) {
+      setIsCustom(true);
+    }
+  };
+
+  const handleDone = () => {
     onSlippageChange(selectedSlippage);
+  };
+
+  const handleCancel = () => {
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="relative bg-white rounded-[15px] p-1 w-full max-w-sm"
-           style={{
-             background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
-           }}>
-        <div className="bg-white rounded-[14px] p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold font-['Sansation']">Slippage tolerance</h3>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
-          </div>
+    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mt-4">
+      <div 
+        className="bg-white shadow-lg"
+        style={{
+          display: 'flex',
+          width: '320px',
+          padding: '16px 16px 36px 16px',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          gap: '16px',
+          borderRadius: '8px'
+        }}
+      >
+        {/* Description Text */}
+        <p className="text-sm text-gray-600 font-['Sansation'] leading-relaxed">
+          Slippage refers to the difference between the expected price or a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.
+        </p>
 
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600 font-['Sansation']">
-              Your transaction will revert if the price changes unfavorably by more than this percentage.
+        {/* Slippage Options */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {presetSlippages.map((value) => (
+            <button
+              key={value}
+              onClick={() => handlePresetClick(value)}
+              className={`text-sm font-['Sansation'] font-semibold transition-colors ${
+                selectedSlippage === value && !isCustom
+                  ? 'bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white'
+                  : 'border border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+              }`}
+              style={{
+                display: 'flex',
+                width: '43px',
+                height: '30px',
+                padding: '5px 10px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px'
+              }}
+            >
+              {value}%
+            </button>
+          ))}
+          
+          {/* Pen Icon Button */}
+          <button
+            onClick={handlePenClick}
+            className={`border border-gray-300 bg-white text-gray-700 hover:border-gray-400 transition-colors ${
+              showCustomInput ? 'bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white border-0' : ''
+            }`}
+            style={{
+              display: 'flex',
+              width: '43px',
+              height: '30px',
+              padding: '5px 10px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px'
+            }}
+          >
+            <Edit3 className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Custom Input (Hidden by default) */}
+        {showCustomInput && (
+          <div className="w-full">
+            <div className="relative">
+              <input
+                type="number"
+                value={customSlippage}
+                onChange={(e) => handleCustomChange(e.target.value)}
+                placeholder="0.50"
+                min="0"
+                max="50"
+                step="0.1"
+                className="w-full p-3 pr-8 border border-gray-300 rounded-lg text-sm font-['Sansation'] outline-none transition-colors focus:border-gray-400"
+                style={{ borderRadius: '8px' }}
+              />
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 font-['Sansation']">
+                %
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Warning for high slippage */}
+        {selectedSlippage > 5 && (
+          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg w-full" style={{ borderRadius: '8px' }}>
+            <p className="text-sm text-yellow-800 font-['Sansation']">
+              ⚠️ High slippage tolerance. You may receive less tokens.
             </p>
-
-            {/* Preset Options */}
-            <div className="grid grid-cols-3 gap-3">
-              {presetSlippages.map((value) => (
-                <button
-                  key={value}
-                  onClick={() => handlePresetClick(value)}
-                  className={`p-3 rounded-lg border-2 text-sm font-['Sansation'] font-semibold transition-colors ${
-                    selectedSlippage === value && !isCustom
-                      ? 'border-[#DC2366] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  {value}%
-                </button>
-              ))}
-            </div>
-
-            {/* Custom Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-['Sansation'] text-gray-600">Custom</label>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={customSlippage}
-                  onChange={(e) => handleCustomChange(e.target.value)}
-                  placeholder="0.50"
-                  min="0"
-                  max="50"
-                  step="0.1"
-                  className={`w-full p-3 pr-8 border-2 rounded-lg text-sm font-['Sansation'] outline-none transition-colors ${
-                    isCustom
-                      ? 'border-[#DC2366] bg-white'
-                      : 'border-gray-300 bg-white focus:border-gray-400'
-                  }`}
-                />
-                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 font-['Sansation']">
-                  %
-                </span>
-              </div>
-            </div>
-
-            {/* Warning for high slippage */}
-            {selectedSlippage > 5 && (
-              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800 font-['Sansation']">
-                  ⚠️ High slippage tolerance. You may receive less tokens.
-                </p>
-              </div>
-            )}
-
-            {/* Save Button */}
-            <button
-              onClick={handleSave}
-              className="w-full py-3 px-4 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white rounded-lg font-['Sansation'] font-semibold hover:opacity-90 transition-opacity"
-            >
-              Save
-            </button>
           </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 w-full">
+          <button
+            onClick={handleDone}
+            className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white font-['Sansation'] font-semibold hover:opacity-90 transition-opacity flex-1"
+            style={{
+              display: 'inline-flex',
+              padding: '10px 20px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px'
+            }}
+          >
+            Done
+          </button>
+          <button
+            onClick={handleCancel}
+            className="border border-gray-300 bg-white text-gray-700 font-['Sansation'] font-semibold hover:bg-gray-50 transition-colors flex-1"
+            style={{
+              display: 'inline-flex',
+              padding: '10px 20px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px'
+            }}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
