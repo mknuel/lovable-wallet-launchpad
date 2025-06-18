@@ -1,25 +1,28 @@
 
+import React from "react";
+import MainMenu from "../screens/main/MainMenu";
+import WalletScreen from "../screens/main/WalletScreen";
+import WalletActionsScreen from "../screens/main/WalletActionsScreen";
+import SendTokensScreen from "../screens/main/SendTokensScreen";
+import SwapCurrencyScreen from "../screens/main/SwapCurrencyScreen";
+import SettingScreen from "../screens/profile/SettingScreen";
+import EditProfile from "../screens/profile/EditProfile";
+import Language from "../screens/profile/Language";
 import {
-  PATH_EDIT_PROFILE,
-  PATH_LANGUAGE,
-  PATH_SETTING,
   PATH_MAIN,
   PATH_WALLET,
   PATH_WALLET_ACTIONS,
   PATH_SEND_TOKENS,
+  PATH_SWAP_CURRENCY,
+  PATH_SETTING,
+  PATH_EDIT_PROFILE,
+  PATH_LANGUAGE,
 } from "./paths";
-import EditProfile from "../screens/profile/EditProfile";
-import SettingScreen from "../screens/profile/SettingScreen";
-import LanguageScreen from "../screens/profile/Language";
-import MainScreen from "../screens/main/MainMenu";
-import WalletScreen from "../screens/main/WalletScreen";
-import WalletActionsScreen from "../screens/main/WalletActionsScreen";
-import SendTokensScreen from "../screens/main/SendTokensScreen";
 
 export const ProtectedRouteArray = [
   {
     path: PATH_MAIN,
-    element: <MainScreen />,
+    element: <MainMenu />,
   },
   {
     path: PATH_WALLET,
@@ -34,15 +37,19 @@ export const ProtectedRouteArray = [
     element: <SendTokensScreen />,
   },
   {
-    path: PATH_EDIT_PROFILE,
-    element: <EditProfile />,
+    path: PATH_SWAP_CURRENCY,
+    element: <SwapCurrencyScreen />,
   },
   {
     path: PATH_SETTING,
     element: <SettingScreen />,
   },
   {
+    path: PATH_EDIT_PROFILE,
+    element: <EditProfile />,
+  },
+  {
     path: PATH_LANGUAGE,
-    element: <LanguageScreen />,
+    element: <Language />,
   },
 ];
