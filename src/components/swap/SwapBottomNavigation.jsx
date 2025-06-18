@@ -10,37 +10,28 @@ const defaultNavItems = [
   { id: 'contact', icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/1feb2a6cba270cf15db25be6dab70b3c838d28fe?placeholderIfAbsent=true', label: 'Contact' },
 ];
 
-export const SwapBottomNavigation = ({ items = defaultNavItems, currentProgress = 0 }) => {
+export const SwapBottomNavigation = ({ items = defaultNavItems }) => {
   return (
     <nav 
       className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h-[66px] w-full flex-col items-center justify-center mt-6 px-5 py-[23px]"
       aria-label="Bottom navigation"
     >
       <ul className="flex max-w-full w-80 items-center justify-between">
-        {items.map((item, index) => {
-          const isActive = index === currentProgress;
-          return (
-            <li key={item.id} className="self-stretch flex flex-col items-center w-[65px] my-auto">
-              <button
-                onClick={item.onClick}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg scale-110' 
-                    : 'hover:bg-gray-100'
-                }`}
-                aria-label={item.label}
-              >
-                <img
-                  src={item.icon}
-                  alt=""
-                  className={`aspect-[1] object-contain ${item.id === 'dial3' ? 'w-4' : 'w-5'} ${
-                    isActive ? 'filter brightness-0 invert' : ''
-                  }`}
-                />
-              </button>
-            </li>
-          );
-        })}
+        {items.map((item) => (
+          <li key={item.id} className="self-stretch flex flex-col items-center w-[65px] my-auto">
+            <button
+              onClick={item.onClick}
+              className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label={item.label}
+            >
+              <img
+                src={item.icon}
+                alt=""
+                className={`aspect-[1] object-contain ${item.id === 'dial3' ? 'w-4' : 'w-5'}`}
+              />
+            </button>
+          </li>
+        ))}
       </ul>
     </nav>
   );

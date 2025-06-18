@@ -31,13 +31,9 @@ export const CurrencyCard = ({
   };
 
   return (
-    <div className="flex flex-col w-full p-4 rounded-lg mt-6 relative"
+    <div className="border border-gray-300 flex flex-col w-full p-4 rounded-lg mt-6 relative"
          style={{
-           background: 'white',
-           border: '1px solid transparent',
-           backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-           backgroundOrigin: 'border-box',
-           backgroundClip: 'padding-box, border-box'
+           borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
          }}>
       <label className="text-[#3c3c43] text-sm font-['Sansation'] mb-2">
         {type === 'from' ? 'From' : 'To'}

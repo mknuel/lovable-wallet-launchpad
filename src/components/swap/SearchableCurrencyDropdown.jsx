@@ -38,14 +38,7 @@ export const SearchableCurrencyDropdown = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute inset-0 bg-white rounded-lg shadow-lg z-50 max-h-80 overflow-hidden transition-all duration-300 ease-out transform"
-         style={{
-           background: 'white',
-           border: '2px solid transparent',
-           backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-           backgroundOrigin: 'border-box',
-           backgroundClip: 'padding-box, border-box'
-         }}>
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
@@ -66,32 +59,24 @@ export const SearchableCurrencyDropdown = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search currency"
-            className="w-full pl-10 pr-3 py-3 rounded-lg text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400"
+            className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-[10px] text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400"
             style={{
-              background: 'white',
-              border: '1px solid transparent',
-              backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-              backgroundOrigin: 'border-box',
-              backgroundClip: 'padding-box, border-box'
+              borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
             }}
           />
         </div>
         
         <div className="text-gray-400 text-sm mb-3">Your tokens</div>
         
-        <div className="max-h-40 overflow-y-auto scrollbar-hide">
+        <div className="max-h-60 overflow-y-auto">
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token) => (
               <button
                 key={token.symbol}
                 onClick={() => onSelect(token)}
-                className="w-full p-3 mb-2 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full p-3 mb-2 border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
                 style={{
-                  background: 'white',
-                  border: '1px solid transparent',
-                  backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box'
+                  borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
                 }}
               >
                 <div className="flex justify-between items-center">
@@ -127,7 +112,7 @@ export const SearchableCurrencyDropdown = ({
               </button>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-8">
+            <div className="flex flex-col items-center justify-center py-8 animate-in fade-in duration-300">
               <X className="w-8 h-8 text-gray-400 mb-2" />
               <div className="text-gray-400 text-sm">Nothing found</div>
             </div>

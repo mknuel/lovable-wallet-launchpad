@@ -11,7 +11,6 @@ import { PATH_WALLET_ACTIONS } from "../../context/paths";
 const SwapCurrencyScreen = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [currentProgress, setCurrentProgress] = useState(1);
 
   const handleSwapSubmit = (data) => {
     console.log('Swap data:', data);
@@ -28,10 +27,6 @@ const SwapCurrencyScreen = () => {
     // Handle navigation logic here
   };
 
-  const handleProgressChange = (progress) => {
-    setCurrentProgress(progress);
-  };
-
   return (
     <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
       {/* Header - Fixed positioning */}
@@ -45,10 +40,7 @@ const SwapCurrencyScreen = () => {
 
       {/* Content */}
       <div className="flex-1 flex flex-col px-6 py-4 overflow-hidden pb-32">
-        <SwapForm 
-          onSubmit={handleSwapSubmit}
-          onProgressChange={handleProgressChange}
-        />
+        <SwapForm onSubmit={handleSwapSubmit} />
         
         <div className="mt-6">
           <SecurityMessage />
@@ -58,7 +50,6 @@ const SwapCurrencyScreen = () => {
       {/* Bottom Navigation - Fixed to bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
         <SwapBottomNavigation 
-          currentProgress={currentProgress}
           items={[
             { id: 'messages', icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/ce980df59d2e45dfb2487bd1a267aa68c36d3c53?placeholderIfAbsent=true', label: 'Messages', onClick: () => handleNavigation('messages') },
             { id: 'dial1', icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/03214bd6d68edcb29752f62522e6e5d597d50a77?placeholderIfAbsent=true', label: 'Dial', onClick: () => handleNavigation('dial1') },

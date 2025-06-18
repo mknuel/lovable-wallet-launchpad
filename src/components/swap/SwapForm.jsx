@@ -1,26 +1,13 @@
 
 import React, { useState } from 'react';
 import { CurrencyCard } from './CurrencyCard';
-import { TransactionDetails } from './TransactionDetails';
+import CommonButton from '../Buttons/CommonButton';
 
-export const SwapForm = ({ onSubmit, onProgressChange }) => {
+export const SwapForm = ({ onSubmit }) => {
   const [fromCurrency, setFromCurrency] = useState(undefined);
   const [toCurrency, setToCurrency] = useState(undefined);
   const [fromAmount, setFromAmount] = useState('');
   const [toAmount, setToAmount] = useState('');
-  const [showDetails, setShowDetails] = useState(false);
-
-  React.useEffect(() => {
-    // Update progress based on form state
-    if (!fromCurrency || !fromAmount) {
-      onProgressChange(1); // Second icon (dial1)
-    } else if (!toCurrency) {
-      onProgressChange(2); // Third icon (dial2)
-    } else {
-      onProgressChange(3); // Fourth icon (dial3)
-      setShowDetails(true);
-    }
-  }, [fromCurrency, toCurrency, fromAmount, onProgressChange]);
 
   const handleFromAmountChange = (amount) => {
     setFromAmount(amount);
@@ -39,7 +26,9 @@ export const SwapForm = ({ onSubmit, onProgressChange }) => {
     setToCurrency(currency);
   };
 
-  const handleNext = () => {
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    
     if (isFormValid) {
       onSubmit({
         fromAmount,
@@ -50,15 +39,10 @@ export const SwapForm = ({ onSubmit, onProgressChange }) => {
     }
   };
 
-  const handleRefresh = () => {
-    // Mock refresh logic
-    console.log('Refreshing price...');
-  };
-
   const isFormValid = fromCurrency && toCurrency && fromAmount && parseFloat(fromAmount) > 0;
 
   return (
-    <div className="flex flex-col w-full flex-1">
+    <form onSubmit={handleFormSubmit} className="flex flex-col w-full flex-1">
       <CurrencyCard
         type="from"
         selectedCurrency={fromCurrency}
@@ -76,16 +60,19 @@ export const SwapForm = ({ onSubmit, onProgressChange }) => {
         onCurrencySelect={handleToCurrencySelect}
       />
 
-      {showDetails && isFormValid && (
-        <TransactionDetails
-          price={`0.00350726 ${fromCurrency?.symbol || 'TOKEN'}`}
-          minimumReceive={`0.003452 ${toCurrency?.symbol || 'TOKEN'}`}
-          totalFee="0.0001 MUDI"
-          slippage="< 0.1%"
-          onNext={handleNext}
-          onRefresh={handleRefresh}
-        />
-      )}
-    </div>
+      <div className="mt-auto pt-8 pb-4">
+        <CommonButton
+          type="submit"
+          disabled={!isFormValid}
+          className={`w-full h-[48px] ${
+            isFormValid 
+              ? '' 
+              : 'opacity-50 cursor-not-allowed'
+          }`}
+        >
+          NEXT
+        </CommonButton>
+      </div>
+    </form>
   );
 };
