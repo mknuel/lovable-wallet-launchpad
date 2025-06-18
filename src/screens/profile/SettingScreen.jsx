@@ -100,10 +100,12 @@ const SettingScreen = () => {
 
 	return (
 		<div className="container">
-			<Header
-				title={t("setting.title") || "My settings"}
-				action={true}></Header>
-			<div className="flex flex-col w-full h-[calc(100vh-170px)] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2">
+			<div className="sticky top-0 left-0 w-full z-40">
+				<Header
+					title={t("setting.title") || "My settings"}
+					action={true}></Header>
+			</div>
+			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-5">
 				<div>
 					<img
 						src={
@@ -224,7 +226,10 @@ const SettingScreen = () => {
 					</div>
 				</div>
 			</div>
-			<Navigation nav="Profile"></Navigation>
+
+			<div className="sticky bottom-0 left-0 w-full z-40">
+				<Navigation nav="Profile"></Navigation>
+			</div>
 		</div>
 	);
 };

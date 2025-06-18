@@ -69,7 +69,7 @@ const SendTokensScreen = () => {
 				setIsLoading(true);
 			}
 
-			const endpoint = query.trim() 
+			const endpoint = query.trim()
 				? `/users/by/name?name=${encodeURIComponent(query)}`
 				: "/users";
 
@@ -80,41 +80,49 @@ const SendTokensScreen = () => {
 
 			console.log("Users response:", response);
 
+			let activeUsers = [];
+
 			if (response.data && Array.isArray(response.data)) {
-				// Filter for active users only and format the data
-				const activeUsers = response.data
-					.filter((user) => user.status === "active")
-					.map((user) => ({
-						id: user._id,
-						name: user.userName || user.phone || "Unknown User",
-						firstName: user.userName || "",
-						lastName: "",
-						email: user.email || "",
-						phone: user.phone || "",
-						avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-					}))
-					.filter((user) => user.id && user.name); // Filter out invalid users
+				activeUsers = response.data
+					.filter((user) => {
+						// Handle both response formats for status check
+						const status = user.status || user.userBasicDetails?.status;
+						return status === "active";
+					})
+					.map((user) => {
+						// Determine fields based on response format
+						const userName = user.userName || "";
+						const firstName =
+							user.firstName || user.userProfileDetails?.firstName || "";
+						const lastName =
+							user.lastName || user.userProfileDetails?.lastName || "";
+						const email = user.email || user.userBasicDetails?.email || "";
+						const phone = user.phone || user.userBasicDetails?.phone || "";
 
-				setUsers(activeUsers);
-			} else if (response.success && response.data && Array.isArray(response.data)) {
-				// Handle search response format
-				const activeUsers = response.data
-					.filter((user) => user.status === "active")
-					.map((user) => ({
-						id: user._id,
-						name: user.userName || user.phone || "Unknown User",
-						firstName: user.userName || "",
-						lastName: "",
-						email: user.email || "",
-						phone: user.phone || "",
-						avatar: "/lovable-uploads/20928411-0a60-4d37-bedf-65edc245de4e.png",
-					}))
-					.filter((user) => user.id && user.name);
+						// Create name field - prefer userName, then firstName + lastName, then phone
+						let name;
+						if (userName) {
+							name = userName;
+						} else if (firstName || lastName) {
+							name = `${firstName} ${lastName}`.trim();
+						} else {
+							name = phone || "Unknown User";
+						}
 
-				setUsers(activeUsers);
-			} else {
-				setUsers([]);
+						return {
+							id: user._id,
+							name: name,
+							firstName: firstName,
+							lastName: lastName,
+							email: email,
+							phone: phone,
+							avatar:
+								"",
+						};
+					});
 			}
+
+			setUsers(activeUsers);
 		} catch (error) {
 			console.error("Error fetching users:", error);
 			setUsers([]);
@@ -124,7 +132,6 @@ const SendTokensScreen = () => {
 			setIsSearching(false);
 		}
 	};
-
 	const handleUserSelect = (user) => {
 		setSelectedUser(user);
 		setShowAmountInput(true);

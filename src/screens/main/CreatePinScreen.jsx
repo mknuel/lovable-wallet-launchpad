@@ -1,145 +1,178 @@
-
 import React, { useState, useRef, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
+import Success from "../../assets/icons/pin-success.svg";
+import { PATH_WALLET } from "../../context/paths";
 
-const CreatePinScreen = ({ onPinCreated, onBack, walletData }) => {
-  const { t } = useTranslation();
-  const [pin, setPin] = useState(["", "", "", ""]);
-  const inputRefs = useRef([]);
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const CreatePinScreen = ({ onBack, walletData }) => {
+	const { t } = useTranslation();
+	const [pin, setPin] = useState(["", "", "", ""]);
+	const inputRefs = useRef([]);
+	const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [showPinConfirmation, setShowPinConfirmation] = useState(false);
+	const navigate = useNavigate();
 
-  // Initialize refs
-  useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, 4);
-  }, []);
+	// Initialize refs
+	useEffect(() => {
+		inputRefs.current = inputRefs.current.slice(0, 4);
+	}, []);
 
-  // Check if all PIN digits are filled
-  useEffect(() => {
-    const allFilled = pin.every((digit) => digit !== "");
-    setIsButtonEnabled(allFilled);
-  }, [pin]);
+	const onPinCreated = () => {
+		setShowPinConfirmation(true);
+		localStorage.setItem("userHasPin", "true");
+		localStorage.removeItem("needsPinEntry");
+	};
 
-  // Log wallet data when it changes
-  useEffect(() => {
-    console.log("CreatePinScreen - walletData:", walletData);
-  }, [walletData]);
+	// Check if all PIN digits are filled
+	useEffect(() => {
+		const allFilled = pin.every((digit) => digit !== "");
+		setIsButtonEnabled(allFilled);
+	}, [pin]);
 
-  const handleInputChange = (index, value) => {
-    // Only allow single digits
-    if (value.length > 1) return;
-    if (value && !/^\d$/.test(value)) return;
+	// Log wallet data when it changes
+	useEffect(() => {
+		console.log("CreatePinScreen - walletData:", walletData);
+	}, [walletData]);
 
-    const newPin = [...pin];
-    newPin[index] = value;
-    setPin(newPin);
+	const handleInputChange = (index, value) => {
+		// Only allow single digits
+		if (value.length > 1) return;
+		if (value && !/^\d$/.test(value)) return;
 
-    // Move to next input if value is entered
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
+		const newPin = [...pin];
+		newPin[index] = value;
+		setPin(newPin);
 
-  const handleKeyDown = (index, e) => {
-    // Handle backspace
-    if (e.key === "Backspace") {
-      if (!pin[index] && index > 0) {
-        // If current input is empty, move to previous and clear it
-        const newPin = [...pin];
-        newPin[index - 1] = "";
-        setPin(newPin);
-        inputRefs.current[index - 1]?.focus();
-      } else {
-        // Clear current input
-        const newPin = [...pin];
-        newPin[index] = "";
-        setPin(newPin);
-      }
-    }
-  };
+		// Move to next input if value is entered
+		if (value && index < 3) {
+			inputRefs.current[index + 1]?.focus();
+		}
+	};
 
-  const handlePaste = (e) => {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData("text").slice(0, 4);
-    if (!/^\d+$/.test(pasteData)) return;
+	const handleKeyDown = (index, e) => {
+		// Handle backspace
+		if (e.key === "Backspace") {
+			if (!pin[index] && index > 0) {
+				// If current input is empty, move to previous and clear it
+				const newPin = [...pin];
+				newPin[index - 1] = "";
+				setPin(newPin);
+				inputRefs.current[index - 1]?.focus();
+			} else {
+				// Clear current input
+				const newPin = [...pin];
+				newPin[index] = "";
+				setPin(newPin);
+			}
+		}
+	};
 
-    const newPin = [...pin];
-    for (let i = 0; i < Math.min(pasteData.length, 4); i++) {
-      newPin[i] = pasteData[i];
-    }
-    setPin(newPin);
+	const handlePaste = (e) => {
+		e.preventDefault();
+		const pasteData = e.clipboardData.getData("text").slice(0, 4);
+		if (!/^\d+$/.test(pasteData)) return;
 
-    // Focus the next empty input or last input
-    const nextIndex = Math.min(pasteData.length, 3);
-    inputRefs.current[nextIndex]?.focus();
-  };
+		const newPin = [...pin];
+		for (let i = 0; i < Math.min(pasteData.length, 4); i++) {
+			newPin[i] = pasteData[i];
+		}
+		setPin(newPin);
 
-  const handleVerify = async () => {
-    if (!isButtonEnabled || isLoading || !walletData) return;
+		// Focus the next empty input or last input
+		const nextIndex = Math.min(pasteData.length, 3);
+		inputRefs.current[nextIndex]?.focus();
+	};
 
-    setIsLoading(true);
-    const pinCode = pin.join("");
-    
-    try {
-      console.log("Creating PIN:", pinCode);
-      console.log("Using appId from wallet:", walletData.data?.appId);
-      
-      // Check if token exists
-      const token = localStorage.getItem('token');
-      console.log("Token exists:", !!token);
-      console.log("Token preview:", token ? `${token.substring(0, 20)}...` : 'No token');
-      
-      const response = await api.post('/user/wallet/pincode/create', {
-        appId: walletData.data?.appId, // Use appId from nested data
-        pinCode: pinCode
-      });
+	const handleVerify = async () => {
+		if (!isButtonEnabled || isLoading || !walletData) return;
 
-      console.log("PIN creation response:", response);
+		setIsLoading(true);
+		const pinCode = pin.join("");
 
-      if (response.success) {
-        console.log("PIN created successfully:", response.data);
-        onPinCreated();
-      } else {
-        console.error("PIN creation failed:", response);
-        // Handle error - you might want to show an error message to user
-      }
-    } catch (error) {
-      console.error("Error creating PIN:", error);
-      console.error("Error details:", {
-        status: error.status,
-        message: error.message,
-        data: error.data
-      });
-      // Handle error - you might want to show an error message to user
-    } finally {
-      setIsLoading(false);
-    }
-  };
+		try {
+			console.log("Creating PIN:", pinCode);
+			console.log("Using appId from wallet:", walletData.data?.appId);
 
-  // Only show loading when walletData is explicitly null (not when it's undefined or being passed)
-  if (walletData === null) {
-    return (
-      <div className="flex flex-col min-h-screen w-full max-w-full bg-white">
-        <Header
-          title={t("wallet.title") || "My Wallet"}
-          action={true}
-        />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-[16px] font-['Sansation'] text-[#1D2126]">
-              Loading wallet...
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+			// Check if token exists
+			const token = localStorage.getItem("token");
+			console.log("Token exists:", !!token);
+			console.log(
+				"Token preview:",
+				token ? `${token.substring(0, 20)}...` : "No token"
+			);
 
-  return (
+			const response = await api.post("/user/wallet/pincode/create", {
+				appId: walletData.data?.appId, // Use appId from nested data
+				pinCode: pinCode,
+			});
+
+			console.log("PIN creation response:", response);
+
+			if (response.success) {
+				console.log("PIN created successfully:", response.data);
+				onPinCreated();
+			} else {
+				console.error("PIN creation failed:", response);
+				// Handle error - you might want to show an error message to user
+			}
+		} catch (error) {
+			console.error("Error creating PIN:", error);
+			console.error("Error details:", {
+				status: error.status,
+				message: error.message,
+				data: error.data,
+			});
+			// Handle error - you might want to show an error message to user
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Only show loading when walletData is explicitly null (not when it's undefined or being passed)
+	if (walletData === null) {
+		return (
+			<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+				<Header title={t("wallet.title") || "My Wallet"} action={true} />
+				<div className="flex-1 flex items-center justify-center">
+					<div className="text-center">
+						<div className="text-[16px] font-['Sansation'] text-[#1D2126]">
+							Loading wallet...
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return (
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+			{/* PIN Confirmation Modal - Fixed z-index */}
+			{showPinConfirmation && (
+				<div className="fixed inset-0 top-0 left-0 bg-black/20 flex items-center justify-center z-[9999]">
+					<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
+						<div className="flex justify-center mb-3">
+							<img src={Success} alt="Success" />
+						</div>
+						<h2 className="text-[20px] font-['Sansation'] font-bold text-black mb-2">
+							{t("mainMenu.pinCreated")}
+						</h2>
+						<p className="text-[16px] font-['Sansation'] text-[#616161] mb-8 w-[80%] mx-auto">
+							{t("mainMenu.pinCreatedMessage")}
+						</p>
+						<button
+							onClick={() => {
+								setShowPinConfirmation(false);
+								navigate(PATH_WALLET);
+							}}
+							className="w-full h-[48px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white text-[16px] font-['Sansation']  rounded-lg hover:opacity-90 transition-opacity">
+							OK
+						</button>
+					</div>
+				</div>
+			)}
 			{/* Header */}
 			<Header title={t("wallet.title") || "My Wallet"} action={true}></Header>
 

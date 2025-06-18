@@ -6,7 +6,12 @@ import { MenuSection } from "../../components/layout/MenuSection";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError } from "../../store/reducers/walletSlice";
+import {
+	fetchWallet,
+	selectWalletData,
+	selectWalletLoading,
+	selectWalletError,
+} from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
 import WalletScreen from "./WalletScreen";
 import { PATH_WALLET } from "../../context/paths";

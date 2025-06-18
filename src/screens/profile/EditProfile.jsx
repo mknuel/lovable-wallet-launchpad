@@ -89,41 +89,44 @@ const EditProfile = () => {
 	};
 	// console.log(formData);
 	return (
-		<div className="container">
-			<Header title={t("editProfile.title") || "Edit Profile"}></Header>
-			<div className="flex flex-col w-full gap-[24px] pt-[35px] pb-[105px]">
-				<div>
-					<div className="text-[12px]">
-						{t("editProfile.firstName.label") || "First Name"}
+		<div className="container h-[100dvh]">
+			<div className="sticky top-0 left-0 w-full z-40">
+				<Header title={t("editProfile.title") || "Edit Profile"}></Header>
+			</div>
+			<div className="flex h-full flex-col w-full gap-[24px] pt-[35px] pb-[40px] px-5 justify-between">
+				<div className="flex flex-col gap-6">
+					<div>
+						<div className="text-[12px]">
+							{t("editProfile.firstName.label") || "First Name"}
+						</div>
+						<FormControl sx={{ width: "100%" }} variant="standard">
+							<Input
+								placeholder={t("editProfile.firstName.hint") || "Enter name"}
+								id="first-name"
+								name="firstName"
+								value={formData.firstName}
+								onChange={handleInputChange}
+							/>
+						</FormControl>
 					</div>
-					<FormControl sx={{ width: "100%" }} variant="standard">
-						<Input
-							placeholder={t("editProfile.firstName.hint") || "Enter name"}
-							id="first-name"
-							name="firstName"
-							value={formData.firstName}
-							onChange={handleInputChange}
-						/>
-					</FormControl>
-				</div>
-				<div>
-					<div className="text-[12px]">
-						{t("editProfile.lastName.label") || "Last Name"}
+					<div>
+						<div className="text-[12px]">
+							{t("editProfile.lastName.label") || "Last Name"}
+						</div>
+						<FormControl sx={{ width: "100%" }} variant="standard">
+							<Input
+								placeholder={t("editProfile.lastName.hint") || "Enter name"}
+								id="last-name"
+								name="lastName"
+								value={formData.lastName}
+								onChange={handleInputChange}
+							/>
+						</FormControl>
 					</div>
-					<FormControl sx={{ width: "100%" }} variant="standard">
-						<Input
-							placeholder={t("editProfile.lastName.hint") || "Enter name"}
-							id="last-name"
-							name="lastName"
-							value={formData.lastName}
-							onChange={handleInputChange}
-						/>
-					</FormControl>
-				</div>
-				{/* <div>
+					{/* <div>
           <div className="text-[12px]">Email</div>
           <FormControl sx={{ width: "100%" }} variant="standard">
-            <Input
+		  <Input
               placeholder="Enter email"
               id="email-input"
               name="email"
@@ -132,71 +135,76 @@ const EditProfile = () => {
             />
           </FormControl>
         </div> */}
-				<div>
-					<div className="text-[12px]">
-						{t("editProfile.country.lable") || "Country"}
+					<div>
+						<div className="text-[12px]">
+							{t("editProfile.country.lable") || "Country"}
+						</div>
+						<FormControl variant="standard" fullWidth>
+							<Select
+								labelId="country-select-label"
+								id="country-select"
+								name="country"
+								value={formData.country}
+								onChange={handleInputChange}
+								label="Country"
+								displayEmpty // Allows displaying a placeholder when no value is selected
+								renderValue={
+									formData.country !== ""
+										? undefined
+										: () => (
+												<span style={{ color: "#999" }}>
+													{t("editProfile.country.hint") || "Choose country"}
+												</span>
+										  )
+								}>
+								{countries.map((country) => (
+									<MenuItem key={country.name} value={country.name}>
+										{country.name}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
 					</div>
-					<FormControl variant="standard" fullWidth>
-						<Select
-							labelId="country-select-label"
-							id="country-select"
-							name="country"
-							value={formData.country}
-							onChange={handleInputChange}
-							label="Country"
-							displayEmpty // Allows displaying a placeholder when no value is selected
-							renderValue={
-								formData.country !== ""
-									? undefined
-									: () => (
-											<span style={{ color: "#999" }}>
-												{t("editProfile.country.hint") || "Choose country"}
-											</span>
-									  )
-							}>
-							{countries.map((country) => (
-								<MenuItem key={country.name} value={country.name}>
-									{country.name}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
-				</div>
-				<div>
-					<div className="text-[12px]">
-						{t("editProfile.password.label") || "Password"}
+					<div>
+						<div className="text-[12px]">
+							{t("editProfile.password.label") || "Password"}
+						</div>
+						<FormControl sx={{ width: "100%" }} variant="standard">
+							<Input
+								placeholder={
+									t("editProfile.password.label") || "Enter password"
+								}
+								id="standard-adornment-password"
+								name="password"
+								value={formData.password}
+								onChange={handleInputChange}
+								type={showPassword ? "text" : "password"}
+								endAdornment={
+									<InputAdornment position="end">
+										<IconButton
+											aria-label={
+												showPassword
+													? "hide the password"
+													: "display the password"
+											}
+											onClick={handleClickShowPassword}
+											onMouseDown={handleMouseDownPassword}
+											onMouseUp={handleMouseUpPassword}>
+											{showPassword ? <VisibilityOff /> : <Visibility />}
+										</IconButton>
+									</InputAdornment>
+								}
+							/>
+						</FormControl>
 					</div>
-					<FormControl sx={{ width: "100%" }} variant="standard">
-						<Input
-							placeholder={t("editProfile.password.label") || "Enter password"}
-							id="standard-adornment-password"
-							name="password"
-							value={formData.password}
-							onChange={handleInputChange}
-							type={showPassword ? "text" : "password"}
-							endAdornment={
-								<InputAdornment position="end">
-									<IconButton
-										aria-label={
-											showPassword
-												? "hide the password"
-												: "display the password"
-										}
-										onClick={handleClickShowPassword}
-										onMouseDown={handleMouseDownPassword}
-										onMouseUp={handleMouseUpPassword}>
-										{showPassword ? <VisibilityOff /> : <Visibility />}
-									</IconButton>
-								</InputAdornment>
-							}
-						/>
-					</FormControl>
 				</div>
+				<CommonButton height="42px" className={"-mt-5"} onClick={handleSubmit}>
+					{t("editProfile.button") || "SUBMIT"}
+				</CommonButton>
 			</div>
-			<CommonButton width="310px" height="42px" onClick={handleSubmit}>
-				{t("editProfile.button") || "SUBMIT"}
-			</CommonButton>
-			<Navigation nav="Profile"></Navigation>
+			<div className="sticky bottom-0 left-0 w-full z-40">
+				<Navigation nav="Profile"></Navigation>
+			</div>
 		</div>
 	);
 };
