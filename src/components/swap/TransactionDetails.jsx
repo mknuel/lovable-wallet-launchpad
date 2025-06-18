@@ -18,7 +18,8 @@ export const TransactionDetails = () => {
         <div className="relative bg-white p-1 mb-4"
              style={{
                background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
-               borderRadius: '8px'
+               borderRadius: '8px',
+               padding: '1px'
              }}>
           <div className="bg-white p-4" style={{ borderRadius: '7px' }}>
             <div className="flex justify-between items-center">

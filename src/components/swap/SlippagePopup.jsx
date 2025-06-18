@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Edit3 } from 'lucide-react';
 
 export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChange }) => {
@@ -7,6 +7,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
   const [customSlippage, setCustomSlippage] = useState('');
   const [isCustom, setIsCustom] = useState(false);
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const modalRef = useRef(null);
 
   const presetSlippages = [0.1, 0.5, 1.0, 5.0];
 
@@ -21,6 +22,22 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
       setSelectedSlippage(currentSlippage);
     }
   }, [isOpen, currentSlippage]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const handlePresetClick = (value) => {
     setSelectedSlippage(value);
@@ -56,18 +73,21 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mt-4">
+    <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mt-20">
       <div 
+        ref={modalRef}
         className="bg-white shadow-lg"
         style={{
           display: 'flex',
-          width: '320px',
+          width: '90vw',
+          maxWidth: '320px',
           padding: '16px 16px 36px 16px',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'flex-start',
           gap: '16px',
-          borderRadius: '8px'
+          borderRadius: '8px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Description Text */}

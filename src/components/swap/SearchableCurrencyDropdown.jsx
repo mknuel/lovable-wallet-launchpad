@@ -39,10 +39,11 @@ export const SearchableCurrencyDropdown = ({
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
-      <div className="relative bg-white shadow-lg p-1"
+      <div className="relative bg-white shadow-lg"
            style={{
              background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
-             borderRadius: '8px'
+             borderRadius: '8px',
+             padding: '1px'
            }}>
         <div className="bg-white p-4" style={{ borderRadius: '7px' }}>
           <div className="text-gray-400 text-sm mb-3">Select currency</div>
