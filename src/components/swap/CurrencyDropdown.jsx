@@ -13,7 +13,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
@@ -22,15 +22,38 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
             <button
               key={currency.symbol}
               onClick={() => onSelect(currency)}
-              className="w-full p-3 mb-2 border border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
+              className="w-full p-3 mb-2 border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
+              style={{
+                borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+              }}
             >
               <div className="flex justify-between items-center">
                 <div className="text-left">
-                  <div className="text-[#DC2366] font-bold text-lg">{currency.symbol}</div>
+                  <div 
+                    className="font-bold text-lg"
+                    style={{
+                      background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      color: 'transparent'
+                    }}
+                  >
+                    {currency.symbol}
+                  </div>
                   <div className="text-gray-400 text-sm">{currency.address}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#DC2366] font-bold text-lg">{currency.value.toFixed(2)} $</div>
+                  <div 
+                    className="font-bold text-lg"
+                    style={{
+                      background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      color: 'transparent'
+                    }}
+                  >
+                    {currency.value.toFixed(2)} $
+                  </div>
                   <div className="text-gray-400 text-sm">{currency.balance.toFixed(4)}</div>
                 </div>
               </div>

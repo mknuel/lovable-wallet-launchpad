@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
-import Navigation from "../../components/layout/Navigation";
 import { SwapBottomNavigation } from "../../components/swap/SwapBottomNavigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { SwapForm } from "../../components/swap/SwapForm";
@@ -40,7 +39,7 @@ const SwapCurrencyScreen = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-6 py-4 overflow-hidden">
+      <div className="flex-1 flex flex-col px-6 py-4 overflow-hidden pb-32">
         <SwapForm onSubmit={handleSwapSubmit} />
         
         <div className="mt-6">
@@ -48,8 +47,8 @@ const SwapCurrencyScreen = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white">
+      {/* Bottom Navigation - Fixed to bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
         <SwapBottomNavigation 
           items={[
             { id: 'messages', icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/ce980df59d2e45dfb2487bd1a267aa68c36d3c53?placeholderIfAbsent=true', label: 'Messages', onClick: () => handleNavigation('messages') },
@@ -60,11 +59,6 @@ const SwapCurrencyScreen = () => {
             { id: 'contact', icon: 'https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/1feb2a6cba270cf15db25be6dab70b3c838d28fe?placeholderIfAbsent=true', label: 'Contact', onClick: () => handleNavigation('contact') },
           ]}
         />
-      </div>
-
-      {/* Navigation - Swap steps navigation */}
-      <div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white">
-        <Navigation nav="Swap" />
       </div>
     </div>
   );

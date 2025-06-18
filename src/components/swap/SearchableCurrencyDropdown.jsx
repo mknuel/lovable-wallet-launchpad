@@ -38,7 +38,7 @@ export const SearchableCurrencyDropdown = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#DC2366] rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden">
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
@@ -59,7 +59,10 @@ export const SearchableCurrencyDropdown = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search currency"
-            className="w-full pl-10 pr-3 py-3 border border-[#DC2366] rounded-[10px] text-gray-700 placeholder-gray-400 outline-none focus:border-[#DC2366]"
+            className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-[10px] text-gray-700 placeholder-gray-400 outline-none focus:border-gray-400"
+            style={{
+              borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+            }}
           />
         </div>
         
@@ -71,22 +74,45 @@ export const SearchableCurrencyDropdown = ({
               <button
                 key={token.symbol}
                 onClick={() => onSelect(token)}
-                className="w-full p-3 mb-2 border border-[#DC2366] rounded-[10px] hover:bg-gray-50 transition-colors"
+                className="w-full p-3 mb-2 border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
+                style={{
+                  borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+                }}
               >
                 <div className="flex justify-between items-center">
                   <div className="text-left">
-                    <div className="text-[#DC2366] font-bold text-lg">{token.symbol}</div>
+                    <div 
+                      className="font-bold text-lg"
+                      style={{
+                        background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        color: 'transparent'
+                      }}
+                    >
+                      {token.symbol}
+                    </div>
                     <div className="text-gray-400 text-sm">{token.address}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[#DC2366] font-bold text-lg">{token.value.toFixed(2)} $</div>
+                    <div 
+                      className="font-bold text-lg"
+                      style={{
+                        background: 'linear-gradient(to right, #DC2366, #4F5CAA)',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        color: 'transparent'
+                      }}
+                    >
+                      {token.value.toFixed(2)} $
+                    </div>
                     <div className="text-gray-400 text-sm">{token.balance.toFixed(4)}</div>
                   </div>
                 </div>
               </button>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-8">
+            <div className="flex flex-col items-center justify-center py-8 animate-in fade-in duration-300">
               <X className="w-8 h-8 text-gray-400 mb-2" />
               <div className="text-gray-400 text-sm">Nothing found</div>
             </div>
