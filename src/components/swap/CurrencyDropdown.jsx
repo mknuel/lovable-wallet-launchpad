@@ -13,18 +13,31 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-300 rounded-[15px] shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out animate-in slide-in-from-top-2 fade-in">
+    <div className={`absolute inset-0 bg-white rounded-lg shadow-lg z-20 max-h-80 overflow-hidden transform transition-all duration-200 ease-out ${
+      isOpen ? 'animate-in slide-in-from-top-2 fade-in scale-in' : 'animate-out slide-out-to-top-2 fade-out scale-out'
+    }`}
+    style={{
+      background: 'white',
+      border: '1px solid transparent',
+      backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
+      backgroundOrigin: 'border-box',
+      backgroundClip: 'padding-box, border-box'
+    }}>
       <div className="p-4">
         <div className="text-gray-400 text-sm mb-3">Select currency</div>
         
-        <div className="max-h-60 overflow-y-auto">
+        <div className="max-h-60 overflow-y-auto scrollbar-hide">
           {defaultCurrencies.map((currency) => (
             <button
               key={currency.symbol}
               onClick={() => onSelect(currency)}
-              className="w-full p-3 mb-2 border border-gray-300 rounded-[10px] hover:bg-gray-50 transition-colors"
+              className="w-full p-3 mb-2 rounded-lg hover:bg-gray-50 transition-colors"
               style={{
-                borderImage: 'linear-gradient(to right, #DC2366, #4F5CAA) 1'
+                background: 'white',
+                border: '1px solid transparent',
+                backgroundImage: 'linear-gradient(white, white), linear-gradient(to right, #DC2366, #4F5CAA)',
+                backgroundOrigin: 'border-box',
+                backgroundClip: 'padding-box, border-box'
               }}
             >
               <div className="flex justify-between items-center">
