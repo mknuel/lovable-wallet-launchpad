@@ -49,7 +49,7 @@ const MainMenu = () => {
 
 		// Only redirect to create PIN if user doesn't have one yet
 		if (!hasPin) {
-			setCurrentScreen("createPin");
+			// setCurrentScreen("createPin");
 		}
 		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
 	}, [walletData, walletLoading]);
@@ -78,11 +78,11 @@ const MainMenu = () => {
 	}, [walletData, t]);
 
 	const handleWalletClick = () => {
-		if (!walletData?.data) return;
+		 	if (!walletData?.data) return;
 
-		if (!walletData.data.isPinCodeSet) {
-			return setCurrentScreen("createPin");
-		}
+			if (!walletData.data.isPinCodeSet) {
+				return setCurrentScreen("createPin");
+			} 
 		navigate(PATH_WALLET);
 	};
 

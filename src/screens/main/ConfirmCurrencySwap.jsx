@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
@@ -12,57 +11,20 @@ import {
 	useActiveWallet,
 	useWalletBalance,
 } from "thirdweb/react";
-import { useWalletAccount } from "../../context/WalletAccountContext";
-import { client } from "../../components/thirdweb/thirdwebClient";
-import { sepolia } from "thirdweb/chains";
 
-import { NATIVE_TOKEN_ADDRESS, Bridge, Insight, getContract } from "thirdweb";
-import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
-import { useTonWallet } from "@tonconnect/ui-react";
-import { balanceOf } from "thirdweb/extensions/erc20";
 const SwapCurrencyScreen = () => {
 	const { t } = useTranslation();
-	const activeAccount = useActiveAccount(); // <-- Get the active Account object here
 	const navigate = useNavigate();
-	// State for tokens the user OWNS
-	const [ownedTokens, setOwnedTokens] = useState([]);
-	// State for ALL tokens available to swap TO
-	const [swappableTokens, setSwappableTokens] = useState([]);
-	const {
-		tokens,
-		isLoading: isGetting,
-		error,
-	} = useGetBridgeTokens({
-		limit: 10,
-	});
 
-	const { tokens: userTokens, isLoading: isGettingTOkens } =
-		useGetAccountTokens(activeAccount?.address);
-
-	const tonwal = useTonWallet();
-
-	const [isLoading, setIsLoading] = useState(true);
+	const activeAccount = useActiveAccount(); // <-- Get the active Account object here
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
-	// Derive the active chain from the connected wallet or set a default
-	const chain = activeWallet ? activeWallet.getChain() : sepolia;
-
-	// --- Fetch User's Token Balances ---
-	// You can use useWalletBalance for the native token
-	const { data: nativeBalance, isLoading: isLoadingNativeBalance } =
-		useWalletBalance({
-			client,
-			chainId: [59141, 137, 11155111, 1],
-			address: activeAccount?.address,
-		});
-
-	// Function to fetch a specific ERC20 token balance
-	const { mutate: fetchTokenBalance } = useWalletBalance({
-		client,
-		chain,
-		address: activeAccount?.address,
-	});
-
+	/* 
+    const { data, isLoading, isError } = useWalletBalance({
+        chain,
+        address,
+        client,
+    });*/
 	useEffect(() => {
 		console.log("active acct:", activeAccount);
 		console.log("active wallet:", activeWallet);
@@ -86,16 +48,6 @@ const SwapCurrencyScreen = () => {
 		// Handle navigation logic here
 	};
 
-	useEffect(() => {
-		console.log("tokens", tokens);
-	}, [tokens]);
-	useEffect(() => {
-		console.log("bative ball", nativeBalance);
-	}, [nativeBalance]);
-
-	useEffect(() => {
-		console.log("tonative ball", userTokens);
-	}, [userTokens]);
 	return (
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
 			{/* Header - Fixed positioning */}
@@ -103,7 +55,6 @@ const SwapCurrencyScreen = () => {
 				<Header title="Swap" action={true} onBack={handleBackClick} />
 			</div>
 
-			{isLoadingNativeBalance && <h1>Loadinf native</h1>}
 			{/* Content */}
 			<div className="flex-1 flex flex-col px-6 py-4 overflow-hidden pb-32">
 				<SwapForm onSubmit={handleSwapSubmit} />

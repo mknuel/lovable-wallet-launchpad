@@ -13,42 +13,59 @@ import { AuthProvider } from "./context/AuthContext";
 import { PATH_AUTH } from "./context/paths";
 
 import "./App.css";
-
+import { useAutoConnect } from "thirdweb/react";
+import { wallets } from "./components/thirdweb/ThirdwebConnectButton.jsx";
+import { client } from "./components/thirdweb/thirdwebClient.js";
 function App() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
-  // Listen for auth errors
-  useEffect(() => {
-    const handleUnauthorized = () => {
-      console.log("Unauthorized function called");
-      navigate(PATH_AUTH); // Redirect to auth page, not login
-    };
-    window.addEventListener("auth:unauthorized", handleUnauthorized);
-    return () => {
-      window.removeEventListener("auth:unauthorized", handleUnauthorized);
-    };
-  }, [dispatch, navigate]);
+	const {
+		data: autoConnected,
+		isLoading,
+		error,
+	} = useAutoConnect({
+		client,
+		wallets,
+		onConnect: (wallet) => {
+			console.log("Auto-connected to:", wallet?.getAccount()?.address);
+		},
+		onTimeout: () => {
+			console.log("Auto-connect timed out.");
+		},
+	});
 
-  return (
-    <div className="app-container">
-      <AuthProvider>
-        <Routes>
-          <Route index element={<MainScreen />} />
-          {PublicRouteArray.map((route) => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-          {ProtectedRouteArray.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-            />
-          ))}
-        </Routes>
-      </AuthProvider>
-    </div>
-  );
+	// Listen for auth errors
+	useEffect(() => {
+		const handleUnauthorized = () => {
+			console.log("Unauthorized function called");
+			navigate(PATH_AUTH); // Redirect to auth page, not login
+		};
+		window.addEventListener("auth:unauthorized", handleUnauthorized);
+		return () => {
+			window.removeEventListener("auth:unauthorized", handleUnauthorized);
+		};
+	}, [dispatch, navigate]);
+
+	return (
+		<div className="app-container">
+			<AuthProvider>
+				<Routes>
+					<Route index element={<MainScreen />} />
+					{PublicRouteArray.map((route) => (
+						<Route key={route.path} path={route.path} element={route.element} />
+					))}
+					{ProtectedRouteArray.map((route) => (
+						<Route
+							key={route.path}
+							path={route.path}
+							element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+						/>
+					))}
+				</Routes>
+			</AuthProvider>
+		</div>
+	);
 }
 
 export default App;

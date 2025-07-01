@@ -54,15 +54,17 @@ const LandingScreen = () => {
   } else {
     // initData in Web mode
     data = {
-      hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce53b98",
-      id: "7916248551",
-      username: "luckyangel1110",
-      first_name: "Lucky",
-      last_name: "Angel",
-      roleId: role.id,
-      appsChannelKey: "abc",
-      deviceId: "Apple",
-    };
+			hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
+			id: "7916246666",
+			username: "mknuel",
+			first_name: "Mk",
+			last_name: "Nuel",
+			roleId: role.id,
+			appsChannelKey: "tg",
+			deviceId: "Samsung",
+			walletAddress: "0xffe11A9c158811FC86fAEdEAA63cD92404B62feD",
+			appId: "notTmamk",
+		};
     console.log("It's not Telegram Mini Apps");
   }
 

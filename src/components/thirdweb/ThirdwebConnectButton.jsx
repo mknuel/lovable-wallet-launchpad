@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 import { useWalletAccount } from "../../context/WalletAccountContext";
 
-const wallets = [
-  createWallet("io.metamask"),
-  createWallet("com.coinbase.wallet"),
-  createWallet("me.rainbow"),
-  createWallet("io.rabby"),
-  createWallet("io.zerion.wallet"),
+export const wallets = [
+	createWallet("io.metamask"),
+	createWallet("com.coinbase.wallet"),
+	createWallet("me.rainbow"),
+	createWallet("io.rabby"),
+	createWallet("io.zerion.wallet"),
 ];
 
 const ThirdwebConnectButton = ({ darkMode, path }) => {

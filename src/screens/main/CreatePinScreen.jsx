@@ -105,7 +105,7 @@ const CreatePinScreen = ({ onBack, walletData }) => {
 			);
 
 			const response = await api.post("/user/wallet/pincode/create", {
-				appId: walletData.data?.appId, // Use appId from nested data
+				appId: walletData?.data?.appId || "", // Use appId from nested data
 				pinCode: pinCode,
 			});
 

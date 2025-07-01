@@ -27,3 +27,4 @@ export const PATH_WALLET = "/wallet";
 export const PATH_WALLET_ACTIONS = "/wallet-actions";
 export const PATH_SEND_TOKENS = "/send-tokens";
 export const PATH_SWAP_CURRENCY = "/swap-currency";
+export const PATH_CONFIRM_SWAP = "/confirm-swap";
