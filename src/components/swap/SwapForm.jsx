@@ -1,81 +1,95 @@
+import React, { useState, useEffect } from "react";
+import { FromCurrencyCard } from "./FromCurrencyCard";
+import { ToCurrencyCard } from "./ToCurrencyCard";
+import { TransactionDetails } from "./TransactionDetails";
+import CommonButton from "../Buttons/CommonButton";
+// import { SwapIcon } from "../Icons/SwapIcon"; // Assuming you have a swap icon component
 
-import React, { useState } from 'react';
-import { CurrencyCard } from './CurrencyCard';
-import { TransactionDetails } from './TransactionDetails';
-import CommonButton from '../Buttons/CommonButton';
+export const SwapForm = ({
+	fromAmount,
+	fromCurrency,
+	toCurrency,
+	setFromAmount,
+	toAmount,
+	setToAmount,
+	setToCurrency,
+	setFromCurrency,
+}) => {
+	const handleFromAmountChange = (amount) => {
+		setFromAmount(amount);
 
-export const SwapForm = ({ onSubmit }) => {
-  const [fromCurrency, setFromCurrency] = useState(undefined);
-  const [toCurrency, setToCurrency] = useState(undefined);
-  const [fromAmount, setFromAmount] = useState('');
-  const [toAmount, setToAmount] = useState('');
+		// Get the USD prices from the currency objects
+		const fromPriceUsd = fromCurrency?.price_data?.price_usd;
+		const toPriceUsd = toCurrency?.priceUsd;
+		const fromAmountNum = parseFloat(amount);
 
-  const handleFromAmountChange = (amount) => {
-    setFromAmount(amount);
-    
-    // Mock conversion calculation
-    const numAmount = parseFloat(amount) || 0;
-    const convertedAmount = (numAmount * 0.95).toFixed(4);
-    setToAmount(convertedAmount);
-  };
+		// Proceed only if we have valid prices and a valid input amount
+		if (fromAmountNum > 0 && fromPriceUsd > 0 && toPriceUsd > 0) {
+			// 1. Convert the "from" amount to its value in USD
+			const valueInUsd = fromAmountNum * fromPriceUsd;
 
-  const handleFromCurrencySelect = (currency) => {
-    setFromCurrency(currency);
-  };
+			// 2. Calculate how much of the "to" currency can be bought with that USD value
+			const convertedAmount = valueInUsd / toPriceUsd;
 
-  const handleToCurrencySelect = (currency) => {
-    setToCurrency(currency);
-  };
+			// 3. Update the "to" amount state, formatted to a reasonable precision
+			setToAmount(convertedAmount.toFixed(4));
+		} else {
+			// If the input is invalid or prices are missing, clear the "to" amount
+			setToAmount("");
+		}
+	};
+	// Swap the "from" and "to" currencies
+	const handleSwapCurrencies = () => {
+		setFromCurrency(toCurrency);
+		setToCurrency(fromCurrency);
+	};
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    
-    if (isFormValid) {
-      onSubmit({
-        fromAmount,
-        fromCurrency: fromCurrency?.symbol,
-        toCurrency: toCurrency?.symbol,
-        toAmount
-      });
-    }
-  };
+	// Handle form submission
+	/* 	const handleFormSubmit = (e) => {
+		e.preventDefault();
+		if (isFormValid) {
+			onSubmit({
+				fromAmount,
+				fromCurrency,
+				toCurrency,
+				toAmount,
+			});
+		}
+	}; */
 
-  const isFormValid = fromCurrency && toCurrency && fromAmount && parseFloat(fromAmount) > 0;
+	// Check if the form is valid for submission
+	const isFormValid =
+		fromCurrency && toCurrency && fromAmount && parseFloat(fromAmount) > 0;
 
-  return (
-    <form onSubmit={handleFormSubmit} className="flex flex-col w-full flex-1">
-      <CurrencyCard
-        type="from"
-        selectedCurrency={fromCurrency}
-        amount={fromAmount}
-        onAmountChange={handleFromAmountChange}
-        onCurrencySelect={handleFromCurrencySelect}
-        availableBalance={1200.97}
-      />
+	return (
+		<div className="flex flex-col w-full flex-1">
+			<div className="relative">
+				{/* "From" Currency Input */}
+				<FromCurrencyCard
+					selectedCurrency={fromCurrency}
+					amount={fromAmount}
+					onAmountChange={handleFromAmountChange}
+					onCurrencySelect={setFromCurrency}
+				/>
 
-      <CurrencyCard
-        type="to"
-        selectedCurrency={toCurrency}
-        amount={toAmount}
-        onAmountChange={() => {}}
-        onCurrencySelect={handleToCurrencySelect}
-      />
+				{/* Swap Button */}
+				<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+					<button
+						type="button"
+						onClick={handleSwapCurrencies}
+						className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all"
+						aria-label="Swap currencies">
+						{/* <SwapIcon className="w-5 h-5 text-[#DC2366]" /> */}
+					</button>
+				</div>
 
-      <TransactionDetails />
-
-      <div className="mt-auto pt-8 pb-4">
-        <CommonButton
-          type="submit"
-          disabled={!isFormValid}
-          className={`w-full h-[48px] ${
-            isFormValid 
-              ? '' 
-              : 'opacity-50 cursor-not-allowed'
-          }`}
-        >
-          NEXT
-        </CommonButton>
-      </div>
-    </form>
-  );
+				{/* "To" Currency Input */}
+				<ToCurrencyCard
+					selectedCurrency={toCurrency}
+					amount={toAmount}
+					onCurrencySelect={setToCurrency}
+				/>
+			</div>
+		</div>
+	);
 };

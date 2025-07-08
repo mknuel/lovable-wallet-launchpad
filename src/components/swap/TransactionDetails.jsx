@@ -1,17 +1,41 @@
+import React, { useState } from "react";
+import { SlippagePopup } from "./SlippagePopup";
 
-import React, { useState } from 'react';
-import { SlippagePopup } from './SlippagePopup';
+// The component now accepts a 'details' prop to dynamically display data.
+export const TransactionDetails = ({ details }) => {
+	const [isSlippagePopupOpen, setIsSlippagePopupOpen] = useState(false);
+	const [slippage, setSlippage] = useState(0.5);
 
-export const TransactionDetails = () => {
-  const [isSlippagePopupOpen, setIsSlippagePopupOpen] = useState(false);
-  const [slippage, setSlippage] = useState(0.5);
+	const handleSlippageChange = (newSlippage) => {
+		setSlippage(newSlippage);
+		setIsSlippagePopupOpen(false);
+	};
 
-  const handleSlippageChange = (newSlippage) => {
-    setSlippage(newSlippage);
-    setIsSlippagePopupOpen(false);
-  };
+	// Return null if there are no details or the necessary nested data is missing.
+	if (!details || !details.steps || details.steps.length === 0) {
+		return null;
+	}
 
-  return (
+	// --- Dynamic Data Calculations ---
+	const step = details.steps[0];
+	const fromToken = step.originToken;
+	const toToken = step.destinationToken;
+
+	// Convert amounts from string to number and adjust for token decimals.
+	const fromAmount = Number(details.originAmount) / 10 ** fromToken.decimals;
+	const toAmount = Number(details.destinationAmount) / 10 ** toToken.decimals;
+
+	// Calculate the exchange rate.
+	const exchangeRate =
+		fromAmount > 0 ? (toAmount / fromAmount).toFixed(4) : "0.0000";
+
+	// Calculate the total value in USD.
+	const usdValue = (fromAmount * fromToken.priceUsd).toFixed(2);
+
+	// Calculate the minimum amount the user will receive after applying slippage.
+	const minimumReceived = (toAmount * (1 - slippage / 100)).toFixed(4);
+
+	return (
 		<>
 			<div className="mt-6">
 				{/* Transaction Cost Section */}
@@ -25,10 +49,10 @@ export const TransactionDetails = () => {
 					<div className="bg-white p-4" style={{ borderRadius: "7px" }}>
 						<div className="flex justify-between items-center">
 							<span className="text-gray-600 text-sm font-['Sansation']">
-								1 EARN = 0.9534 LOAN
+								1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
 							</span>
 							<span className="text-gray-600 text-sm font-['Sansation']">
-								≈ $2.08
+								≈ ${usdValue}
 							</span>
 						</div>
 					</div>
@@ -41,18 +65,11 @@ export const TransactionDetails = () => {
 							Minimum received
 						</span>
 						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							475.25 LOAN
+							{minimumReceived} {toToken.symbol}
 						</span>
 					</div>
 
-					<div className="flex justify-between items-center py-2">
-						<span className="text-gray-600 text-sm font-['Sansation']">
-							Total fee
-						</span>
-						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							0.3% (1.5 EARN)
-						</span>
-					</div>
+					{/* The "Total fee" section is removed as it's not in the provided data. */}
 
 					<div className="flex justify-between items-center py-2">
 						<span className="text-gray-600 text-sm font-['Sansation']">
@@ -62,7 +79,6 @@ export const TransactionDetails = () => {
 							onClick={() => setIsSlippagePopupOpen(true)}
 							className="text-sm font-['Sansation'] font-semibold transition-colors flex items-center">
 							<span className="text-[#04BA6E]">{`< ${slippage}% `}</span>
-
 							<span> max(20%)</span>
 						</button>
 					</div>

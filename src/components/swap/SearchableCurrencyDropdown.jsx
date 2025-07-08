@@ -5,6 +5,7 @@ import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { useGetBridgeTokens } from "../../hooks/useBridge";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
+import { useActiveAccount } from "thirdweb/react";
 
 export const SearchableCurrencyDropdown = ({
 	isOpen,
@@ -15,10 +16,14 @@ export const SearchableCurrencyDropdown = ({
 	const dropdownRef = useRef(null);
 	const [search, setSearch] = useState("");
 	const debouncedSearchTerm = useDebounce(search, 300); // 300ms debounce
+	const activeAccount = useActiveAccount();
 
 	const { tokens, isLoading, error } = useGetBridgeTokens({
 		limit: 20,
 		name: debouncedSearchTerm,
+		...(!debouncedSearchTerm && {
+			owner_address: activeAccount?.address,
+		}),
 		// chainId: chainId, // Use the chainId prop here
 	});
 

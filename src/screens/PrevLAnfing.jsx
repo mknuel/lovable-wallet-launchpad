@@ -14,13 +14,8 @@ import { isTMA } from "@telegram-apps/bridge";
 
 import { useNavigate } from "react-router-dom";
 
-// --- thirdweb imports ---
-import { useConnect} from "thirdweb/react";
-import { inAppWallet } from "thirdweb/wallets";
-import { client } from "../components/thirdweb/thirdwebClient";
-
 const role = {
-	id: "614c68de1df56b0018b4ghdnkls",
+	id: "614c68de1df56b0018b4699c",
 	name: "Engineer",
 };
 
@@ -30,12 +25,6 @@ const LandingScreen = () => {
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
 	const { login } = useAuth();
-
-	// --- thirdweb hooks ---
-	const {connect} = useConnect();
-	const wallet = inAppWallet()
-	
-
 	let data = {};
 
 	useEffect(() => {
@@ -48,23 +37,6 @@ const LandingScreen = () => {
 		setSelectedLanguage(langCode);
 	};
 
-
-	const handleSwipe = async (e) => {
-		e.preventDefault();
-		try {
-			// --- Connect to in-app wallet ---
-      const res=await connect(async () => {
-				await wallet.connect({
-					client,
-					strategy: "telegram",
-				});
-				return wallet;
-			});
-      console.log("res===>",res)
-      
-      const acct = wallet.getAccount()
-
-      console.log(acct, "walletAccount")
 	if (isTMA()) {
 		console.log("It's Telegram Mini Apps");
 		const initData = retrieveLaunchParams();
@@ -77,7 +49,6 @@ const LandingScreen = () => {
 			roleId: role.id,
 			appsChannelKey: "abc",
 			deviceId: "Apple",
-			walletAddress: acct?.address, // --- Add wallet address ---
 		};
 		console.log("data==========>", data);
 	} else {
@@ -91,17 +62,21 @@ const LandingScreen = () => {
 			roleId: role.id,
 			appsChannelKey: "tg",
 			deviceId: "Samsung",
-			// walletAddress: address, // --- Add wallet address ---
+			walletAddress: "0xffe11A9c158811FC86fAEdEAA63cD92404B62feD",
 			appId: "notTmamk",
-			walletAddress: acct?.address, // --- Add wallet address ---
 		};
 		console.log("It's not Telegram Mini Apps");
 	}
 
-			// --- The rest of your registration logic ---
-		 	api.post("/ssoauth/tgregister", data).then(async (res) => {
+	const handleSwipe = (e) => {
+		e.preventDefault();
+		try {
+			api.post("/ssoauth/tgregister", data).then(async (res) => {
+				// if (res) {
 				console.log("Register Res==========>", res);
+				// US-2.1: Redirect to Main Menu after initial sign-up
 				handleLogin(PATH_MAIN);
+				// }
 			});
 		} catch (error) {
 			console.error("Unexpected error:", error);
@@ -132,8 +107,7 @@ const LandingScreen = () => {
 						email: response.user.email,
 						profileId: response.user.profile._id,
 						photo: response.user.profile.photo,
-            gender: "male",
-            walletAddress:response?.user?.walletAddress
+						gender: "male",
 					};
 					console.log(response);
 					login(response.token, userData);

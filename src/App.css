@@ -160,7 +160,7 @@ body.dark-mode {
   -webkit-clip-path: url(#customClip);
   background: linear-gradient(to right, #DC2366, #4F5CAA);
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 16/8;
   /* Optional enhancements */
   background-size: cover;
   background-repeat: no-repeat;

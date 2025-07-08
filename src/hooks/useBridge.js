@@ -86,7 +86,20 @@ export const useGetAccountTokens = (
 						},
 					}
 				);
-				setTokens(response.data.data);
+
+				const processedTokens = response?.data?.data?.map((token) => {
+					// Convert the string balance to a number, accounting for decimals
+					const balanceAsNumber =
+						token.balance && token.decimals
+							? parseInt(token.balance, 10) / 10 ** token.decimals
+							: 0;
+
+					return {
+						...token,
+						balance: balanceAsNumber, // Overwrite the string balance with the formatted number
+					};
+				});
+				setTokens(processedTokens);
 			} catch (err) {
 				if (err.name === "CanceledError") return;
 				console.error("Failed to fetch tokens:", err);

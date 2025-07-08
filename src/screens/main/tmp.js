@@ -6,17 +6,22 @@ import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import SearchIcon from "../../assets/icons/Search.svg";
 import { FromCurrencyCard } from "../../components/swap/FromCurrencyCard";
-import { defineChain, getContract, NATIVE_TOKEN_ADDRESS } from "thirdweb";
+import {
+	defineChain,
+	getContract,
+	NATIVE_TOKEN_ADDRESS,
+	toWei,
+} from "thirdweb";
 import { client } from "../../components/thirdweb/thirdwebClient";
 import {
 	useActiveAccount,
+	useEstimateGas,
 	useEstimateGasCost,
 	useSendTransaction,
-	useSimulateTransaction,
 } from "thirdweb/react";
+import { prepareTransaction } from "thirdweb/transaction";
+import { getChainMetadata } from "thirdweb/chains"; // To get chain info
 import { transfer } from "thirdweb/extensions/erc20";
-import { SendConfirmationModal } from "../../components/swap/ConfirmationModal";
-
 function formatTokenBalance(token) {
 	if (
 		!token ||
@@ -30,23 +35,10 @@ function formatTokenBalance(token) {
 
 	if (price_data && typeof price_data.price_usd === "number") {
 		const usdValue = balance * price_data.price_usd;
-		return `$${usdValue.toFixed(2)}`;
+		return `${usdValue} $`;
 	}
 
 	return `${balance} ${symbol}`;
-}
-
-function formatGasFee(gasCost, fromCurrency) {
-	if (!gasCost || !fromCurrency) return "--";
-
-	const etherValue = parseFloat(gasCost.ether);
-	const usdValue = fromCurrency.price_data?.price_usd
-		? (etherValue * fromCurrency.price_data.price_usd).toFixed(2)
-		: null;
-
-	return usdValue
-		? `${etherValue.toFixed(8)} ${fromCurrency.symbol} ($${usdValue})`
-		: `${etherValue.toFixed(8)} ${fromCurrency.symbol}`;
 }
 
 const SendTokensScreen = () => {
@@ -56,18 +48,35 @@ const SendTokensScreen = () => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [amount, setAmount] = useState("");
 	const [showAmountInput, setShowAmountInput] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
+	const [isSearching, setIsSearching] = useState(false);
 	const [fromCurrency, setFromCurrency] = useState(undefined);
-	const [operationStatus, setOperationStatus] = useState(null); // 'searching', 'estimating', 'sending'
-	const [isOpen, setIsOpen] = useState(false);
-
 	const activeAccount = useActiveAccount();
-	const { mutate: sendTransaction } = useSendTransaction();
-	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
+	const { mutate: sendTransaction, isPending } = useSendTransaction();
 	const [preparedTx, setPreparedTx] = useState();
 	const activeRequest = useRef(null);
 	const lastSearchQuery = useRef("");
-	const { mutate: simulateTx } = useSimulateTransaction();
+
+	/* const {
+        mutate: estimateGasCost,
+        data: gasCost,
+        isLoading: isEstimatingGas,
+    } = useEstimateGas();
+ */
+
+	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
+	function debounce(func, wait) {
+		let timeout;
+		return function executedFunction(...args) {
+			const later = () => {
+				clearTimeout(timeout);
+				func(...args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	}
 
 	const debounceSearch = useCallback(
 		debounce((query) => {
@@ -92,7 +101,11 @@ const SendTokensScreen = () => {
 		}
 
 		try {
-			setOperationStatus(query.trim() ? "searching" : "loading");
+			if (query.trim()) {
+				setIsSearching(true);
+			} else {
+				setIsLoading(true);
+			}
 
 			const endpoint = query.trim()
 				? `/users/by/name?name=${encodeURIComponent(query)}`
@@ -135,9 +148,6 @@ const SendTokensScreen = () => {
 							email: email,
 							phone: phone,
 							avatar: "",
-							walletAddress:
-								user?.walletAddress ||
-								"0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
 						};
 					});
 			}
@@ -148,28 +158,96 @@ const SendTokensScreen = () => {
 			setUsers([]);
 		} finally {
 			activeRequest.current = null;
-			setOperationStatus(null);
+			setIsLoading(false);
+			setIsSearching(false);
 		}
 	};
-
 	const handleUserSelect = (user) => {
 		setSelectedUser(user);
 		setShowAmountInput(true);
 	};
 
+	/* const handleSendTokens = useCallback(async () => {
+        if (!selectedUser || !amount || !activeAccount || !fromCurrency) {
+            console.error("Missing required information for transaction.");
+            console.log(selectedUser, amount, activeAccount, fromCurrency);
+            return;
+        }
+
+        try {
+            const chain = await getChainMetadata(fromCurrency.chain_id);
+            console.log(fromCurrency?.chain_id);
+
+            const transaction = prepareTransaction({
+                to: "9uPLCK9jK17z49zp7DjSMoc9rMBuUMBKDTDUmVSroJM4", // Replace with the actual recipient's address
+                value: toWei(amount),
+                chain,
+                client: client,
+            });
+
+            sendTransaction(transaction, {
+                onSuccess: (result) => {
+                    console.log("Transaction successful:", result);
+                    // Optionally, navigate to a success screen or show a success message
+                    navigate(PATH_WALLET_ACTIONS);
+                },
+                onError: (error) => {
+                    console.error("Transaction failed:", error);
+                    // Handle transaction error, e.g., show a notification
+                },
+            });
+        } catch (error) {
+            console.error("Error preparing transaction:", error);
+        }
+    }, [fromCurrency, amount, activeAccount, selectedUser]); */
+
+	// This function now handles ERC20 token transfers
 	const handleSendTokens = useCallback(async () => {
 		if (!preparedTx) {
 			console.error("Missing required information for transaction.");
 			return;
 		}
 
+		// IMPORTANT: Ensure your 'fromCurrency' object contains the token's contract address.
+		/* if (
+            !fromCurrency.address ||
+            fromCurrency.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        ) {
+            console.error(
+                "Invalid or missing ERC20 contract address in 'fromCurrency'."
+            );
+            return;
+        } */
+
+		// IMPORTANT: Ensure your 'selectedUser' object contains the recipient's wallet address.
+		/* if (!selectedUser.walletAddress) {
+            console.error("Recipient wallet address is missing.");
+            return;
+        } */
+
 		try {
-			setOperationStatus("sending");
+			console.log(fromCurrency?.chain_id);
+			const chain = defineChain({ id: fromCurrency?.chain_id });
+			// const chain = await getChainMetadata(fromCurrency.chain_id);
 
-			const result = await simulateTx(preparedTx);
+			/* 	// Get an instance of the ERC20 contract
+            const contract = getContract({
+                client,
+                chain,
+                address: fromCurrency.token_address,
+            });
 
-			console.log(result, "res");
-			/* sendTransaction(preparedTx, {
+            // Prepare the transaction to transfer the specified amount of the ERC20 token
+            const transaction = transfer({
+                contract,
+                // to: selectedUser.walletAddress, // Use the recipient's wallet address
+                to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF", // Use the recipient's wallet address
+                amount: amount, // The amount should be in a human-readable format, e.g., "1.5"
+            });
+
+            console.log(transaction); */
+
+			sendTransaction(preparedTx, {
 				onSuccess: (result) => {
 					console.log("Transaction successful:", result);
 					navigate(PATH_WALLET_ACTIONS);
@@ -177,15 +255,18 @@ const SendTokensScreen = () => {
 				onError: (error) => {
 					console.error("Transaction failed:", error);
 				},
-				onSettled: () => {
-					setOperationStatus(null);
-				},
-			}); */
+			});
 		} catch (error) {
 			console.error("Error preparing transaction:", error);
-			setOperationStatus(null);
 		}
-	}, [preparedTx, navigate, sendTransaction, simulateTx]);
+	}, [
+		fromCurrency,
+		amount,
+		activeAccount,
+		selectedUser,
+		navigate,
+		sendTransaction,
+	]);
 
 	const handleBackClick = () => {
 		if (showAmountInput) {
@@ -198,7 +279,17 @@ const SendTokensScreen = () => {
 	};
 
 	useEffect(() => {
-		const prepareTransaction = async () => {
+		console.log(fromCurrency, "from cutrr");
+	}, [fromCurrency]);
+	useEffect(() => {
+		console.log(preparedTx, "prep tx");
+	}, [preparedTx]);
+	useEffect(() => {
+		console.log(gasCost, "getGas info");
+	}, [gasCost]);
+
+	useEffect(() => {
+		const prepare = async () => {
 			if (
 				amount &&
 				parseFloat(amount) > 0 &&
@@ -207,9 +298,10 @@ const SendTokensScreen = () => {
 				activeAccount &&
 				fromCurrency.token_address &&
 				fromCurrency.chain_id
+				// selectedUser.walletAddress
 			) {
 				try {
-					setOperationStatus("estimating");
+					console.log("trying");
 
 					const chain = defineChain({ id: fromCurrency?.chain_id });
 					const contract = getContract({
@@ -217,48 +309,33 @@ const SendTokensScreen = () => {
 						chain,
 						address: fromCurrency.token_address,
 					});
-
 					const tx = transfer({
 						contract,
 						to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+						// to: selectedUser.walletAddress,
 						amount: amount,
 					});
 
 					setPreparedTx(tx);
-					await estimateGasCost(tx);
+					const dt = await estimateGasCost(tx);
+					console.log(dt, "get gas info data");
 				} catch (e) {
 					console.error("Error preparing transaction for estimation:", e);
 					setPreparedTx(null);
-				} finally {
-					setOperationStatus(null);
 				}
 			} else {
 				setPreparedTx(null);
 			}
 		};
 
-		prepareTransaction();
-	}, [amount, fromCurrency, selectedUser, activeAccount, estimateGasCost]);
-
-	const isLoading = operationStatus !== null;
-	const isSendDisabled =
-		!amount || isLoading || !preparedTx || operationStatus == "estimating";
+		prepare();
+	}, [amount, fromCurrency, selectedUser, activeAccount]);
 
 	return (
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
 			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
-				<Header
-					title={t("wallet.title") || "My Wallet"}
-					action={true}
-					onBack={handleBackClick}
-				/>
+				<Header title={t("wallet.title") || "My Wallet"} action={true} />
 			</div>
-
-			<SendConfirmationModal
-				isOpen={isOpen}
-				onConfirm={handleSendTokens}
-				onClose={() => setIsOpen(false)}
-			/>
 
 			<div className="flex-1 flex flex-col px-5 py-3 overflow-hidden mt-3">
 				{!showAmountInput ? (
@@ -273,9 +350,9 @@ const SendTokensScreen = () => {
 									className="w-full py-3 px-4 pl-12 border border-gray-300 rounded-xl bg-gray-50 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent"
 								/>
 								<div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-									<img src={SearchIcon} alt="Search" />
+									<img src={SearchIcon} />
 								</div>
-								{operationStatus === "searching" && (
+								{isSearching && (
 									<div className="absolute right-4 top-1/2 transform -translate-y-1/2">
 										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500"></div>
 									</div>
@@ -284,8 +361,7 @@ const SendTokensScreen = () => {
 						</div>
 
 						<div className="w-full flex-1 overflow-y-auto">
-							{operationStatus === "searching" ||
-							(operationStatus == "loading" && users.length === 0) ? (
+							{isLoading ? (
 								<div className="text-center py-8">Loading users...</div>
 							) : users.length === 0 ? (
 								<div className="text-center py-8 text-gray-500">
@@ -334,7 +410,7 @@ const SendTokensScreen = () => {
 				) : (
 					<>
 						<section
-							className={`relative w-full max-w-full mx-auto text-white stats-box rounded-xl`}
+							className={`relative w-full max-w-full mx-auto text-white stats-box rounded-xl  `}
 							role="region"
 							aria-label="Currency balance text-white">
 							<div className="relative flex items-center h-full px-6 flex-col p-5">
@@ -344,17 +420,20 @@ const SendTokensScreen = () => {
 								<div className="flex flex-col items-center w-full max-w-sm mt-4 text-sm gap-2">
 									<div className="justify-between flex w-full">
 										<span>From:</span>
+
 										<span>{fromCurrency?.symbol || "--"}</span>
 									</div>
 									<div className="justify-between flex w-full">
 										<span>Available Balance:</span>
+
 										<span>
 											{fromCurrency?.balance} {fromCurrency?.symbol || "--"}
 										</span>
 									</div>
 									<div className="justify-between flex w-full">
 										<span>Fees:</span>
-										<span>{formatGasFee(gasCost, fromCurrency)}</span>
+
+										<span>2 $ EurX</span>
 									</div>
 								</div>
 							</div>
@@ -363,10 +442,9 @@ const SendTokensScreen = () => {
 						<FromCurrencyCard
 							selectedCurrency={fromCurrency}
 							amount={amount}
-							onAmountChange={setAmount}
+							onAmountChange={(val) => setAmount(val)}
 							onCurrencySelect={setFromCurrency}
 						/>
-
 						<div className="w-full mb-6 mt-5 py-2 px-4 bg-white border border-gray-300 rounded-2xl">
 							<div className="text-gray-400">Send To:</div>
 							<div className="flex items-center">
@@ -390,22 +468,18 @@ const SendTokensScreen = () => {
 
 						<div className="w-full mb-5">
 							<button
-								onClick={() => setIsOpen(true)}
-								disabled={isSendDisabled}
+								onClick={handleSendTokens}
+								disabled={!amount || isPending}
 								className={`
-                  w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-                  transition-all duration-200 flex items-center justify-center
-                  ${
-										!isSendDisabled
-											? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
-											: "bg-gray-300 text-gray-500 cursor-not-allowed"
-									}
-                `}>
-								{operationStatus === "sending"
-									? "Sending..."
-									: operationStatus === "estimating"
-									? "Calculating..."
-									: "SEND TOKENS"}
+                  w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
+                  transition-all duration-200 flex items-center justify-center
+                  ${
+									amount && !isPending
+										? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
+										: "bg-gray-300 text-gray-500 cursor-not-allowed"
+								}
+                `}>
+								{isPending ? "Sending..." : "SEND TOKENS"}
 							</button>
 						</div>
 					</>
@@ -414,17 +488,5 @@ const SendTokensScreen = () => {
 		</div>
 	);
 };
-
-function debounce(func, wait) {
-	let timeout;
-	return function executedFunction(...args) {
-		const later = () => {
-			clearTimeout(timeout);
-			func(...args);
-		};
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-	};
-}
 
 export default SendTokensScreen;
