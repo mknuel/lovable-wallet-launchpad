@@ -82,7 +82,40 @@ const AAVE_POOL_ABI = [
 ];
 
 const WETH_GATEWAY_ABI = [
-  "function depositETH(address pool, address onBehalfOf, uint16 referralCode) payable"
+  {
+    "inputs": [
+      {"name": "pool", "type": "address"},
+      {"name": "onBehalfOf", "type": "address"},
+      {"name": "referralCode", "type": "uint16"}
+    ],
+    "name": "depositETH",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"name": "pool", "type": "address"},
+      {"name": "amount", "type": "uint256"},
+      {"name": "interestRateMode", "type": "uint256"},
+      {"name": "referralCode", "type": "uint16"}
+    ],
+    "name": "borrowETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"name": "pool", "type": "address"},
+      {"name": "onBehalfOf", "type": "address"},
+      {"name": "referralCode", "type": "uint16"}
+    ],
+    "name": "repayETH",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ];
 
 const getTokenContract = (client, address) =>
@@ -172,10 +205,10 @@ export const approveToken = async (account, tokenAddress, amount) => {
 };
 
 /**
- * Borrow WETH from Aave Pool
+ * Borrow native ETH from Aave Pool via WETH Gateway
  * Note: You must have supplied collateral first before borrowing
  */
-export const borrowWETH = async (account, amount) => {
+export const borrowETH = async (account, amount) => {
   if (!amount || isNaN(parseFloat(amount))) {
     throw new Error('Invalid amount');
   }
@@ -186,30 +219,47 @@ export const borrowWETH = async (account, amount) => {
   }
 
   try {
-    const pool = getPoolContract(client);
+    const gateway = getContract({
+      client,
+      chain: sepolia,
+      address: CONTRACTS.WETH_GATEWAY,
+      abi: [{
+        "inputs": [
+          {"name": "pool", "type": "address"},
+          {"name": "amount", "type": "uint256"},
+          {"name": "interestRateMode", "type": "uint256"},
+          {"name": "referralCode", "type": "uint16"}
+        ],
+        "name": "borrowETH",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }]
+    });
+    
     const tx = await prepareContractCall({
-      contract: pool,
-      method: "borrow",
-      params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address]
+      contract: gateway,
+      method: "borrowETH",
+      params: [CONTRACTS.AAVE_POOL, safeToWei(amount), 2, 0]
     });
     const result = await sendTransaction({ transaction: tx, account });
     return {
       success: true,
-      message: `Borrowed ${amount} WETH`,
+      message: `Borrowed ${amount} ETH`,
       txHash: result.transactionHash
     };
   } catch (error) {
     if (error.message.includes('execution reverted')) {
-      throw new Error(`Cannot borrow WETH. Make sure you have sufficient collateral deposited first. Try supplying ETH or DAI as collateral before borrowing.`);
+      throw new Error(`Cannot borrow ETH. Make sure you have sufficient collateral deposited first. Try supplying ETH or DAI as collateral before borrowing.`);
     }
     throw error;
   }
 };
 
 /**
- * Repay WETH to Aave Pool
+ * Repay native ETH to Aave Pool via WETH Gateway
  */
-export const repayWETH = async (account, amount) => {
+export const repayETH = async (account, amount) => {
   if (!amount || isNaN(parseFloat(amount))) {
     throw new Error('Invalid amount');
   }
@@ -219,18 +269,33 @@ export const repayWETH = async (account, amount) => {
     throw new Error('Thirdweb client not configured');
   }
 
-  const weiAmount = safeToWei(amount);
-  await approveToken(account, CONTRACTS.WETH, weiAmount);
-  const pool = getPoolContract(client);
+  const gateway = getContract({
+    client,
+    chain: sepolia,
+    address: CONTRACTS.WETH_GATEWAY,
+    abi: [{
+      "inputs": [
+        {"name": "pool", "type": "address"},
+        {"name": "onBehalfOf", "type": "address"},
+        {"name": "referralCode", "type": "uint16"}
+      ],
+      "name": "repayETH",
+      "outputs": [{"name": "", "type": "uint256"}],
+      "stateMutability": "payable",
+      "type": "function"
+    }]
+  });
+
   const tx = await prepareContractCall({
-    contract: pool,
-    method: "repay",
-    params: [CONTRACTS.WETH, weiAmount, 2, account.address]
+    contract: gateway,
+    method: "repayETH",
+    params: [CONTRACTS.AAVE_POOL, account.address, 0],
+    value: safeToWei(amount)
   });
   const result = await sendTransaction({ transaction: tx, account });
   return {
     success: true,
-    message: `Repaid ${amount} WETH`,
+    message: `Repaid ${amount} ETH`,
     txHash: result.transactionHash
   };
 };

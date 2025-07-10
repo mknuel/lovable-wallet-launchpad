@@ -13,7 +13,7 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplyDAI, borrowWETH, repayWETH, getTokenBalance, CONTRACTS } from '../../utils/aaveHelpers';
+import { supplyDAI, borrowETH, repayETH, getTokenBalance, CONTRACTS } from '../../utils/aaveHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
@@ -77,7 +77,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'borrow',
-      title: 'Borrow WETH from Aave'
+      title: 'Borrow ETH from Aave'
     });
   };
 
@@ -95,7 +95,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'repay',
-      title: 'Repay WETH to Aave'
+      title: 'Repay ETH to Aave'
     });
   };
 
@@ -120,10 +120,10 @@ const BlockLoansScreen = () => {
           result = await supplyDAI(account, amount);
           break;
         case 'borrow':
-          result = await borrowWETH(account, amount);
+          result = await borrowETH(account, amount);
           break;
         case 'repay':
-          result = await repayWETH(account, amount);
+          result = await repayETH(account, amount);
           break;
         case 'stake':
           showNotification('Staking functionality coming soon!', 'info');
