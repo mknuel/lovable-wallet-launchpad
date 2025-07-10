@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActiveWallet } from 'thirdweb/react';
-import Header from '../../components/layout/MainHeader';
+import { Header } from '../../components/layout/Header';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { ActionGrid } from '../../components/layout/ActionGrid';
-import Navigation from '../../components/layout/Navigation';
+import { SwapBottomNavigation } from '../../components/swap/SwapBottomNavigation';
 import { AaveActionModal } from '../../components/modals/AaveActionModal';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
@@ -140,17 +140,20 @@ const BlockLoansScreen = () => {
     }
   };
 
-  const handleBackClick = () => {
-    navigate(-1);
+  const handleNotificationClick = () => {
+    console.log('Notification clicked');
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/setting');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <Header
-        title="BlockLoans"
-        action={true}
-        onBack={handleBackClick}
+        onNotificationClick={handleNotificationClick}
+        onSettingsClick={handleSettingsClick}
       />
       
       {/* Notification */}
@@ -190,9 +193,7 @@ const BlockLoansScreen = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
-        <Navigation nav="BlockLoans" />
-      </div>
+      {/* <SwapBottomNavigation /> */}
 
       {/* Aave Action Modal */}
       <AaveActionModal
