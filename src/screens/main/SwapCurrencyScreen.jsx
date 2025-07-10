@@ -211,7 +211,7 @@ const SwapCurrencyScreen = () => {
 			{/* Content */}
 			<div className="flex-1 flex flex-col px-6 py-4 overflow-hidden pb-32">
 				<SwapForm
-					fromAmount={setFromAmount}
+					fromAmount={fromAmount}
 					setFromAmount={setFromAmount}
 					toAmount={toAmount}
 					setToAmount={setToAmount}

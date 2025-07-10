@@ -76,7 +76,7 @@ const BlockLoansScreen = () => {
         ];
 
     // Add real Aave loan data
-    const loansValue = accountData ? (Number(accountData.totalDebtETH) / 1e18).toFixed(4) : "0";
+    const loansValue = accountData ? `${(Number(accountData.totalDebtETH) / 1e18).toFixed(1)} ETH` : "0 ETH";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
