@@ -205,7 +205,7 @@ export const approveToken = async (account, tokenAddress, amount) => {
 };
 
 /**
- * Borrow native ETH from Aave Pool via WETH Gateway
+ * Borrow WETH from Aave Pool (using Pool contract directly)
  * Note: You must have supplied collateral first before borrowing
  */
 export const borrowETH = async (account, amount) => {
@@ -219,45 +219,32 @@ export const borrowETH = async (account, amount) => {
   }
 
   try {
-    const gateway = getContract({
-      client,
-      chain: sepolia,
-      address: CONTRACTS.WETH_GATEWAY,
-      abi: [{
-        "inputs": [
-          {"name": "pool", "type": "address"},
-          {"name": "amount", "type": "uint256"},
-          {"name": "interestRateMode", "type": "uint256"},
-          {"name": "referralCode", "type": "uint16"}
-        ],
-        "name": "borrowETH",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }]
-    });
-    
+    // Use Pool contract directly to borrow WETH, not Gateway
+    const pool = getPoolContract(client);
     const tx = await prepareContractCall({
-      contract: gateway,
-      method: "borrowETH",
-      params: [CONTRACTS.AAVE_POOL, safeToWei(amount), 2, 0]
+      contract: pool,
+      method: "borrow",
+      params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address]
     });
     const result = await sendTransaction({ transaction: tx, account });
     return {
       success: true,
-      message: `Borrowed ${amount} ETH`,
+      message: `Borrowed ${amount} WETH (you can unwrap to ETH)`,
       txHash: result.transactionHash
     };
   } catch (error) {
-    if (error.message.includes('execution reverted')) {
-      throw new Error(`Cannot borrow ETH. Make sure you have sufficient collateral deposited first. Try supplying ETH or DAI as collateral before borrowing.`);
+    console.error('Borrow error:', error);
+    if (error.message.includes('30')) {
+      throw new Error(`Borrowing is not enabled for WETH on this testnet. Try borrowing DAI instead, or check if you have sufficient collateral deposited.`);
+    } else if (error.message.includes('execution reverted')) {
+      throw new Error(`Cannot borrow WETH. Make sure you have sufficient collateral deposited first. Try supplying ETH or DAI as collateral before borrowing.`);
     }
     throw error;
   }
 };
 
 /**
- * Repay native ETH to Aave Pool via WETH Gateway
+ * Repay WETH to Aave Pool (using Pool contract directly)
  */
 export const repayETH = async (account, amount) => {
   if (!amount || isNaN(parseFloat(amount))) {
@@ -269,35 +256,28 @@ export const repayETH = async (account, amount) => {
     throw new Error('Thirdweb client not configured');
   }
 
-  const gateway = getContract({
-    client,
-    chain: sepolia,
-    address: CONTRACTS.WETH_GATEWAY,
-    abi: [{
-      "inputs": [
-        {"name": "pool", "type": "address"},
-        {"name": "onBehalfOf", "type": "address"},
-        {"name": "referralCode", "type": "uint16"}
-      ],
-      "name": "repayETH",
-      "outputs": [{"name": "", "type": "uint256"}],
-      "stateMutability": "payable",
-      "type": "function"
-    }]
-  });
-
-  const tx = await prepareContractCall({
-    contract: gateway,
-    method: "repayETH",
-    params: [CONTRACTS.AAVE_POOL, account.address, 0],
-    value: safeToWei(amount)
-  });
-  const result = await sendTransaction({ transaction: tx, account });
-  return {
-    success: true,
-    message: `Repaid ${amount} ETH`,
-    txHash: result.transactionHash
-  };
+  try {
+    const weiAmount = safeToWei(amount);
+    await approveToken(account, CONTRACTS.WETH, weiAmount);
+    const pool = getPoolContract(client);
+    const tx = await prepareContractCall({
+      contract: pool,
+      method: "repay",
+      params: [CONTRACTS.WETH, weiAmount, 2, account.address]
+    });
+    const result = await sendTransaction({ transaction: tx, account });
+    return {
+      success: true,
+      message: `Repaid ${amount} WETH`,
+      txHash: result.transactionHash
+    };
+  } catch (error) {
+    console.error('Repay error:', error);
+    if (error.message.includes('30')) {
+      throw new Error(`Borrowing/Repaying is not enabled for WETH on this testnet.`);
+    }
+    throw error;
+  }
 };
 
 /**

@@ -77,7 +77,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'borrow',
-      title: 'Borrow ETH from Aave'
+      title: 'Borrow WETH from Aave'
     });
   };
 
@@ -95,7 +95,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'repay',
-      title: 'Repay ETH to Aave'
+      title: 'Repay WETH to Aave'
     });
   };
 
