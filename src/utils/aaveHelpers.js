@@ -1,262 +1,130 @@
-import { getContract, readContract, prepareContractCall, sendTransaction, toWei, fromGwei } from 'thirdweb';
-import { polygon } from 'thirdweb/chains';
-import { client, isClientAvailable } from "../components/thirdweb/thirdwebClient.js"
+// aaveHelpers.js – for Sepolia ETH using Aave v3 and Thirdweb SDK only
 
-// Helper function to convert from wei
-const fromWei = (value) => {
-  return (Number(value) / Math.pow(10, 18)).toString();
-};
+import {
+  getContract,
+  prepareContractCall,
+  sendTransaction,
+  readContract,
+  toWei
+} from "thirdweb";
+import { sepolia } from "thirdweb/chains";
 
-// Contract addresses for Polygon Mumbai testnet
 export const CONTRACTS = {
-  AAVE_POOL: '0x919d0dC6100b5cBb624c4CcEacd831a3E19b8c73',
-  DAI: '0x001B3B4D0F3714Ca98Ba10F6042daEbF0B1B7b6F',
-  WETH: '0xd0A1E359811322d97991E03f863a0C30C2cF029C'
+  AAVE_POOL: "0x87870Bca3F3fd6335C3F4cE8392D69350b4fA4E2", // Aave Pool
+  WETH_GATEWAY: "0x6A109e4c2f5D75F16d6e01f29e3A272Bb3A42e6b", // WETH Gateway
+  WETH: "0xdd13E55209Fd76AfE204dBda4007C227904f0a81" // WETH Token on Sepolia
 };
 
-// ERC20 ABI (minimal for approve, balanceOf, allowance)
 const ERC20_ABI = [
   "function approve(address spender, uint256 amount) external returns (bool)",
   "function allowance(address owner, address spender) external view returns (uint256)",
-  "function balanceOf(address account) external view returns (uint256)",
-  "function decimals() external view returns (uint8)"
+  "function balanceOf(address account) external view returns (uint256)"
 ];
 
-// Aave Pool ABI (minimal for supply, borrow, repay)
 const AAVE_POOL_ABI = [
-  "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external",
-  "function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf) external",
-  "function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) external returns (uint256)"
+  "function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf)",
+  "function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) returns (uint256)"
 ];
 
+const WETH_GATEWAY_ABI = [
+  "function depositETH(address pool, address onBehalfOf, uint16 referralCode) payable"
+];
+
+const getTokenContract = (client, address) =>
+  getContract({ client, chain: sepolia, address, abi: ERC20_ABI });
+
+const getPoolContract = (client) =>
+  getContract({ client, chain: sepolia, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
+
 /**
- * Get contract instance
+ * Supply Sepolia ETH (native) via WETH Gateway
  */
-const getTokenContract = (client, tokenAddress) => {
-  return getContract({
+export const supplySepoliaETH = async (client, account, amount) => {
+  const contract = getContract({
     client,
-    chain: polygon,
-    address: tokenAddress,
-    abi: ERC20_ABI
+    chain: sepolia,
+    address: CONTRACTS.WETH_GATEWAY,
+    abi: WETH_GATEWAY_ABI
   });
-};
 
-const getPoolContract = (client) => {
-  return getContract({
-    client,
-    chain: polygon,
-    address: CONTRACTS.AAVE_POOL,
-    abi: AAVE_POOL_ABI
+  const tx = await prepareContractCall({
+    contract,
+    method: "depositETH",
+    params: [CONTRACTS.AAVE_POOL, account.address, 0],
+    value: toWei(amount)
   });
+
+  const result = await sendTransaction({ transaction: tx, account });
+
+  return {
+    success: true,
+    message: `Supplied ${amount} ETH via WETH Gateway`,
+    txHash: result.transactionHash
+  };
 };
 
 /**
- * Approve tokens for spending by Aave Pool
+ * Approve WETH token before repay
  */
-export const approveToken = async (account, tokenAddress, amount) => {
-  try {
-    if (!isClientAvailable()) {
-      return { success: false, message: 'Thirdweb client not available' };
-    }
-    
-    const tokenContract = getTokenContract(client, tokenAddress);
-    const parsedAmount = toWei(amount);
-    
-    // Check current allowance
-    const userAddress = account.address;
-    const currentAllowance = await readContract({
-      contract: tokenContract,
-      method: "allowance",
-      params: [userAddress, CONTRACTS.AAVE_POOL]
-    });
-    
-    if (BigInt(currentAllowance) >= BigInt(parsedAmount)) {
-      console.log('Already approved sufficient amount');
-      return { success: true, message: 'Already approved' };
-    }
-    
-    const transaction = prepareContractCall({
-      contract: tokenContract,
-      method: "approve",
-      params: [CONTRACTS.AAVE_POOL, parsedAmount]
-    });
-    
-    const result = await sendTransaction({
-      transaction,
-      account
-    });
-    
-    console.log('Approval confirmed:', result.transactionHash);
-    
-    return { 
-      success: true, 
-      message: 'Token approved successfully',
-      txHash: result.transactionHash 
-    };
-  } catch (error) {
-    console.error('Approval failed:', error);
-    return { 
-      success: false, 
-      message: error.message || 'Approval failed' 
-    };
-  }
-};
+export const approveToken = async (client, account, tokenAddress, amount) => {
+  const token = getTokenContract(client, tokenAddress);
+  const currentAllowance = await readContract({
+    contract: token,
+    method: "allowance",
+    params: [account.address, CONTRACTS.AAVE_POOL]
+  });
 
-/**
- * Supply DAI to Aave Pool
- */
-export const supplyDAI = async (account, amount) => {
-  try {
-    if (!isClientAvailable()) {
-      return { success: false, message: 'Thirdweb client not available' };
-    }
-    
-    const poolContract = getPoolContract(client);
-    const userAddress = account.address;
-    const parsedAmount = toWei(amount);
-    
-    // First approve DAI
-    const approvalResult = await approveToken(account, CONTRACTS.DAI, amount);
-    if (!approvalResult.success) {
-      return approvalResult;
-    }
-    
-    // Supply to Aave
-    const transaction = prepareContractCall({
-      contract: poolContract,
-      method: "supply",
-      params: [CONTRACTS.DAI, parsedAmount, userAddress, 0]
-    });
-    
-    const result = await sendTransaction({
-      transaction,
-      account
-    });
-    
-    console.log('Supply confirmed:', result.transactionHash);
-    
-    return {
-      success: true,
-      message: `Successfully supplied ${amount} DAI`,
-      txHash: result.transactionHash
-    };
-  } catch (error) {
-    console.error('Supply failed:', error);
-    return {
-      success: false,
-      message: error.message || 'Supply failed'
-    };
+  if (BigInt(currentAllowance) >= BigInt(amount)) {
+    return { success: true, message: "Already approved" };
   }
+
+  const tx = await prepareContractCall({
+    contract: token,
+    method: "approve",
+    params: [CONTRACTS.AAVE_POOL, amount]
+  });
+
+  const result = await sendTransaction({ transaction: tx, account });
+  return {
+    success: true,
+    message: "Token approved",
+    txHash: result.transactionHash
+  };
 };
 
 /**
  * Borrow WETH from Aave Pool
  */
-export const borrowWETH = async (account, amount) => {
-  try {
-    if (!isClientAvailable()) {
-      return { success: false, message: 'Thirdweb client not available' };
-    }
-    
-    const poolContract = getPoolContract(client);
-    const userAddress = account.address;
-    const parsedAmount = toWei(amount);
-    
-    const transaction = prepareContractCall({
-      contract: poolContract,
-      method: "borrow",
-      params: [CONTRACTS.WETH, parsedAmount, 2, 0, userAddress]
-    });
-    
-    const result = await sendTransaction({
-      transaction,
-      account
-    });
-    
-    console.log('Borrow confirmed:', result.transactionHash);
-    
-    return {
-      success: true,
-      message: `Successfully borrowed ${amount} WETH`,
-      txHash: result.transactionHash
-    };
-  } catch (error) {
-    console.error('Borrow failed:', error);
-    return {
-      success: false,
-      message: error.message || 'Borrow failed'
-    };
-  }
+export const borrowWETH = async (client, account, amount) => {
+  const pool = getPoolContract(client);
+  const tx = await prepareContractCall({
+    contract: pool,
+    method: "borrow",
+    params: [CONTRACTS.WETH, toWei(amount), 2, 0, account.address]
+  });
+  const result = await sendTransaction({ transaction: tx, account });
+  return {
+    success: true,
+    message: `Borrowed ${amount} WETH`,
+    txHash: result.transactionHash
+  };
 };
 
 /**
  * Repay WETH to Aave Pool
  */
-export const repayWETH = async (account, amount) => {
-  try {
-    if (!isClientAvailable()) {
-      return { success: false, message: 'Thirdweb client not available' };
-    }
-    
-    const poolContract = getPoolContract(client);
-    const userAddress = account.address;
-    const parsedAmount = toWei(amount);
-    
-    // First approve WETH
-    const approvalResult = await approveToken(account, CONTRACTS.WETH, amount);
-    if (!approvalResult.success) {
-      return approvalResult;
-    }
-    
-    // Repay to Aave
-    const transaction = prepareContractCall({
-      contract: poolContract,
-      method: "repay",
-      params: [CONTRACTS.WETH, parsedAmount, 2, userAddress]
-    });
-    
-    const result = await sendTransaction({
-      transaction,
-      account
-    });
-    
-    console.log('Repay confirmed:', result.transactionHash);
-    
-    return {
-      success: true,
-      message: `Successfully repaid ${amount} WETH`,
-      txHash: result.transactionHash
-    };
-  } catch (error) {
-    console.error('Repay failed:', error);
-    return {
-      success: false,
-      message: error.message || 'Repay failed'
-    };
-  }
-};
-
-/**
- * Get user's token balance
- */
-export const getTokenBalance = async (account, tokenAddress) => {
-  try {
-    if (!isClientAvailable()) {
-      return '0';
-    }
-    
-    const tokenContract = getTokenContract(client, tokenAddress);
-    const userAddress = account.address;
-    
-    const balance = await readContract({
-      contract: tokenContract,
-      method: "balanceOf",
-      params: [userAddress]
-    });
-    
-    return fromWei(balance);
-  } catch (error) {
-    console.error('Failed to get token balance:', error);
-    return '0';
-  }
+export const repayWETH = async (client, account, amount) => {
+  await approveToken(client, account, CONTRACTS.WETH, toWei(amount));
+  const pool = getPoolContract(client);
+  const tx = await prepareContractCall({
+    contract: pool,
+    method: "repay",
+    params: [CONTRACTS.WETH, toWei(amount), 2, account.address]
+  });
+  const result = await sendTransaction({ transaction: tx, account });
+  return {
+    success: true,
+    message: `Repaid ${amount} WETH`,
+    txHash: result.transactionHash
+  };
 };
