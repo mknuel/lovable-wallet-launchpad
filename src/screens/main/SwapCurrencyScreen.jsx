@@ -14,7 +14,6 @@ import {
 	useActiveWallet,
 	useWalletBalance,
 	useEstimateGasCost,
-  useSendAndConfirmTransaction
 } from "thirdweb/react";
 import { useWalletAccount } from "../../context/WalletAccountContext";
 import { client } from "../../components/thirdweb/thirdwebClient";
@@ -159,8 +158,7 @@ const SwapCurrencyScreen = () => {
 			console.log(prepared, "prepared");
 			for (const txStep of prepared.steps) {
 				for (const transaction of txStep.transactions) {
-					// await sendTransaction(transaction);
-					await sendAndConfirmTx(transaction);
+					await sendTransaction(transaction);
 				}
 			}
 			console.log("Swap executed successfully!");
