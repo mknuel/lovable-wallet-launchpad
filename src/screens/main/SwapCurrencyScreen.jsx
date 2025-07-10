@@ -24,6 +24,7 @@ import {
 	Bridge,
 	Insight,
 	getContract,
+	sendTransaction,
 	toWei,
 } from "thirdweb";
 import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
@@ -61,8 +62,6 @@ const SwapCurrencyScreen = () => {
 	const tonwal = useTonWallet();
 
 	const { mutate: sendTransaction } = useSendTransaction();
-  const { mutate: sendAndConfirmTx, data: transactionReceipt } =
-  useSendAndConfirmTransaction();
 	const [isLoading, setIsLoading] = useState(true);
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
