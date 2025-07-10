@@ -8,7 +8,9 @@ export const AaveActionModal = ({
   onConfirm, 
   isLoading = false,
   tokenSymbol = '',
-  actionType = 'deposit'
+  actionType = 'deposit',
+  maxBorrowAmount = 0,
+  accountData = null
 }) => {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
@@ -51,7 +53,7 @@ export const AaveActionModal = ({
 
   const getTokenInfo = () => {
     switch (actionType) {
-      case 'deposit': return { symbol: 'DAI', description: 'Supply DAI to earn interest' };
+      case 'deposit': return { symbol: 'ETH', description: 'Supply Sepolia ETH to earn interest' };
       case 'borrow': return { symbol: 'WETH', description: 'Borrow WETH with variable rate' };
       case 'repay': return { symbol: 'WETH', description: 'Repay your WETH debt' };
       case 'stake': return { symbol: 'AAVE', description: 'Stake AAVE tokens (coming soon)' };
@@ -83,20 +85,51 @@ export const AaveActionModal = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Borrowing guidance */}
+          {actionType === 'borrow' && accountData && (
+            <div className="bg-blue-50 p-3 rounded-lg text-sm space-y-1">
+              <div className="font-medium text-blue-900">Account Info:</div>
+              <div className="text-blue-700">
+                • Collateral: {(Number(accountData.totalCollateralETH) / 1e18).toFixed(4)} ETH
+              </div>
+              <div className="text-blue-700">
+                • Max borrow: {maxBorrowAmount.toFixed(4)} ETH
+              </div>
+              <div className="text-blue-700">
+                • Current debt: {(Number(accountData.totalDebtETH) / 1e18).toFixed(4)} ETH
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Amount ({symbol})
+              {actionType === 'borrow' && maxBorrowAmount > 0 && (
+                <span className="text-blue-600 font-normal"> (Max: {maxBorrowAmount.toFixed(4)})</span>
+              )}
             </label>
-            <input
-              type="number"
-              step="0.000001"
-              min="0"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={`Enter ${symbol} amount`}
-              disabled={isLoading || actionType === 'stake'}
-            />
+            <div className="relative">
+              <input
+                type="number"
+                step="0.000001"
+                min="0"
+                max={actionType === 'borrow' ? maxBorrowAmount : undefined}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={`Enter ${symbol} amount`}
+                disabled={isLoading || actionType === 'stake'}
+              />
+              {actionType === 'borrow' && maxBorrowAmount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setAmount(maxBorrowAmount.toString())}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200"
+                >
+                  Max
+                </button>
+              )}
+            </div>
           </div>
 
           {error && (

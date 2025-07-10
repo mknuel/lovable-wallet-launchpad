@@ -13,7 +13,7 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplySepoliaETH, borrowETH, repayETH, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
+import { supplySepoliaETH, borrowETH, repayETH, getUserAccountData, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
@@ -34,10 +34,30 @@ const BlockLoansScreen = () => {
   const [isTransactionLoading, setIsTransactionLoading] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' });
   const [selectedAction, setSelectedAction] = useState('deposit');
+  const [maxBorrowAmount, setMaxBorrowAmount] = useState(0);
+  const [accountData, setAccountData] = useState(null);
 
-  // Use the same stats calculation as MainMenu
+  // Load account data when wallet connects
+  useEffect(() => {
+    const loadAccountData = async () => {
+      if (activeWallet) {
+        try {
+          const account = activeWallet.getAccount();
+          const data = await getUserAccountData(account);
+          setAccountData(data);
+          setMaxBorrowAmount(Number(data.availableBorrowsETH) / 1e18);
+        } catch (error) {
+          console.error('Error loading account data:', error);
+        }
+      }
+    };
+    
+    loadAccountData();
+  }, [activeWallet]);
+
+  // Use the same stats calculation as MainMenu but include real Aave data
   const statsData = useMemo(() => {
-    return walletData?.data
+    const baseStats = walletData?.data
       ? [
           {
             id: "tokens",
@@ -48,15 +68,19 @@ const BlockLoansScreen = () => {
             id: "crypto", 
             value: walletData.data.balance || "0",
             label: t("wallet.crypto"),
-          },
-          { id: "loans", value: "0", label: t("wallet.loans") },
+          }
         ]
       : [
           { id: "tokens", value: "0", label: t("wallet.tokens") },
-          { id: "crypto", value: "0", label: t("wallet.crypto") },
-          { id: "loans", value: "0", label: t("wallet.loans") },
+          { id: "crypto", value: "0", label: t("wallet.crypto") }
         ];
-  }, [walletData, t]);
+
+    // Add real Aave loan data
+    const loansValue = accountData ? (Number(accountData.totalDebtETH) / 1e18).toFixed(4) : "0";
+    baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
+
+    return baseStats;
+  }, [walletData, accountData, t]);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -83,11 +107,7 @@ const BlockLoansScreen = () => {
 
   const handleStakeClick = () => {
     setSelectedAction('stake');
-    setModalConfig({
-      isOpen: true,
-      type: 'stake',
-      title: 'Stake AAVE Tokens'
-    });
+    showNotification('Staking functionality is coming soon! This feature will allow you to stake AAVE tokens for rewards.', 'info');
   };
 
   const handleRepayClick = () => {
@@ -124,16 +144,23 @@ const BlockLoansScreen = () => {
           break;
         case 'repay':
           result = await repayETH(account, amount);
+          // Reload account data after successful transaction
+          const newData = await getUserAccountData(account);
+          setAccountData(newData);
+          setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
           break;
-        case 'stake':
-          showNotification('Staking functionality coming soon!', 'info');
-          return;
         default:
           throw new Error('Unknown action type');
       }
 
       if (result.success) {
         showNotification(result.message, 'success');
+        // Reload account data after successful transaction
+        if (modalConfig.type === 'deposit' || modalConfig.type === 'borrow') {
+          const newData = await getUserAccountData(account);
+          setAccountData(newData);
+          setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
+        }
       } else {
         showNotification(result.message, 'error');
       }
@@ -213,6 +240,8 @@ const BlockLoansScreen = () => {
         actionType={modalConfig.type}
         onConfirm={handleConfirmAction}
         isLoading={isTransactionLoading}
+        maxBorrowAmount={maxBorrowAmount}
+        accountData={accountData}
       />
     </div>
   );
