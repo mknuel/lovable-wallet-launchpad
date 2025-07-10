@@ -13,7 +13,7 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplyDAI, borrowETH, repayETH, getTokenBalance, CONTRACTS } from '../../utils/aaveHelpers';
+import { supplyDAI, borrowETH, repayETH, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
@@ -139,7 +139,15 @@ const BlockLoansScreen = () => {
       }
     } catch (error) {
       console.error('Transaction failed:', error);
-      showNotification(error.message || 'Transaction failed', 'error');
+      let errorMessage = error.message || 'Transaction failed';
+      
+      // Show helpful message for DAI balance issues
+      if (errorMessage.includes('Insufficient DAI balance')) {
+        const daiInfo = getTestDAIInfo();
+        errorMessage += '\n\n' + daiInfo.message + '\n' + daiInfo.instructions.join('\n');
+      }
+      
+      showNotification(errorMessage, 'error');
     } finally {
       setIsTransactionLoading(false);
     }

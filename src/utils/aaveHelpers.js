@@ -293,20 +293,37 @@ export const supplyDAI = async (account, amount) => {
     throw new Error('Thirdweb client not configured');
   }
 
-  const weiAmount = safeToWei(amount);
-  await approveToken(account, CONTRACTS.DAI, weiAmount);
-  const pool = getPoolContract(client);
-  const tx = await prepareContractCall({
-    contract: pool,
-    method: "supply",
-    params: [CONTRACTS.DAI, weiAmount, account.address, 0]
-  });
-  const result = await sendTransaction({ transaction: tx, account });
-  return {
-    success: true,
-    message: `Supplied ${amount} DAI`,
-    txHash: result.transactionHash
-  };
+  try {
+    // Check user's DAI balance first
+    const daiBalance = await getTokenBalance(account, CONTRACTS.DAI);
+    const weiAmount = safeToWei(amount);
+    
+    if (BigInt(daiBalance) < BigInt(weiAmount)) {
+      throw new Error(`Insufficient DAI balance. You need ${amount} DAI but only have ${Number(daiBalance) / 1e18} DAI. Get test DAI from a faucet first.`);
+    }
+
+    await approveToken(account, CONTRACTS.DAI, weiAmount);
+    const pool = getPoolContract(client);
+    const tx = await prepareContractCall({
+      contract: pool,
+      method: "supply",
+      params: [CONTRACTS.DAI, weiAmount, account.address, 0]
+    });
+    const result = await sendTransaction({ transaction: tx, account });
+    return {
+      success: true,
+      message: `Supplied ${amount} DAI to Aave`,
+      txHash: result.transactionHash
+    };
+  } catch (error) {
+    console.error('Supply DAI error:', error);
+    if (error.message.includes('Insufficient DAI balance')) {
+      throw error; // Re-throw our custom error
+    } else if (error.message.includes('execution reverted')) {
+      throw new Error(`Transaction failed. Make sure you have enough DAI tokens and gas fees. Try getting test DAI from a Sepolia faucet first.`);
+    }
+    throw error;
+  }
 };
 
 /**
@@ -325,4 +342,20 @@ export const getTokenBalance = async (account, tokenAddress) => {
     params: [account.address]
   });
   return balance;
+};
+
+/**
+ * Get test DAI from Sepolia faucet (if available)
+ * Note: This is a placeholder - user needs to get DAI from external faucet
+ */
+export const getTestDAIInfo = () => {
+  return {
+    message: "To get test DAI for Sepolia testnet:",
+    instructions: [
+      "1. Visit the Aave testnet app: https://app.aave.com (enable testnet mode)",
+      "2. Or use a Sepolia DAI faucet if available",
+      "3. Make sure you have Sepolia ETH for gas fees first",
+      "DAI Contract: " + CONTRACTS.DAI
+    ]
+  };
 };
