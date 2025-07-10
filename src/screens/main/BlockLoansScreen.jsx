@@ -13,7 +13,7 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplyDAI, borrowETH, repayETH, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
+import { supplySepoliaETH, borrowETH, repayETH, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
@@ -68,7 +68,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'deposit',
-      title: 'Supply DAI to Aave'
+      title: 'Supply Sepolia ETH to Aave'
     });
   };
 
@@ -117,7 +117,7 @@ const BlockLoansScreen = () => {
 
       switch (modalConfig.type) {
         case 'deposit':
-          result = await supplyDAI(account, amount);
+          result = await supplySepoliaETH(account, amount);
           break;
         case 'borrow':
           result = await borrowETH(account, amount);
@@ -141,10 +141,9 @@ const BlockLoansScreen = () => {
       console.error('Transaction failed:', error);
       let errorMessage = error.message || 'Transaction failed';
       
-      // Show helpful message for DAI balance issues
-      if (errorMessage.includes('Insufficient DAI balance')) {
-        const daiInfo = getTestDAIInfo();
-        errorMessage += '\n\n' + daiInfo.message + '\n' + daiInfo.instructions.join('\n');
+      // Show helpful message for insufficient balance
+      if (errorMessage.includes('Insufficient')) {
+        errorMessage += '\n\nMake sure you have enough Sepolia ETH in your wallet for the transaction and gas fees.';
       }
       
       showNotification(errorMessage, 'error');
