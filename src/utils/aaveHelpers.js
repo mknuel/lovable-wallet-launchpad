@@ -11,10 +11,10 @@ import {
 import { sepolia } from "thirdweb/chains";
 
 export const CONTRACTS = {
-  AAVE_POOL: "0x87870Bca3F3fd6335C3F4cE8392D69350b4fA4E2", // Aave Pool
-  WETH_GATEWAY: "0x6A109e4c2f5D75F16d6e01f29e3A272Bb3A42e6b", // WETH Gateway
-  WETH: "0xdd13E55209Fd76AfE204dBda4007C227904f0a81", // WETH Token on Sepolia
-  DAI: "0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6" // DAI Token on Sepolia
+  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951", // Aave Pool v3 on Sepolia
+  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D", // WETH Gateway v3 on Sepolia  
+  WETH: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14", // WETH Token on Sepolia
+  DAI: "0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6" // DAI Token on Sepolia (if available)
 };
 
 const ERC20_ABI = [
@@ -39,10 +39,29 @@ const getTokenContract = (client, address) =>
 const getPoolContract = (client) =>
   getContract({ client, chain: sepolia, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
 
+// Helper function to safely convert to wei
+const safeToWei = (amount) => {
+  if (!amount) throw new Error('Amount is required');
+  const amountStr = amount.toString();
+  if (!amountStr || amountStr === 'undefined' || amountStr === 'null') {
+    throw new Error('Invalid amount value');
+  }
+  return toWei(amountStr);
+};
+
 /**
  * Supply Sepolia ETH (native) via WETH Gateway
  */
-export const supplySepoliaETH = async (client, account, amount) => {
+export const supplySepoliaETH = async (account, amount) => {
+  if (!amount || isNaN(parseFloat(amount))) {
+    throw new Error('Invalid amount');
+  }
+  
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+
   const contract = getContract({
     client,
     chain: sepolia,
@@ -54,7 +73,7 @@ export const supplySepoliaETH = async (client, account, amount) => {
     contract,
     method: "depositETH",
     params: [CONTRACTS.AAVE_POOL, account.address, 0],
-    value: toWei(amount)
+    value: safeToWei(amount)
   });
 
   const result = await sendTransaction({ transaction: tx, account });
@@ -69,7 +88,12 @@ export const supplySepoliaETH = async (client, account, amount) => {
 /**
  * Approve WETH token before repay
  */
-export const approveToken = async (client, account, tokenAddress, amount) => {
+export const approveToken = async (account, tokenAddress, amount) => {
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+  
   const token = getTokenContract(client, tokenAddress);
   const currentAllowance = await readContract({
     contract: token,
@@ -98,12 +122,21 @@ export const approveToken = async (client, account, tokenAddress, amount) => {
 /**
  * Borrow WETH from Aave Pool
  */
-export const borrowWETH = async (client, account, amount) => {
+export const borrowWETH = async (account, amount) => {
+  if (!amount || isNaN(parseFloat(amount))) {
+    throw new Error('Invalid amount');
+  }
+  
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+
   const pool = getPoolContract(client);
   const tx = await prepareContractCall({
     contract: pool,
     method: "borrow",
-    params: [CONTRACTS.WETH, toWei(amount), 2, 0, account.address]
+    params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address]
   });
   const result = await sendTransaction({ transaction: tx, account });
   return {
@@ -116,13 +149,23 @@ export const borrowWETH = async (client, account, amount) => {
 /**
  * Repay WETH to Aave Pool
  */
-export const repayWETH = async (client, account, amount) => {
-  await approveToken(client, account, CONTRACTS.WETH, toWei(amount));
+export const repayWETH = async (account, amount) => {
+  if (!amount || isNaN(parseFloat(amount))) {
+    throw new Error('Invalid amount');
+  }
+  
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+
+  const weiAmount = safeToWei(amount);
+  await approveToken(account, CONTRACTS.WETH, weiAmount);
   const pool = getPoolContract(client);
   const tx = await prepareContractCall({
     contract: pool,
     method: "repay",
-    params: [CONTRACTS.WETH, toWei(amount), 2, account.address]
+    params: [CONTRACTS.WETH, weiAmount, 2, account.address]
   });
   const result = await sendTransaction({ transaction: tx, account });
   return {
@@ -135,13 +178,23 @@ export const repayWETH = async (client, account, amount) => {
 /**
  * Supply DAI to Aave Pool
  */
-export const supplyDAI = async (client, account, amount) => {
-  await approveToken(client, account, CONTRACTS.DAI, toWei(amount));
+export const supplyDAI = async (account, amount) => {
+  if (!amount || isNaN(parseFloat(amount))) {
+    throw new Error('Invalid amount');
+  }
+  
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+
+  const weiAmount = safeToWei(amount);
+  await approveToken(account, CONTRACTS.DAI, weiAmount);
   const pool = getPoolContract(client);
   const tx = await prepareContractCall({
     contract: pool,
     method: "supply",
-    params: [CONTRACTS.DAI, toWei(amount), account.address, 0]
+    params: [CONTRACTS.DAI, weiAmount, account.address, 0]
   });
   const result = await sendTransaction({ transaction: tx, account });
   return {
@@ -154,7 +207,12 @@ export const supplyDAI = async (client, account, amount) => {
 /**
  * Get token balance
  */
-export const getTokenBalance = async (client, account, tokenAddress) => {
+export const getTokenBalance = async (account, tokenAddress) => {
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+  
   const token = getTokenContract(client, tokenAddress);
   const balance = await readContract({
     contract: token,

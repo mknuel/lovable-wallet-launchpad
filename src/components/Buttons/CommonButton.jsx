@@ -12,10 +12,11 @@ import Button from "@mui/material/Button";
 //   "@apply font-regular": {},
 // });
 
-const CommonButton = ({ children, ...props }) => {
+const CommonButton = ({ children, ariaLabel, ...props }) => {
   return (
     <Button
       {...props}
+      aria-label={ariaLabel}
       variant="contained"
       disabled={props.disabled}
       sx={{
