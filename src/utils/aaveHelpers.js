@@ -173,6 +173,7 @@ export const approveToken = async (account, tokenAddress, amount) => {
 
 /**
  * Borrow WETH from Aave Pool
+ * Note: You must have supplied collateral first before borrowing
  */
 export const borrowWETH = async (account, amount) => {
   if (!amount || isNaN(parseFloat(amount))) {
@@ -184,18 +185,25 @@ export const borrowWETH = async (account, amount) => {
     throw new Error('Thirdweb client not configured');
   }
 
-  const pool = getPoolContract(client);
-  const tx = await prepareContractCall({
-    contract: pool,
-    method: "borrow",
-    params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address]
-  });
-  const result = await sendTransaction({ transaction: tx, account });
-  return {
-    success: true,
-    message: `Borrowed ${amount} WETH`,
-    txHash: result.transactionHash
-  };
+  try {
+    const pool = getPoolContract(client);
+    const tx = await prepareContractCall({
+      contract: pool,
+      method: "borrow",
+      params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address]
+    });
+    const result = await sendTransaction({ transaction: tx, account });
+    return {
+      success: true,
+      message: `Borrowed ${amount} WETH`,
+      txHash: result.transactionHash
+    };
+  } catch (error) {
+    if (error.message.includes('execution reverted')) {
+      throw new Error(`Cannot borrow WETH. Make sure you have sufficient collateral deposited first. Try supplying ETH or DAI as collateral before borrowing.`);
+    }
+    throw error;
+  }
 };
 
 /**
