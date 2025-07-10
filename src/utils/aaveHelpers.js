@@ -261,19 +261,42 @@ export const borrowETH = async (account, amount) => {
   try {
     // Check user's account data first
     const accountData = await getUserAccountData(account);
+    const totalCollateralETH = Number(accountData.totalCollateralETH) / 1e18;
+    const totalDebtETH = Number(accountData.totalDebtETH) / 1e18;
     const availableBorrowETH = Number(accountData.availableBorrowsETH) / 1e18;
+    const healthFactor = Number(accountData.healthFactor) / 1e18;
     const requestedAmount = parseFloat(amount);
     
-    console.log('Account data:', {
-      totalCollateral: Number(accountData.totalCollateralETH) / 1e18,
-      totalDebt: Number(accountData.totalDebtETH) / 1e18,
+    console.log('=== AAVE ACCOUNT DEBUG ===');
+    console.log('Raw account data:', accountData);
+    console.log('Parsed data:', {
+      totalCollateral: totalCollateralETH,
+      totalDebt: totalDebtETH,
       availableBorrows: availableBorrowETH,
-      healthFactor: Number(accountData.healthFactor) / 1e18,
+      healthFactor: healthFactor,
+      ltv: Number(accountData.ltv) / 100, // LTV is in basis points
+      liquidationThreshold: Number(accountData.currentLiquidationThreshold) / 100,
       requestedAmount
     });
 
+    // If no collateral, provide specific guidance
+    if (totalCollateralETH === 0) {
+      throw new Error(`No collateral detected in your Aave account. Your ETH deposit might not have been processed correctly. Please check the transaction status or try depositing again.`);
+    }
+
+    // Calculate what they should be able to borrow (typically 80% of collateral for ETH)
+    const expectedBorrowCapacity = totalCollateralETH * 0.8; // 80% LTV typical for ETH
+    console.log('Expected borrow capacity (80% of collateral):', expectedBorrowCapacity);
+
     if (availableBorrowETH < requestedAmount) {
-      throw new Error(`Insufficient borrowing capacity. You can borrow up to ${availableBorrowETH.toFixed(4)} ETH worth, but requested ${requestedAmount} ETH. Deposit more collateral to increase borrowing capacity.`);
+      throw new Error(`Insufficient borrowing capacity. 
+      
+Your account:
+- Collateral deposited: ${totalCollateralETH.toFixed(6)} ETH
+- Available to borrow: ${availableBorrowETH.toFixed(6)} ETH  
+- You requested: ${requestedAmount} ETH
+
+${totalCollateralETH > 0 ? 'Try borrowing a smaller amount or deposit more collateral.' : 'Make sure your ETH deposit transaction was successful.'}`);
     }
 
     // Borrow WETH directly from Pool contract
