@@ -317,7 +317,7 @@ ${totalCollateralETH > 0 ? 'Try borrowing a smaller amount or deposit more colla
     if (error.message.includes('Insufficient borrowing capacity')) {
       throw error; // Re-throw our custom error
     } else if (error.message.includes('30')) {
-      throw new Error(`Borrowing is not enabled for WETH on this testnet.`);
+      throw new Error(`Borrowing WETH is not supported on Sepolia testnet. Aave V3 on Sepolia may have limited asset support. Try using a different testnet or mainnet.`);
     } else if (error.message.includes('execution reverted')) {
       throw new Error(`Cannot borrow WETH. The transaction was reverted - this usually means insufficient collateral or borrowing is not enabled for this asset.`);
     }

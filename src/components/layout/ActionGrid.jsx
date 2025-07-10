@@ -27,6 +27,7 @@ export const ActionGrid = ({
           title="Stake"
           isHighlighted={selectedAction === 'stake'}
           onClick={onStakeClick}
+          disabled={true}
         />
         <ActionCard
           title="Repay"
