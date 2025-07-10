@@ -107,18 +107,18 @@ const BlockLoansScreen = () => {
     setIsTransactionLoading(true);
     
     try {
-      const signer = await activeWallet.getSigner();
+      const account = activeWallet.getAccount();
       let result;
 
       switch (modalConfig.type) {
         case 'deposit':
-          result = await supplyDAI(signer, amount);
+          result = await supplyDAI(account, amount);
           break;
         case 'borrow':
-          result = await borrowWETH(signer, amount);
+          result = await borrowWETH(account, amount);
           break;
         case 'repay':
-          result = await repayWETH(signer, amount);
+          result = await repayWETH(account, amount);
           break;
         case 'stake':
           showNotification('Staking functionality coming soon!', 'info');

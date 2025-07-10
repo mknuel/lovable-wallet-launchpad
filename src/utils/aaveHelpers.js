@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { getContract, readContract, prepareContractCall, sendTransaction, toWei, fromWei } from 'thirdweb';
+import { polygon } from 'thirdweb/chains';
 
 // Contract addresses for Polygon Mumbai testnet
 export const CONTRACTS = {
@@ -23,32 +24,65 @@ const AAVE_POOL_ABI = [
 ];
 
 /**
+ * Get contract instance
+ */
+const getTokenContract = (client, tokenAddress) => {
+  return getContract({
+    client,
+    chain: polygon,
+    address: tokenAddress,
+    abi: ERC20_ABI
+  });
+};
+
+const getPoolContract = (client) => {
+  return getContract({
+    client,
+    chain: polygon,
+    address: CONTRACTS.AAVE_POOL,
+    abi: AAVE_POOL_ABI
+  });
+};
+
+/**
  * Approve tokens for spending by Aave Pool
  */
-export const approveToken = async (signer, tokenAddress, amount) => {
+export const approveToken = async (account, tokenAddress, amount) => {
   try {
-    const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    const client = account.client;
+    const tokenContract = getTokenContract(client, tokenAddress);
+    const parsedAmount = toWei(amount);
     
     // Check current allowance
-    const userAddress = await signer.getAddress();
-    const currentAllowance = await tokenContract.allowance(userAddress, CONTRACTS.AAVE_POOL);
+    const userAddress = account.address;
+    const currentAllowance = await readContract({
+      contract: tokenContract,
+      method: "allowance",
+      params: [userAddress, CONTRACTS.AAVE_POOL]
+    });
     
-    if (currentAllowance.gte(parsedAmount)) {
+    if (BigInt(currentAllowance) >= BigInt(parsedAmount)) {
       console.log('Already approved sufficient amount');
       return { success: true, message: 'Already approved' };
     }
     
-    const tx = await tokenContract.approve(CONTRACTS.AAVE_POOL, parsedAmount);
-    console.log('Approval transaction sent:', tx.hash);
+    const transaction = prepareContractCall({
+      contract: tokenContract,
+      method: "approve",
+      params: [CONTRACTS.AAVE_POOL, parsedAmount]
+    });
     
-    const receipt = await tx.wait();
-    console.log('Approval confirmed:', receipt.transactionHash);
+    const result = await sendTransaction({
+      transaction,
+      account
+    });
+    
+    console.log('Approval confirmed:', result.transactionHash);
     
     return { 
       success: true, 
       message: 'Token approved successfully',
-      txHash: receipt.transactionHash 
+      txHash: result.transactionHash 
     };
   } catch (error) {
     console.error('Approval failed:', error);
@@ -62,34 +96,37 @@ export const approveToken = async (signer, tokenAddress, amount) => {
 /**
  * Supply DAI to Aave Pool
  */
-export const supplyDAI = async (signer, amount) => {
+export const supplyDAI = async (account, amount) => {
   try {
-    const poolContract = new ethers.Contract(CONTRACTS.AAVE_POOL, AAVE_POOL_ABI, signer);
-    const userAddress = await signer.getAddress();
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    const client = account.client;
+    const poolContract = getPoolContract(client);
+    const userAddress = account.address;
+    const parsedAmount = toWei(amount);
     
     // First approve DAI
-    const approvalResult = await approveToken(signer, CONTRACTS.DAI, amount);
+    const approvalResult = await approveToken(account, CONTRACTS.DAI, amount);
     if (!approvalResult.success) {
       return approvalResult;
     }
     
     // Supply to Aave
-    const tx = await poolContract.supply(
-      CONTRACTS.DAI,
-      parsedAmount,
-      userAddress,
-      0 // referral code
-    );
+    const transaction = prepareContractCall({
+      contract: poolContract,
+      method: "supply",
+      params: [CONTRACTS.DAI, parsedAmount, userAddress, 0]
+    });
     
-    console.log('Supply transaction sent:', tx.hash);
-    const receipt = await tx.wait();
-    console.log('Supply confirmed:', receipt.transactionHash);
+    const result = await sendTransaction({
+      transaction,
+      account
+    });
+    
+    console.log('Supply confirmed:', result.transactionHash);
     
     return {
       success: true,
       message: `Successfully supplied ${amount} DAI`,
-      txHash: receipt.transactionHash
+      txHash: result.transactionHash
     };
   } catch (error) {
     console.error('Supply failed:', error);
@@ -103,28 +140,30 @@ export const supplyDAI = async (signer, amount) => {
 /**
  * Borrow WETH from Aave Pool
  */
-export const borrowWETH = async (signer, amount) => {
+export const borrowWETH = async (account, amount) => {
   try {
-    const poolContract = new ethers.Contract(CONTRACTS.AAVE_POOL, AAVE_POOL_ABI, signer);
-    const userAddress = await signer.getAddress();
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    const client = account.client;
+    const poolContract = getPoolContract(client);
+    const userAddress = account.address;
+    const parsedAmount = toWei(amount);
     
-    const tx = await poolContract.borrow(
-      CONTRACTS.WETH,
-      parsedAmount,
-      2, // variable interest rate mode
-      0, // referral code
-      userAddress
-    );
+    const transaction = prepareContractCall({
+      contract: poolContract,
+      method: "borrow",
+      params: [CONTRACTS.WETH, parsedAmount, 2, 0, userAddress]
+    });
     
-    console.log('Borrow transaction sent:', tx.hash);
-    const receipt = await tx.wait();
-    console.log('Borrow confirmed:', receipt.transactionHash);
+    const result = await sendTransaction({
+      transaction,
+      account
+    });
+    
+    console.log('Borrow confirmed:', result.transactionHash);
     
     return {
       success: true,
       message: `Successfully borrowed ${amount} WETH`,
-      txHash: receipt.transactionHash
+      txHash: result.transactionHash
     };
   } catch (error) {
     console.error('Borrow failed:', error);
@@ -138,34 +177,37 @@ export const borrowWETH = async (signer, amount) => {
 /**
  * Repay WETH to Aave Pool
  */
-export const repayWETH = async (signer, amount) => {
+export const repayWETH = async (account, amount) => {
   try {
-    const poolContract = new ethers.Contract(CONTRACTS.AAVE_POOL, AAVE_POOL_ABI, signer);
-    const userAddress = await signer.getAddress();
-    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+    const client = account.client;
+    const poolContract = getPoolContract(client);
+    const userAddress = account.address;
+    const parsedAmount = toWei(amount);
     
     // First approve WETH
-    const approvalResult = await approveToken(signer, CONTRACTS.WETH, amount);
+    const approvalResult = await approveToken(account, CONTRACTS.WETH, amount);
     if (!approvalResult.success) {
       return approvalResult;
     }
     
     // Repay to Aave
-    const tx = await poolContract.repay(
-      CONTRACTS.WETH,
-      parsedAmount,
-      2, // variable interest rate mode
-      userAddress
-    );
+    const transaction = prepareContractCall({
+      contract: poolContract,
+      method: "repay",
+      params: [CONTRACTS.WETH, parsedAmount, 2, userAddress]
+    });
     
-    console.log('Repay transaction sent:', tx.hash);
-    const receipt = await tx.wait();
-    console.log('Repay confirmed:', receipt.transactionHash);
+    const result = await sendTransaction({
+      transaction,
+      account
+    });
+    
+    console.log('Repay confirmed:', result.transactionHash);
     
     return {
       success: true,
       message: `Successfully repaid ${amount} WETH`,
-      txHash: receipt.transactionHash
+      txHash: result.transactionHash
     };
   } catch (error) {
     console.error('Repay failed:', error);
@@ -179,12 +221,19 @@ export const repayWETH = async (signer, amount) => {
 /**
  * Get user's token balance
  */
-export const getTokenBalance = async (signer, tokenAddress) => {
+export const getTokenBalance = async (account, tokenAddress) => {
   try {
-    const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
-    const userAddress = await signer.getAddress();
-    const balance = await tokenContract.balanceOf(userAddress);
-    return ethers.utils.formatUnits(balance, 18);
+    const client = account.client;
+    const tokenContract = getTokenContract(client, tokenAddress);
+    const userAddress = account.address;
+    
+    const balance = await readContract({
+      contract: tokenContract,
+      method: "balanceOf",
+      params: [userAddress]
+    });
+    
+    return fromWei(balance);
   } catch (error) {
     console.error('Failed to get token balance:', error);
     return '0';
