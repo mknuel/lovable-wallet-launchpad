@@ -1,5 +1,14 @@
-import { getContract, readContract, prepareContractCall, sendTransaction, toUnits, fromUnits } from 'thirdweb';
+import { getContract, readContract, prepareContractCall, sendTransaction } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
+
+// Helper functions for unit conversion
+const toWei = (value) => {
+  return BigInt(Math.floor(parseFloat(value) * Math.pow(10, 18)));
+};
+
+const fromWei = (value) => {
+  return (Number(value) / Math.pow(10, 18)).toString();
+};
 
 // Contract addresses for Polygon Mumbai testnet
 export const CONTRACTS = {
@@ -51,7 +60,7 @@ export const approveToken = async (account, tokenAddress, amount) => {
   try {
     const client = account.client;
     const tokenContract = getTokenContract(client, tokenAddress);
-    const parsedAmount = toUnits(amount, 18);
+    const parsedAmount = toWei(amount);
     
     // Check current allowance
     const userAddress = account.address;
@@ -101,7 +110,7 @@ export const supplyDAI = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toUnits(amount, 18);
+    const parsedAmount = toWei(amount);
     
     // First approve DAI
     const approvalResult = await approveToken(account, CONTRACTS.DAI, amount);
@@ -145,7 +154,7 @@ export const borrowWETH = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toUnits(amount, 18);
+    const parsedAmount = toWei(amount);
     
     const transaction = prepareContractCall({
       contract: poolContract,
@@ -182,7 +191,7 @@ export const repayWETH = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toUnits(amount, 18);
+    const parsedAmount = toWei(amount);
     
     // First approve WETH
     const approvalResult = await approveToken(account, CONTRACTS.WETH, amount);
@@ -233,7 +242,7 @@ export const getTokenBalance = async (account, tokenAddress) => {
       params: [userAddress]
     });
     
-    return fromUnits(balance, 18);
+    return fromWei(balance);
   } catch (error) {
     console.error('Failed to get token balance:', error);
     return '0';
