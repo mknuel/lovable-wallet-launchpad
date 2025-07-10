@@ -5,7 +5,7 @@ import MainHeader from '../../components/layout/MainHeader';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { ActionGrid } from '../../components/layout/ActionGrid';
 import Navigation from '../../components/layout/Navigation';
-import { AaveActionModal } from '../../components/modals/AaveActionModal';
+import { AaveConfirmationModal } from '../../components/modals/AaveConfirmationModal';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
 import {
@@ -125,8 +125,7 @@ const BlockLoansScreen = () => {
 
   const handleConfirmAction = async (amount) => {
     if (!activeWallet) {
-      showNotification('Please connect your wallet first', 'error');
-      return;
+      return Promise.reject(new Error('Please connect your wallet first'));
     }
 
     setIsTransactionLoading(true);
@@ -144,25 +143,19 @@ const BlockLoansScreen = () => {
           break;
         case 'repay':
           result = await repayETH(account, amount);
-          // Reload account data after successful transaction
-          const newData = await getUserAccountData(account);
-          setAccountData(newData);
-          setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
           break;
         default:
           throw new Error('Unknown action type');
       }
 
       if (result.success) {
-        showNotification(result.message, 'success');
         // Reload account data after successful transaction
-        if (modalConfig.type === 'deposit' || modalConfig.type === 'borrow') {
-          const newData = await getUserAccountData(account);
-          setAccountData(newData);
-          setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
-        }
+        const newData = await getUserAccountData(account);
+        setAccountData(newData);
+        setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
+        return Promise.resolve(result.message);
       } else {
-        showNotification(result.message, 'error');
+        return Promise.reject(new Error(result.message));
       }
     } catch (error) {
       console.error('Transaction failed:', error);
@@ -173,7 +166,7 @@ const BlockLoansScreen = () => {
         errorMessage += '\n\nMake sure you have enough Sepolia ETH in your wallet for the transaction and gas fees.';
       }
       
-      showNotification(errorMessage, 'error');
+      return Promise.reject(new Error(errorMessage));
     } finally {
       setIsTransactionLoading(false);
     }
@@ -232,8 +225,8 @@ const BlockLoansScreen = () => {
       {/* Bottom Navigation */}
       <Navigation nav="BlockLoans" />
 
-      {/* Aave Action Modal */}
-      <AaveActionModal
+      {/* Aave Confirmation Modal */}
+      <AaveConfirmationModal
         isOpen={modalConfig.isOpen}
         onClose={handleModalClose}
         title={modalConfig.title}
