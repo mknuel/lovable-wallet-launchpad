@@ -33,6 +33,7 @@ const BlockLoansScreen = () => {
   });
   const [isTransactionLoading, setIsTransactionLoading] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [selectedAction, setSelectedAction] = useState('deposit');
 
   // Use the same stats calculation as MainMenu
   const statsData = useMemo(() => {
@@ -63,6 +64,7 @@ const BlockLoansScreen = () => {
   };
 
   const handleDepositClick = () => {
+    setSelectedAction('deposit');
     setModalConfig({
       isOpen: true,
       type: 'deposit',
@@ -71,6 +73,7 @@ const BlockLoansScreen = () => {
   };
 
   const handleBorrowClick = () => {
+    setSelectedAction('borrow');
     setModalConfig({
       isOpen: true,
       type: 'borrow',
@@ -79,6 +82,7 @@ const BlockLoansScreen = () => {
   };
 
   const handleStakeClick = () => {
+    setSelectedAction('stake');
     setModalConfig({
       isOpen: true,
       type: 'stake',
@@ -87,6 +91,7 @@ const BlockLoansScreen = () => {
   };
 
   const handleRepayClick = () => {
+    setSelectedAction('repay');
     setModalConfig({
       isOpen: true,
       type: 'repay',
@@ -180,6 +185,7 @@ const BlockLoansScreen = () => {
           onBorrowClick={handleBorrowClick}
           onStakeClick={handleStakeClick}
           onRepayClick={handleRepayClick}
+          selectedAction={selectedAction}
         />
 
         {/* Active Tokens Section */}
