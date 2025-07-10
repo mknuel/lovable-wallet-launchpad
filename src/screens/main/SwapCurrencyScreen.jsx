@@ -14,6 +14,7 @@ import {
 	useActiveWallet,
 	useWalletBalance,
 	useEstimateGasCost,
+  useSendAndConfirmTransaction
 } from "thirdweb/react";
 import { useWalletAccount } from "../../context/WalletAccountContext";
 import { client } from "../../components/thirdweb/thirdwebClient";
@@ -24,7 +25,6 @@ import {
 	Bridge,
 	Insight,
 	getContract,
-	sendTransaction,
 	toWei,
 } from "thirdweb";
 import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
@@ -62,6 +62,8 @@ const SwapCurrencyScreen = () => {
 	const tonwal = useTonWallet();
 
 	const { mutate: sendTransaction } = useSendTransaction();
+  const { mutate: sendAndConfirmTx, data: transactionReceipt } =
+  useSendAndConfirmTransaction();
 	const [isLoading, setIsLoading] = useState(true);
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
@@ -157,7 +159,8 @@ const SwapCurrencyScreen = () => {
 			console.log(prepared, "prepared");
 			for (const txStep of prepared.steps) {
 				for (const transaction of txStep.transactions) {
-					await sendTransaction(transaction);
+					// await sendTransaction(transaction);
+					await sendAndConfirmTx(transaction);
 				}
 			}
 			console.log("Swap executed successfully!");
