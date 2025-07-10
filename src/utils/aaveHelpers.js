@@ -1,4 +1,4 @@
-import { getContract, readContract, prepareContractCall, sendTransaction, toWei, fromWei } from 'thirdweb';
+import { getContract, readContract, prepareContractCall, sendTransaction, toUnits, fromUnits } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
 
 // Contract addresses for Polygon Mumbai testnet
@@ -51,7 +51,7 @@ export const approveToken = async (account, tokenAddress, amount) => {
   try {
     const client = account.client;
     const tokenContract = getTokenContract(client, tokenAddress);
-    const parsedAmount = toWei(amount);
+    const parsedAmount = toUnits(amount, 18);
     
     // Check current allowance
     const userAddress = account.address;
@@ -101,7 +101,7 @@ export const supplyDAI = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toWei(amount);
+    const parsedAmount = toUnits(amount, 18);
     
     // First approve DAI
     const approvalResult = await approveToken(account, CONTRACTS.DAI, amount);
@@ -145,7 +145,7 @@ export const borrowWETH = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toWei(amount);
+    const parsedAmount = toUnits(amount, 18);
     
     const transaction = prepareContractCall({
       contract: poolContract,
@@ -182,7 +182,7 @@ export const repayWETH = async (account, amount) => {
     const client = account.client;
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
-    const parsedAmount = toWei(amount);
+    const parsedAmount = toUnits(amount, 18);
     
     // First approve WETH
     const approvalResult = await approveToken(account, CONTRACTS.WETH, amount);
@@ -233,7 +233,7 @@ export const getTokenBalance = async (account, tokenAddress) => {
       params: [userAddress]
     });
     
-    return fromWei(balance);
+    return fromUnits(balance, 18);
   } catch (error) {
     console.error('Failed to get token balance:', error);
     return '0';
