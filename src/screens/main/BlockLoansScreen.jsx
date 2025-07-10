@@ -149,7 +149,7 @@ const BlockLoansScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header
         onNotificationClick={handleNotificationClick}
@@ -168,7 +168,7 @@ const BlockLoansScreen = () => {
       )}
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center px-4 py-6 gap-6">
+      <div className="flex-1 flex flex-col items-center px-2 py-6 gap-6">
         {/* Stats Card */}
         <div className="w-full max-w-sm">
           <StatsCard stats={statsData} />
@@ -193,7 +193,7 @@ const BlockLoansScreen = () => {
       </div>
 
       {/* Bottom Navigation */}
-      {/* <SwapBottomNavigation /> */}
+      <SwapBottomNavigation />
 
       {/* Aave Action Modal */}
       <AaveActionModal
