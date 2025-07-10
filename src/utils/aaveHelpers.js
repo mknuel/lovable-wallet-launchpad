@@ -18,15 +18,67 @@ export const CONTRACTS = {
 };
 
 const ERC20_ABI = [
-  "function approve(address spender, uint256 amount) external returns (bool)",
-  "function allowance(address owner, address spender) external view returns (uint256)",
-  "function balanceOf(address account) external view returns (uint256)"
+  {
+    "inputs": [{"name": "spender", "type": "address"}, {"name": "amount", "type": "uint256"}],
+    "name": "approve",
+    "outputs": [{"name": "", "type": "bool"}],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"name": "owner", "type": "address"}, {"name": "spender", "type": "address"}],
+    "name": "allowance",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"name": "account", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ];
 
 const AAVE_POOL_ABI = [
-  "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
-  "function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf)",
-  "function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) returns (uint256)"
+  {
+    "inputs": [
+      {"name": "asset", "type": "address"},
+      {"name": "amount", "type": "uint256"},
+      {"name": "onBehalfOf", "type": "address"},
+      {"name": "referralCode", "type": "uint16"}
+    ],
+    "name": "supply",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"name": "asset", "type": "address"},
+      {"name": "amount", "type": "uint256"},
+      {"name": "interestRateMode", "type": "uint256"},
+      {"name": "referralCode", "type": "uint16"},
+      {"name": "onBehalfOf", "type": "address"}
+    ],
+    "name": "borrow",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"name": "asset", "type": "address"},
+      {"name": "amount", "type": "uint256"},
+      {"name": "interestRateMode", "type": "uint256"},
+      {"name": "onBehalfOf", "type": "address"}
+    ],
+    "name": "repay",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ];
 
 const WETH_GATEWAY_ABI = [
