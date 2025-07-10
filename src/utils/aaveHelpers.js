@@ -1,12 +1,8 @@
-import { getContract, readContract, prepareContractCall, sendTransaction } from 'thirdweb';
+import { getContract, readContract, prepareContractCall, sendTransaction, toWei, fromGwei } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
-import {client} from "../components/thirdweb/thirdwebClient.js"
+import { client, isClientAvailable } from "../components/thirdweb/thirdwebClient.js"
 
-// Helper functions for unit conversion
-const toWei = (value) => {
-  return BigInt(Math.floor(parseFloat(value) * Math.pow(10, 18)));
-};
-
+// Helper function to convert from wei
 const fromWei = (value) => {
   return (Number(value) / Math.pow(10, 18)).toString();
 };
@@ -59,7 +55,10 @@ const getPoolContract = (client) => {
  */
 export const approveToken = async (account, tokenAddress, amount) => {
   try {
-    const client = account.client;
+    if (!isClientAvailable()) {
+      return { success: false, message: 'Thirdweb client not available' };
+    }
+    
     const tokenContract = getTokenContract(client, tokenAddress);
     const parsedAmount = toWei(amount);
     
@@ -108,7 +107,10 @@ export const approveToken = async (account, tokenAddress, amount) => {
  */
 export const supplyDAI = async (account, amount) => {
   try {
-    const client = account.client;
+    if (!isClientAvailable()) {
+      return { success: false, message: 'Thirdweb client not available' };
+    }
+    
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
     const parsedAmount = toWei(amount);
@@ -152,7 +154,10 @@ export const supplyDAI = async (account, amount) => {
  */
 export const borrowWETH = async (account, amount) => {
   try {
-    const client = account.client;
+    if (!isClientAvailable()) {
+      return { success: false, message: 'Thirdweb client not available' };
+    }
+    
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
     const parsedAmount = toWei(amount);
@@ -189,7 +194,10 @@ export const borrowWETH = async (account, amount) => {
  */
 export const repayWETH = async (account, amount) => {
   try {
-    const client = account.client;
+    if (!isClientAvailable()) {
+      return { success: false, message: 'Thirdweb client not available' };
+    }
+    
     const poolContract = getPoolContract(client);
     const userAddress = account.address;
     const parsedAmount = toWei(amount);
@@ -233,7 +241,10 @@ export const repayWETH = async (account, amount) => {
  */
 export const getTokenBalance = async (account, tokenAddress) => {
   try {
-    const client = account.client;
+    if (!isClientAvailable()) {
+      return '0';
+    }
+    
     const tokenContract = getTokenContract(client, tokenAddress);
     const userAddress = account.address;
     
