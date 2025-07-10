@@ -1,5 +1,6 @@
 import { getContract, readContract, prepareContractCall, sendTransaction } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
+import {client} from "../components/thirdweb/thirdwebClient.js"
 
 // Helper functions for unit conversion
 const toWei = (value) => {
