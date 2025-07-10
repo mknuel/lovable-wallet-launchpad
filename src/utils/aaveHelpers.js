@@ -78,6 +78,20 @@ const AAVE_POOL_ABI = [
     "outputs": [{"name": "", "type": "uint256"}],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [{"name": "user", "type": "address"}],
+    "name": "getUserAccountData",
+    "outputs": [
+      {"name": "totalCollateralETH", "type": "uint256"},
+      {"name": "totalDebtETH", "type": "uint256"},
+      {"name": "availableBorrowsETH", "type": "uint256"},
+      {"name": "currentLiquidationThreshold", "type": "uint256"},
+      {"name": "ltv", "type": "uint256"},
+      {"name": "healthFactor", "type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ];
 
@@ -205,6 +219,32 @@ export const approveToken = async (account, tokenAddress, amount) => {
 };
 
 /**
+ * Get user's account data from Aave
+ */
+export const getUserAccountData = async (account) => {
+  const { client } = await import('../components/thirdweb/thirdwebClient.js');
+  if (!client) {
+    throw new Error('Thirdweb client not configured');
+  }
+
+  const pool = getPoolContract(client);
+  const data = await readContract({
+    contract: pool,
+    method: "getUserAccountData",
+    params: [account.address]
+  });
+
+  return {
+    totalCollateralETH: data[0],
+    totalDebtETH: data[1],
+    availableBorrowsETH: data[2],
+    currentLiquidationThreshold: data[3],
+    ltv: data[4],
+    healthFactor: data[5]
+  };
+};
+
+/**
  * Borrow WETH from Aave Pool (which can be unwrapped to ETH)
  * Note: You must have supplied collateral first before borrowing
  */
@@ -219,7 +259,24 @@ export const borrowETH = async (account, amount) => {
   }
 
   try {
-    // Borrow WETH directly from Pool contract (Gateway doesn't support borrowing on Sepolia)
+    // Check user's account data first
+    const accountData = await getUserAccountData(account);
+    const availableBorrowETH = Number(accountData.availableBorrowsETH) / 1e18;
+    const requestedAmount = parseFloat(amount);
+    
+    console.log('Account data:', {
+      totalCollateral: Number(accountData.totalCollateralETH) / 1e18,
+      totalDebt: Number(accountData.totalDebtETH) / 1e18,
+      availableBorrows: availableBorrowETH,
+      healthFactor: Number(accountData.healthFactor) / 1e18,
+      requestedAmount
+    });
+
+    if (availableBorrowETH < requestedAmount) {
+      throw new Error(`Insufficient borrowing capacity. You can borrow up to ${availableBorrowETH.toFixed(4)} ETH worth, but requested ${requestedAmount} ETH. Deposit more collateral to increase borrowing capacity.`);
+    }
+
+    // Borrow WETH directly from Pool contract
     const pool = getPoolContract(client);
     const tx = await prepareContractCall({
       contract: pool,
@@ -234,10 +291,12 @@ export const borrowETH = async (account, amount) => {
     };
   } catch (error) {
     console.error('Borrow error:', error);
-    if (error.message.includes('30')) {
-      throw new Error(`Borrowing is not enabled for WETH on this testnet. Try supplying more collateral first.`);
+    if (error.message.includes('Insufficient borrowing capacity')) {
+      throw error; // Re-throw our custom error
+    } else if (error.message.includes('30')) {
+      throw new Error(`Borrowing is not enabled for WETH on this testnet.`);
     } else if (error.message.includes('execution reverted')) {
-      throw new Error(`Cannot borrow WETH. Make sure you have sufficient collateral deposited first. You need to supply ETH as collateral before borrowing.`);
+      throw new Error(`Cannot borrow WETH. The transaction was reverted - this usually means insufficient collateral or borrowing is not enabled for this asset.`);
     }
     throw error;
   }
