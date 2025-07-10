@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActiveWallet } from 'thirdweb/react';
-import { Header } from '../../components/layout/Header';
+import Header from '../../components/layout/MainHeader';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { ActionGrid } from '../../components/layout/ActionGrid';
 import Navigation from '../../components/layout/Navigation';
@@ -140,20 +140,17 @@ const BlockLoansScreen = () => {
     }
   };
 
-  const handleNotificationClick = () => {
-    console.log('Notification clicked');
-  };
-
-  const handleSettingsClick = () => {
-    navigate('/setting');
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <Header
-        onNotificationClick={handleNotificationClick}
-        onSettingsClick={handleSettingsClick}
+        title="BlockLoans"
+        action={true}
+        onBack={handleBackClick}
       />
       
       {/* Notification */}
