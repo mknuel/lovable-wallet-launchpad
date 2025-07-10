@@ -5,14 +5,16 @@ import {
   prepareContractCall,
   sendTransaction,
   readContract,
-  toWei
+  toWei,
+  fromGwei
 } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 
 export const CONTRACTS = {
   AAVE_POOL: "0x87870Bca3F3fd6335C3F4cE8392D69350b4fA4E2", // Aave Pool
   WETH_GATEWAY: "0x6A109e4c2f5D75F16d6e01f29e3A272Bb3A42e6b", // WETH Gateway
-  WETH: "0xdd13E55209Fd76AfE204dBda4007C227904f0a81" // WETH Token on Sepolia
+  WETH: "0xdd13E55209Fd76AfE204dBda4007C227904f0a81", // WETH Token on Sepolia
+  DAI: "0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6" // DAI Token on Sepolia
 };
 
 const ERC20_ABI = [
@@ -22,6 +24,7 @@ const ERC20_ABI = [
 ];
 
 const AAVE_POOL_ABI = [
+  "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
   "function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf)",
   "function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) returns (uint256)"
 ];
@@ -127,4 +130,36 @@ export const repayWETH = async (client, account, amount) => {
     message: `Repaid ${amount} WETH`,
     txHash: result.transactionHash
   };
+};
+
+/**
+ * Supply DAI to Aave Pool
+ */
+export const supplyDAI = async (client, account, amount) => {
+  await approveToken(client, account, CONTRACTS.DAI, toWei(amount));
+  const pool = getPoolContract(client);
+  const tx = await prepareContractCall({
+    contract: pool,
+    method: "supply",
+    params: [CONTRACTS.DAI, toWei(amount), account.address, 0]
+  });
+  const result = await sendTransaction({ transaction: tx, account });
+  return {
+    success: true,
+    message: `Supplied ${amount} DAI`,
+    txHash: result.transactionHash
+  };
+};
+
+/**
+ * Get token balance
+ */
+export const getTokenBalance = async (client, account, tokenAddress) => {
+  const token = getTokenContract(client, tokenAddress);
+  const balance = await readContract({
+    contract: token,
+    method: "balanceOf",
+    params: [account.address]
+  });
+  return balance;
 };
