@@ -14,7 +14,7 @@ import {
 } from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
 import WalletScreen from "./WalletScreen";
-import { PATH_WALLET } from "../../context/paths";
+import { PATH_WALLET, PATH_BLOCKLOANS } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
 import Success from "../../assets/icons/pin-success.svg";
 
@@ -102,7 +102,7 @@ const MainMenu = () => {
 			{
 				id: "blockloans",
 				label: t("mainMenu.blockloans"),
-				onClick: () => console.log("Navigate to blockloans"),
+				onClick: () => navigate(PATH_BLOCKLOANS),
 			},
 		],
 		[t, handleWalletClick, navigate]

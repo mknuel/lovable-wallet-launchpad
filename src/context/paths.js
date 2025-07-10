@@ -21,6 +21,7 @@ export const PATH_REGISTER_CONGRATULATION = "/registery-congratulation";
 export const PATH_SETTING = "/setting";
 export const PATH_EDIT_PROFILE = "/edit-profile";
 export const PATH_LANGUAGE = "/language";
+export const PATH_BLOCKLOANS = "/blockloans";
 
 export const PATH_MAIN = "/main";
 export const PATH_WALLET = "/wallet";

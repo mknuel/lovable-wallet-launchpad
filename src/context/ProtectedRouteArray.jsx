@@ -17,7 +17,9 @@ import {
   PATH_SETTING,
   PATH_EDIT_PROFILE,
   PATH_LANGUAGE,
+  PATH_BLOCKLOANS,
 } from "./paths";
+import BlockLoansScreen from "../screens/main/BlockLoansScreen";
 
 export const ProtectedRouteArray = [
   {
@@ -51,5 +53,9 @@ export const ProtectedRouteArray = [
   {
     path: PATH_LANGUAGE,
     element: <Language />,
+  },
+  {
+    path: PATH_BLOCKLOANS,
+    element: <BlockLoansScreen />,
   },
 ];
