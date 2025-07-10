@@ -4,7 +4,7 @@ import { useActiveWallet } from 'thirdweb/react';
 import { Header } from '../../components/layout/Header';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { ActionGrid } from '../../components/layout/ActionGrid';
-import { SwapBottomNavigation } from '../../components/swap/SwapBottomNavigation';
+import Navigation from '../../components/layout/Navigation';
 import { AaveActionModal } from '../../components/modals/AaveActionModal';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
@@ -193,7 +193,9 @@ const BlockLoansScreen = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <SwapBottomNavigation />
+      <div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+        <Navigation nav="BlockLoans" />
+      </div>
 
       {/* Aave Action Modal */}
       <AaveActionModal
