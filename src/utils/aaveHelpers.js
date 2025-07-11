@@ -165,3 +165,92 @@ export const supplySepoliaETH = async (account, amount) => {
     txHash: result.transactionHash,
   };
 };
+
+// ✅ Borrow ETH
+export const borrowETH = async (account, amount) => {
+  const { client } = await import("../components/thirdweb/thirdwebClient.js");
+  if (!client) throw new Error("Thirdweb client not configured");
+
+  const contract = getPoolContract(client);
+  const tx = await prepareContractCall({
+    contract,
+    method: "borrow",
+    params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address],
+  });
+
+  const result = await sendTransaction({ transaction: tx, account });
+
+  return {
+    success: true,
+    message: `Borrowed ${amount} ETH successfully`,
+    txHash: result.transactionHash,
+  };
+};
+
+// ✅ Repay ETH
+export const repayETH = async (account, amount) => {
+  const { client } = await import("../components/thirdweb/thirdwebClient.js");
+  if (!client) throw new Error("Thirdweb client not configured");
+
+  const contract = getPoolContract(client);
+  const tx = await prepareContractCall({
+    contract,
+    method: "repay",
+    params: [CONTRACTS.WETH, safeToWei(amount), 2, account.address],
+  });
+
+  const result = await sendTransaction({ transaction: tx, account });
+
+  return {
+    success: true,
+    message: `Repaid ${amount} ETH successfully`,
+    txHash: result.transactionHash,
+  };
+};
+
+// ✅ Get user account data
+export const getUserAccountData = async (userAddress) => {
+  const { client } = await import("../components/thirdweb/thirdwebClient.js");
+  if (!client) throw new Error("Thirdweb client not configured");
+
+  const contract = getPoolContract(client);
+  const data = await readContract({
+    contract,
+    method: "getUserAccountData",
+    params: [userAddress],
+  });
+
+  return {
+    totalCollateralETH: Number(data.totalCollateralETH) / 1e18,
+    totalDebtETH: Number(data.totalDebtETH) / 1e18,
+    availableBorrowsETH: Number(data.availableBorrowsETH) / 1e18,
+    currentLiquidationThreshold: Number(data.currentLiquidationThreshold),
+    ltv: Number(data.ltv),
+    healthFactor: Number(data.healthFactor) / 1e18,
+  };
+};
+
+// ✅ Get token balance
+export const getTokenBalance = async (userAddress, tokenAddress) => {
+  const { client } = await import("../components/thirdweb/thirdwebClient.js");
+  if (!client) throw new Error("Thirdweb client not configured");
+
+  const contract = getTokenContract(client, tokenAddress);
+  const balance = await readContract({
+    contract,
+    method: "balanceOf",
+    params: [userAddress],
+  });
+
+  return Number(balance) / 1e18;
+};
+
+// ✅ Get test DAI info
+export const getTestDAIInfo = () => {
+  return {
+    address: CONTRACTS.DAI,
+    symbol: "DAI",
+    name: "Dai Stablecoin",
+    decimals: 18,
+  };
+};
