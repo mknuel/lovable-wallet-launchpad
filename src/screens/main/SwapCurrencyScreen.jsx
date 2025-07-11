@@ -46,6 +46,7 @@ const SwapCurrencyScreen = () => {
 	const [isFetchingQuote, setIsFetchingQuote] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [error, setError] = useState(null);
+	const [isExecutingSwap, setIsExecutingSwap] = useState(false);
 	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
 
 	// State for tokens the user OWNS
@@ -139,7 +140,9 @@ const SwapCurrencyScreen = () => {
 	// --- Step 3: Execute Swap ---
 	const executeSwap = async () => {
 		if (!quote || !activeAccount) return;
-		setIsModalOpen(false);
+		
+		setIsExecutingSwap(true);
+		setError(null);
 
 		try {
 			console.log(fromAmount, fromCurrency, toCurrency, activeAccount, "shad");
@@ -161,10 +164,13 @@ const SwapCurrencyScreen = () => {
 				}
 			}
 			console.log("Swap executed successfully!");
+			setIsModalOpen(false);
 			// navigate(PATH_WALLET_ACTIONS);
 		} catch (err) {
 			console.error("Failed to execute swap:", err);
 			setError("An error occurred during the swap.");
+		} finally {
+			setIsExecutingSwap(false);
 		}
 	};
 
@@ -252,8 +258,9 @@ const SwapCurrencyScreen = () => {
 
 			<ConfirmationModal
 				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
+				onClose={() => !isExecutingSwap && setIsModalOpen(false)}
 				onConfirm={executeSwap}
+				isLoading={isExecutingSwap}
 			/>
 
 			{/* Bottom Navigation - Fixed to bottom */}

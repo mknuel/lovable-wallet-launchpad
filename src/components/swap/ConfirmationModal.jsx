@@ -43,7 +43,7 @@ import CommonButton from "../Buttons/CommonButton";
     }
 } */
 
-export const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+export const ConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
 	// Animation variants for the modal backdrop
 	const backdropVariants = {
 		hidden: { opacity: 0 },
@@ -103,10 +103,20 @@ export const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 						<div className="mt-6">
 							<CommonButton
 								onClick={onConfirm}
+								disabled={isLoading}
 								className="w-full py-3 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
-								<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-									Confirm
-								</span>
+								{isLoading ? (
+									<div className="flex items-center justify-center gap-2">
+										<div className="w-4 h-4 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin"></div>
+										<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
+											Processing...
+										</span>
+									</div>
+								) : (
+									<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
+										Confirm
+									</span>
+								)}
 							</CommonButton>
 						</div>
 					</motion.div>
