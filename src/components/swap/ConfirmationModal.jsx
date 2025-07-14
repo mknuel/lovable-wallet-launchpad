@@ -195,14 +195,15 @@ export const TransactionSuccessModal = ({
 
 						{/* Action Button */}
 						<div className="mt-6">
-							<CommonButton
+								<div className="mt-0">
+							<button
 								onClick={onConfirm}
-								disabled={isLoading}
-								className="w-full py-3 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
+								className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
 								<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-									Confirm
+									Done!
 								</span>
-							</CommonButton>
+							</button>
+						</div>
 						</div>
 					</motion.div>
 				</motion.div>
