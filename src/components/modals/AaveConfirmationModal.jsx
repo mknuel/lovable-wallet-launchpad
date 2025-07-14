@@ -159,44 +159,12 @@ export const AaveConfirmationModal = ({
             {!success && !error && (
               <>
                 {/* Title */}
-                <h3 className="text-xl font-bold text-center text-gray-900 mb-2">
-                  {title}
+                <h3 className="text-xl font-bold text-black mb-6">
+                  Enter The Amount You Wish To {getActionText()}.
                 </h3>
 
-                {/* Description */}
-                <p className="text-center text-gray-600 mb-4 text-sm">
-                  {description}
-                </p>
-
-                {/* Account Info for Borrowing */}
-                {actionType === 'borrow' && accountData && (
-                  <div className="bg-blue-50 p-4 rounded-lg mb-4 space-y-2">
-                    <div className="text-sm font-medium text-blue-900 mb-2">Account Summary:</div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-blue-700">Collateral:</span>
-                        <div className="font-medium">{(Number(accountData.totalCollateralETH) / 1e18).toFixed(4)} ETH</div>
-                      </div>
-                      <div>
-                        <span className="text-blue-700">Current Debt:</span>
-                        <div className="font-medium">{(Number(accountData.totalDebtETH) / 1e18).toFixed(4)} ETH</div>
-                      </div>
-                      <div className="col-span-2">
-                        <span className="text-blue-700">Available to Borrow:</span>
-                        <div className="font-medium text-blue-800">{maxBorrowAmount.toFixed(4)} ETH</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {/* Amount Input */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount ({symbol})
-                    {actionType === 'borrow' && maxBorrowAmount > 0 && (
-                      <span className="text-blue-600 font-normal ml-1">(Max: {maxBorrowAmount.toFixed(4)})</span>
-                    )}
-                  </label>
+                <div className="mb-6">
                   <div className="relative">
                     <input
                       type="number"
@@ -205,19 +173,13 @@ export const AaveConfirmationModal = ({
                       max={actionType === 'borrow' ? maxBorrowAmount : undefined}
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-medium"
-                      placeholder={`Enter ${symbol} amount`}
+                      className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-lg"
+                      placeholder="Enter amount"
                       disabled={isLoading || actionType === 'stake'}
                     />
-                    {actionType === 'borrow' && maxBorrowAmount > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setAmount(maxBorrowAmount.toString())}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
-                      >
-                        Max
-                      </button>
-                    )}
+                    <div className="absolute left-4 bottom-2 text-gray-400 text-sm">
+                      Enter here
+                    </div>
                   </div>
                 </div>
 
@@ -228,29 +190,17 @@ export const AaveConfirmationModal = ({
                   </div>
                 )}
 
-                {/* Divider */}
-                <div className="border-t border-gray-200 -mx-6 mb-6"></div>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <CommonButton
-                    onClick={handleSubmit}
-                    disabled={isLoading || !amount || actionType === 'stake'}
-                    className="w-full py-3 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all"
-                  >
-                    <span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-                      {isLoading ? 'Processing...' : getActionText()}
-                    </span>
-                  </CommonButton>
-                  
-                  <button
-                    onClick={handleClose}
-                    disabled={isLoading}
-                    className="w-full py-3 text-gray-700 font-medium hover:bg-gray-50 transition-colors rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                {/* Action Button */}
+                <CommonButton
+                  onClick={handleSubmit}
+                  disabled={isLoading || !amount || actionType === 'stake'}
+                  className="w-full py-4 font-semibold rounded-lg text-white text-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, #DC2366, #4F5CAA)'
+                  }}
+                >
+                  {isLoading ? 'Processing...' : 'Confirm'}
+                </CommonButton>
               </>
             )}
           </motion.div>

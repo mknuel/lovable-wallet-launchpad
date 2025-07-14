@@ -195,7 +195,7 @@ const SettingScreen = () => {
 							<div
 								className="flex flex-row items-center gap-[13px]"
 								onClick={() =>
-									copyToClipboard(currentWalletAccount, setCopied)
+									copyToClipboard(userData.walletAddress, setCopied)
 								}>
 								<QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
 								<div className="flex flex-col">
