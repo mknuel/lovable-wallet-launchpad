@@ -257,7 +257,7 @@ const SwapCurrencyScreen = () => {
 			</div>
 
 			<TransactionSuccessModal
-				isOpen={isModalOpen}
+				isOpen={isModalOpen||true}
 				onClose={() => !isExecutingSwap && setIsModalOpen(false)}
 				onConfirm={() => setIsModalOpen(false)}
 				isLoading={isExecutingSwap}
