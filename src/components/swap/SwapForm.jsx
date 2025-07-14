@@ -72,17 +72,6 @@ export const SwapForm = ({
 					onCurrencySelect={setFromCurrency}
 				/>
 
-				{/* Swap Button */}
-				<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-					<button
-						type="button"
-						onClick={handleSwapCurrencies}
-						className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all"
-						aria-label="Swap currencies">
-						{/* <SwapIcon className="w-5 h-5 text-[#DC2366]" /> */}
-					</button>
-				</div>
-
 				{/* "To" Currency Input */}
 				<ToCurrencyCard
 					selectedCurrency={toCurrency}

@@ -6,6 +6,7 @@ import { useGetBridgeTokens } from "../../hooks/useBridge";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
 import { useActiveAccount } from "thirdweb/react";
+import Nodata from "../../assets/icons/cancel.svg";
 
 export const SearchableCurrencyDropdown = ({
 	isOpen,
@@ -20,11 +21,12 @@ export const SearchableCurrencyDropdown = ({
 
 	const { tokens, isLoading, error } = useGetBridgeTokens({
 		limit: 20,
-		name: debouncedSearchTerm,
+		metadata: "true",
+		testnet: true,
+		include_without_price: "true",
 		...(!debouncedSearchTerm && {
-			owner_address: activeAccount?.address,
+			name: debouncedSearchTerm,
 		}),
-		// chainId: chainId, // Use the chainId prop here
 	});
 
 	useOutsideClick(dropdownRef, onClose);
@@ -79,7 +81,7 @@ export const SearchableCurrencyDropdown = ({
 					initial="hidden"
 					animate="visible"
 					exit="exit"
-					className="absolute top-full left-0 right-0 mt-2 z-20 shadow-xl"
+					className="absolute top-3/4 left-0 right-0 mt-2 z-20 mb-10 shadow-xl"
 					ref={dropdownRef}>
 					<div className="relative p-[1px] w-full rounded-[8px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
 						<div className="bg-white p-4 rounded-[8px] backdrop-blur-sm bg-opacity-90">
@@ -164,10 +166,10 @@ export const SearchableCurrencyDropdown = ({
 											variants={noResultsVariants}
 											initial="hidden"
 											animate="visible"
-											className="flex flex-col items-center justify-center py-8">
-											<X className="w-8 h-8 mb-2 text-gray-400" />
+											className="flex flex-col items-center justify-center py-4">
+											<img src={Nodata} />
 											<div className="text-gray-500 text-sm">
-												Nothing found for "{debouncedSearchTerm}"
+												No tokens found
 											</div>
 										</motion.div>
 									))}

@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import LandingBackground from "../assets/images/landing_background.png";
 import CommonButton from "../components/Buttons/CommonButton";
@@ -17,8 +14,13 @@ import { isTMA } from "@telegram-apps/bridge";
 
 import { useNavigate } from "react-router-dom";
 
+// --- thirdweb imports ---
+import { useConnect } from "thirdweb/react";
+import { inAppWallet } from "thirdweb/wallets";
+import { client } from "../components/thirdweb/thirdwebClient";
+
 const role = {
-	id: "614c68de1df56b0018b4699c",
+	id: "614c68de1df56b0018b4ghdnkls",
 	name: "Engineer",
 };
 
@@ -28,6 +30,11 @@ const LandingScreen = () => {
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
 	const { login } = useAuth();
+
+	// --- thirdweb hooks ---
+	const { connect } = useConnect();
+	const wallet = inAppWallet();
+
 	let data = {};
 
 	useEffect(() => {
@@ -40,46 +47,59 @@ const LandingScreen = () => {
 		setSelectedLanguage(langCode);
 	};
 
-	if (isTMA()) {
-		console.log("It's Telegram Mini Apps");
-		const initData = retrieveLaunchParams();
-		data = {
-			hash: initData.tgWebAppData.hash,
-			id: initData.tgWebAppData.user.id,
-			username: initData.tgWebAppData.user.username,
-			first_name: initData.tgWebAppData.user.first_name,
-			last_name: initData.tgWebAppData.user.last_name,
-			roleId: role.id,
-			appsChannelKey: "abc",
-			deviceId: "Apple",
-		};
-		console.log("data==========>", data);
-	} else {
-		// initData in Web mode
-		data = {
-			hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
-			id: "7916246666",
-			username: "mknuel",
-			first_name: "Mk",
-			last_name: "Nuel",
-			roleId: role.id,
-			appsChannelKey: "tg",
-			deviceId: "Samsung",
-			walletAddress: "0xffe11A9c158811FC86fAEdEAA63cD92404B62feD",
-			appId: "notTmamk",
-		};
-		console.log("It's not Telegram Mini Apps");
-	}
-
-	const handleSwipe = (e) => {
+	const handleSwipe = async (e) => {
 		e.preventDefault();
 		try {
+			// --- Connect to in-app wallet ---
+			const res = await connect(async () => {
+				await wallet.connect({
+					client,
+					strategy: "telegram",
+				});
+				return wallet;
+			});
+			console.log("res===>", res);
+
+			const acct = wallet.getAccount();
+
+			console.log(acct, "walletAccount");
+			if (isTMA()) {
+				console.log("It's Telegram Mini Apps");
+				const initData = retrieveLaunchParams();
+				data = {
+					hash: initData.tgWebAppData.hash,
+					id: initData.tgWebAppData.user.id,
+					username: initData.tgWebAppData.user.username,
+					first_name: initData.tgWebAppData.user.first_name,
+					last_name: initData.tgWebAppData.user.last_name,
+					roleId: role.id,
+					appsChannelKey: "abc",
+					deviceId: "Apple",
+					walletAddress: acct?.address, // --- Add wallet address ---
+				};
+				console.log("data==========>", data);
+			} else {
+				// initData in Web mode
+				data = {
+					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
+					id: "7916246666",
+					username: "mknuel",
+					first_name: "Mk",
+					last_name: "Nuel",
+					roleId: role.id,
+					appsChannelKey: "tg",
+					deviceId: "Samsung",
+					// walletAddress: address, // --- Add wallet address ---
+					appId: "notTmamk",
+					walletAddress: acct?.address, // --- Add wallet address ---
+				};
+				console.log("It's not Telegram Mini Apps");
+			}
+
+			// --- The rest of your registration logic ---
 			api.post("/ssoauth/tgregister", data).then(async (res) => {
-				// if (res) {
 				console.log("Register Res==========>", res);
-				// US-2.1: Redirect to Main Menu after initial sign-up
 				handleLogin(PATH_MAIN);
-				// }
 			});
 		} catch (error) {
 			console.error("Unexpected error:", error);
@@ -111,6 +131,7 @@ const LandingScreen = () => {
 						profileId: response.user.profile._id,
 						photo: response.user.profile.photo,
 						gender: "male",
+						walletAddress: response?.user?.walletAddress,
 					};
 					console.log(response);
 					login(response.token, userData);

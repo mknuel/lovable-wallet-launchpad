@@ -31,7 +31,10 @@ import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { balanceOf } from "thirdweb/extensions/erc20";
 import CommonButton from "../../components/Buttons/CommonButton";
-import { ConfirmationModal } from "../../components/swap/ConfirmationModal";
+import {
+	ConfirmationModal,
+	TransactionSuccessModal,
+} from "../../components/swap/ConfirmationModal";
 const SwapCurrencyScreen = () => {
 	const { t } = useTranslation();
 	const activeAccount = useActiveAccount(); // <-- Get the active Account object here
@@ -63,6 +66,7 @@ const SwapCurrencyScreen = () => {
 	const tonwal = useTonWallet();
 
 	const { mutate: sendTransaction } = useSendTransaction();
+	const { mutate: sendAndConfirmTx } = useSendTransaction();
 	const [isLoading, setIsLoading] = useState(true);
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
@@ -130,17 +134,10 @@ const SwapCurrencyScreen = () => {
 		}
 	};
 
-	// --- Step 2: Open Confirmation Modal ---
-	const handleConfirmClick = () => {
-		if (step === 2 && quote) {
-			setIsModalOpen(true);
-		}
-	};
-
 	// --- Step 3: Execute Swap ---
 	const executeSwap = async () => {
 		if (!quote || !activeAccount) return;
-		
+
 		setIsExecutingSwap(true);
 		setError(null);
 
@@ -229,25 +226,28 @@ const SwapCurrencyScreen = () => {
 
 				{step === 2 && <TransactionDetails details={quote} />}
 				{error && (
-					<p className="text-red-500 text-sm text-center mt-2">{error}</p>
+					<p className="text-red-500 bg-red-100 w-full rounded p-3 text-sm text-center mt-2">
+						{error}
+					</p>
 				)}
 
-				<div className="mt-auto pt-8">
+				<div className={`mt-auto pt-8 ${step == 1 && "pt-28"}`}>
 					{step === 1 && (
 						<CommonButton
 							onClick={handleGetQuote}
-							className="w-full !text-[#fff] py-3"
+							className="w-full !text-[#fff] py-3 "
 							disabled={!isStep1Valid || isFetchingQuote}>
-							{isFetchingQuote ? "Getting Quote..." : "Get Quote"}
+							{isFetchingQuote ? "Getting Quote..." : "NEXT"}
 						</CommonButton>
 					)}
 					{step === 2 && (
 						<CommonButton
 							type="button"
 							className="w-full !text-[#fff] py-3"
-							onClick={handleConfirmClick}
+							onClick={executeSwap}
+							isLoading={isExecutingSwap}
 							disabled={!quote}>
-							Confirm Swap
+							Next
 						</CommonButton>
 					)}
 				</div>
@@ -256,10 +256,10 @@ const SwapCurrencyScreen = () => {
 				</div>
 			</div>
 
-			<ConfirmationModal
+			<TransactionSuccessModal
 				isOpen={isModalOpen}
 				onClose={() => !isExecutingSwap && setIsModalOpen(false)}
-				onConfirm={executeSwap}
+				onConfirm={() => setIsModalOpen(false)}
 				isLoading={isExecutingSwap}
 			/>
 

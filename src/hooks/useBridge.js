@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import bridge from "../components/thirdweb/thirdwebBridge"; // Adjust path to your axios instance
 import axios from "axios";
 import qs from "qs";
+
+const CHAIN_IDS = [80002, 11155111, 137, 1];
 export const useGetBridgeTokens = (params = {}) => {
 	const [tokens, setTokens] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +25,7 @@ export const useGetBridgeTokens = (params = {}) => {
 			setTokens(null);
 
 			try {
-				const response = await bridge.get("/tokens", {
+				const response = await bridge.get(`/tokens?chainId=${CHAIN_IDS[3]}`, {
 					params: JSON.parse(serializedParams), // Use the parsed params for the request
 					signal: controller.signal, // Pass the abort signal
 				});
@@ -58,10 +60,8 @@ export const useGetBridgeTokens = (params = {}) => {
 	return { tokens, isLoading, error };
 };
 
-export const useGetAccountTokens = (
-	ownerAddress,
-	CHAIN_IDS = [59141, 137, 11155111, 1]
-) => {
+// CHAIN_IDS = [59141, 137, 11155111, 1,]
+export const useGetAccountTokens = (ownerAddress) => {
 	const [tokens, setTokens] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
@@ -73,12 +73,12 @@ export const useGetAccountTokens = (
 			setIsLoading(true);
 			setError(null);
 			setTokens(null);
-
+			// &chain_id=${CHAIN_IDS[1]}&chain_id=${CHAIN_IDS[2]}&chain_id=${CHAIN_IDS[3]}
 			try {
 				// https://insight.thirdweb.com/v1/tokens?chain_id=1&chain_id=137&chain_id=11155111&limit=50&metadata=false&resolve_metadata_links=true&include_spam=false&owner_address=0xffe11A9c158811FC86fAEdEAA63cD92404B62feD&include_native=true&clientId=YOUR_THIRDWEB_CLIENT_ID
 				if (!ownerAddress) throw new Error("No address");
 				const response = await bridge.get(
-					`https://insight.thirdweb.com/v1/tokens?owner_address=${ownerAddress}&chain_id=${CHAIN_IDS[0]}&chain_id=${CHAIN_IDS[1]}&chain_id=${CHAIN_IDS[2]}&chain_id=${CHAIN_IDS[3]}`,
+					`https://insight.thirdweb.com/v1/tokens?owner_address=${ownerAddress}&chain_id=${CHAIN_IDS[0]}&chain_id=${CHAIN_IDS[3]}`,
 					{
 						params: {
 							metadata: true,

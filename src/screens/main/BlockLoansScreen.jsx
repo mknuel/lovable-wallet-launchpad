@@ -177,67 +177,68 @@ const BlockLoansScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <MainHeader
-        title="BlockLoans"
-        action={true}
-        onBack={handleBackClick}
-      />
-      
-      {/* Notification */}
-      {notification.message && (
-        <div className={`mx-4 mt-4 p-3 rounded-lg text-sm ${
-          notification.type === 'success' ? 'bg-green-100 text-green-800' :
-          notification.type === 'error' ? 'bg-red-100 text-red-800' :
-          'bg-blue-100 text-blue-800'
-        }`}>
-          {notification.message}
-        </div>
-      )}
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center px-4 py-6 gap-6">
-        {/* Stats Card */}
-        <div className="w-full">
-          <StatsCard stats={statsData} />
-        </div>
+		<div className="min-h-screen bg-gray-50 flex flex-col">
+			{/* Header */}
+			<MainHeader title="BlockLoans" action={true} onBack={handleBackClick} />
 
-        {/* Action Grid */}
-        <ActionGrid
-          onDepositClick={handleDepositClick}
-          onBorrowClick={handleBorrowClick}
-          onStakeClick={handleStakeClick}
-          onRepayClick={handleRepayClick}
-          selectedAction={selectedAction}
-        />
+			{/* Notification */}
+			{notification.message && (
+				<div
+					className={`mx-4 mt-4 p-3 rounded-lg text-sm ${
+						notification.type === "success"
+							? "bg-green-100 text-green-800"
+							: notification.type === "error"
+							? "bg-red-100 text-red-800"
+							: "bg-blue-100 text-blue-800"
+					}`}>
+					{notification.message}
+				</div>
+			)}
 
-        {/* Active Tokens Section */}
-        <div className="w-full max-w-sm mt-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">ACTIVE TOKENS</h2>
-          {/* Add token list here */}
-          <div className="text-gray-500 text-center py-8">
+			{/* Main Content */}
+			<div className="flex-1 flex flex-col items-center px-4 py-6 gap-6">
+				{/* Stats Card */}
+				<div className="w-full">
+					<StatsCard stats={statsData} />
+				</div>
+
+				{/* Action Grid */}
+				<ActionGrid
+					onDepositClick={handleDepositClick}
+					onBorrowClick={handleBorrowClick}
+					onStakeClick={handleStakeClick}
+					onRepayClick={handleRepayClick}
+					selectedAction={selectedAction}
+				/>
+
+				{/* Active Tokens Section */}
+				<div className="w-full max-w-sm mt-6">
+					<h2 className="text-lg font-bold text-gray-900 mb-4">
+						ACTIVE TOKENS
+					</h2>
+					{/* Add token list here */}
+					{/*  <div className="text-gray-500 text-center py-8">
             Connect wallet to view your Aave positions
-          </div>
-        </div>
-      </div>
+          </div> */}
+				</div>
+			</div>
 
-      {/* Bottom Navigation */}
-      <Navigation nav="BlockLoans" />
+			{/* Bottom Navigation */}
+			<Navigation nav="BlockLoans" />
 
-      {/* Aave Confirmation Modal */}
-      <AaveConfirmationModal
-        isOpen={modalConfig.isOpen}
-        onClose={handleModalClose}
-        title={modalConfig.title}
-        actionType={modalConfig.type}
-        onConfirm={handleConfirmAction}
-        isLoading={isTransactionLoading}
-        maxBorrowAmount={maxBorrowAmount}
-        accountData={accountData}
-      />
-    </div>
-  );
+			{/* Aave Confirmation Modal */}
+			<AaveConfirmationModal
+				isOpen={modalConfig.isOpen}
+				onClose={handleModalClose}
+				title={modalConfig.title}
+				actionType={modalConfig.type}
+				onConfirm={handleConfirmAction}
+				isLoading={isTransactionLoading}
+				maxBorrowAmount={maxBorrowAmount}
+				accountData={accountData}
+			/>
+		</div>
+	);
 };
 
 export default BlockLoansScreen;

@@ -35,8 +35,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 		}
 
 		return userTokens?.map((currency, i) => {
-			const { symbol, address, value, balance, chain_id, token_address } =
-				currency;
+			const { symbol, value, balance, chain_id, token_address } = currency;
 			return (
 				<motion.div
 					key={`${token_address}-${chain_id}`} // Use a truly unique key
@@ -56,12 +55,16 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 									{symbol}
 								</div>
 								<div className="text-gray-400 text-sm truncate w-40">
-									{address}
+									{token_address}
 								</div>
 							</div>
 							<div className="text-right">
 								<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-									{value ? `${Number(value).toFixed(2)} $` : "-"}
+									{currency?.price_data?.price_usd
+										? `${Number(currency?.price_data?.price_usd).toFixed(2)} $`
+										: value
+										? `${Number(value).toFixed(2)} $`
+										: "-"}
 								</div>
 								<div className="text-gray-400 text-sm">
 									{balance ? Number(balance).toFixed(4) : "0.0000"}
@@ -96,7 +99,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 							transition: { duration: 0.2 },
 						},
 					}}
-					className="absolute top-full left-0 right-0 mt-2 z-20 shadow-xl"
+					className="absolute top-3/4 left-0 right-0 mt-2 z-20 mb-10 shadow-xl"
 					ref={dropdownRef}>
 					<div className="relative p-[1px] rounded-[10px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
 						<div className="bg-white p-4 rounded-[9px] backdrop-blur-sm bg-opacity-90">
