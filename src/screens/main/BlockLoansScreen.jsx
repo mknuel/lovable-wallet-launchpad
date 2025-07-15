@@ -78,8 +78,8 @@ const BlockLoansScreen = () => {
           { id: "crypto", value: "0", label: t("wallet.crypto") }
         ];
 
-    // Add real Aave loan data in MATIC
-    const loansValue = accountData ? `${(accountData.totalDebtETH * 1.2).toFixed(2)} MATIC` : "0 MATIC";
+    // Add real Aave loan data without units
+    const loansValue = accountData ? (accountData.totalDebtETH * 1.2).toFixed(2) : "0";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;

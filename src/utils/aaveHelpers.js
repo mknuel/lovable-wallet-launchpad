@@ -156,6 +156,7 @@ export const supplySepoliaETH = async (account, usdAmount) => {
     contract,
     method: "supply",
     params: [CONTRACTS.WMATIC, safeToWei(maticAmount), account.address, 0],
+    gas: 50000n, // Set higher gas limit
   });
 
   const result = await sendTransaction({ transaction: tx, account });
@@ -197,6 +198,7 @@ export const borrowETH = async (account, usdAmount) => {
     contract,
     method: "borrow",
     params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, 0, account.address],
+    gas: 50000n, // Set higher gas limit
   });
 
   const result = await sendTransaction({ transaction: tx, account });
@@ -221,6 +223,7 @@ export const repayETH = async (account, usdAmount) => {
     contract,
     method: "repay",
     params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, account.address],
+    gas: 50000n, // Set higher gas limit
   });
 
   const result = await sendTransaction({ transaction: tx, account });
