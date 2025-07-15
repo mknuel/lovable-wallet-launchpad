@@ -214,7 +214,7 @@ export const AaveConfirmationModal = ({
 											value={amount}
 											onChange={(e) => setAmount(e.target.value)}
 											className="w-full px-4 py-2 pt-6 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-lg text-black placeholder:text-black"
-											placeholder="Enter USD amount"
+											placeholder="Enter amount"
 											disabled={isLoading || actionType === "stake"}
 										/>
 										<div className="absolute left-4 top-2 text-gray-400 text-sm">
