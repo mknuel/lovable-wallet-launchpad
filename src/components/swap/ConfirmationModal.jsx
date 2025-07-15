@@ -165,7 +165,7 @@ export const TransactionSuccessModal = ({
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					className="fixed inset-0 z-50 flex items-center justify-center p-4"
+					className="fixed inset-0 z-[100] flex items-center justify-center p-4"
 					initial="hidden"
 					animate="visible"
 					exit="exit">
@@ -178,7 +178,7 @@ export const TransactionSuccessModal = ({
 
 					{/* Modal Content */}
 					<motion.div
-						className="relative bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl"
+						className="relative bg-white w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl"
 						variants={modalVariants}>
 						{/* Title */}
 						<h3 className="text-xl font-bold text-center text-gray-900 mb-2">
@@ -195,12 +195,12 @@ export const TransactionSuccessModal = ({
 
 						{/* Action Button */}
 						<button
-								onClick={onConfirm}
-								className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
-								<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-									Confirm
-								</span>
-							</button>
+							onClick={onConfirm}
+							className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none transition-all outline-none">
+							<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent text-lg">
+								GOT IT!
+							</span>
+						</button>
 					</motion.div>
 				</motion.div>
 			)}
@@ -240,7 +240,7 @@ export const SendConfirmationModal = ({
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					className="fixed inset-0 z-50 flex items-center justify-center p-4"
+					className="fixed inset-0 z-[100] flex items-center justify-center p-4"
 					initial="hidden"
 					animate="visible"
 					exit="exit">
@@ -253,7 +253,7 @@ export const SendConfirmationModal = ({
 
 					{/* Modal Content */}
 					<motion.div
-						className="relative bg-white w-full max-w-sm p-3 rounded-2xl shadow-xl"
+						className="relative bg-white w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl"
 						variants={modalVariants}>
 						{/* Title */}
 						<h3 className="text-xl font-bold text-center text-gray-900 mb-2">
@@ -272,8 +272,8 @@ export const SendConfirmationModal = ({
 						<div className="mt-0">
 							<button
 								onClick={onConfirm}
-								className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
-								<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
+								className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none transition-all outline-none">
+								<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent text-lg">
 									Confirm
 								</span>
 							</button>

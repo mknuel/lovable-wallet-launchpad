@@ -25,7 +25,7 @@ export const useGetBridgeTokens = (params = {}) => {
 			setTokens(null);
 
 			try {
-				const response = await bridge.get(`/tokens?chainId=${CHAIN_IDS[3]}`, {
+				const response = await bridge.get(`/tokens`, {
 					params: JSON.parse(serializedParams), // Use the parsed params for the request
 					signal: controller.signal, // Pass the abort signal
 				});

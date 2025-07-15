@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { SlippagePopup } from "./SlippagePopup";
+import SwapIcon from "../../assets/icons/round-arrow.svg";
 
 // The component now accepts a 'details' prop to dynamically display data.
-export const TransactionDetails = ({ details }) => {
+export const TransactionDetails = ({ details, slippage, setSlippage }) => {
 	const [isSlippagePopupOpen, setIsSlippagePopupOpen] = useState(false);
-	const [slippage, setSlippage] = useState(0.5);
 
 	const handleSlippageChange = (newSlippage) => {
 		setSlippage(newSlippage);
@@ -49,11 +49,16 @@ export const TransactionDetails = ({ details }) => {
 					<div className="bg-white p-4" style={{ borderRadius: "7px" }}>
 						<div className="flex justify-between items-center">
 							<span className="text-gray-600 text-sm font-['Sansation']">
-								1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
+								Price:
 							</span>
-							<span className="text-gray-600 text-sm font-['Sansation']">
-								≈ ${usdValue}
-							</span>
+
+							<div className="flex gap-2 items-center">
+								<span className="text-gray-600 text-sm font-['Sansation']">
+									-
+								</span>
+
+								<img src={SwapIcon} />
+							</div>
 						</div>
 					</div>
 				</div>

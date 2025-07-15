@@ -81,8 +81,8 @@ export const FromCurrencyCard = ({
 					</div>
 
 					{/* --- Balance and USD Value --- */}
-					<div className="flex justify-between items-center mt-2 text-xs font-['Sansation']">
-						<span className="text-gray-500">
+					<div className="flex justify-between items-center mt-2 text-xs font-['Sansation'] pl-12">
+						<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-bold">
 							Available: {selectedCurrency?.balance?.toFixed(4) ?? "0.0000"}
 						</span>
 						<span className="text-gray-400">

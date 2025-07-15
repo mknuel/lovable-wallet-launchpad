@@ -79,8 +79,8 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
 				className="bg-white shadow-lg"
 				style={{
 					display: "flex",
-          width: "90dvw",
-          maxWidth:"400px",
+					width: "90dvw",
+					maxWidth: "400px",
 					padding: "16px 16px 36px 16px",
 					flexDirection: "column",
 					justifyContent: "center",
@@ -154,7 +154,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
 								onChange={(e) => handleCustomChange(e.target.value)}
 								placeholder="0.50"
 								min="0"
-								max="50"
+								max="20"
 								step="0.1"
 								className="w-full p-3 pr-8 border border-gray-300 rounded-lg text-sm font-['Sansation'] outline-none transition-colors focus:border-gray-400"
 								style={{ borderRadius: "8px" }}
@@ -167,7 +167,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
 				)}
 
 				{/* Warning for high slippage */}
-				{selectedSlippage > 5 && (
+				{/* {selectedSlippage > 5 && (
 					<div
 						className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg w-full"
 						style={{ borderRadius: "8px" }}>
@@ -175,7 +175,7 @@ export const SlippagePopup = ({ isOpen, onClose, currentSlippage, onSlippageChan
 							⚠️ High slippage tolerance. You may receive less tokens.
 						</p>
 					</div>
-				)}
+				)} */}
 
 				{/* Action Buttons */}
 				<div className="flex gap-3 w-full">

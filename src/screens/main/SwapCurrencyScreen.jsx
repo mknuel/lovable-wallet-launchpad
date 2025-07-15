@@ -52,6 +52,7 @@ const SwapCurrencyScreen = () => {
 	const [isExecutingSwap, setIsExecutingSwap] = useState(false);
 	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
 
+	const [slippage, setSlippage] = useState(0.5);
 	// State for tokens the user OWNS
 	const [ownedTokens, setOwnedTokens] = useState([]);
 	// State for ALL tokens available to swap TO
@@ -62,8 +63,6 @@ const SwapCurrencyScreen = () => {
 
 	const { tokens: userTokens, isLoading: isGettingTOkens } =
 		useGetAccountTokens(activeAccount?.address);
-
-	const tonwal = useTonWallet();
 
 	const { mutate: sendTransaction } = useSendTransaction();
 	const { mutate: sendAndConfirmTx } = useSendTransaction();
@@ -161,7 +160,7 @@ const SwapCurrencyScreen = () => {
 				}
 			}
 			console.log("Swap executed successfully!");
-			setIsModalOpen(false);
+			setIsModalOpen(true);
 			// navigate(PATH_WALLET_ACTIONS);
 		} catch (err) {
 			console.error("Failed to execute swap:", err);
@@ -224,7 +223,13 @@ const SwapCurrencyScreen = () => {
 					setToCurrency={setToCurrency}
 				/>
 
-				{step === 2 && <TransactionDetails details={quote} />}
+				{step === 2 && (
+					<TransactionDetails
+						slippage={slippage}
+						setSlippage={setSlippage}
+						details={quote}
+					/>
+				)}
 				{error && (
 					<p className="text-red-500 bg-red-100 w-full rounded p-3 text-sm text-center mt-2">
 						{error}
@@ -235,7 +240,7 @@ const SwapCurrencyScreen = () => {
 					{step === 1 && (
 						<CommonButton
 							onClick={handleGetQuote}
-							className="w-full !text-[#fff] py-3 "
+							className="w-full !text-[#fff] py-3 uppercase"
 							disabled={!isStep1Valid || isFetchingQuote}>
 							{isFetchingQuote ? "Getting Quote..." : "NEXT"}
 						</CommonButton>
@@ -243,11 +248,10 @@ const SwapCurrencyScreen = () => {
 					{step === 2 && (
 						<CommonButton
 							type="button"
-							className="w-full !text-[#fff] py-3"
+							className="w-full !text-[#fff] py-3 uppercase"
 							onClick={executeSwap}
-							isLoading={isExecutingSwap}
-							disabled={!quote}>
-							Next
+							disabled={!quote || isExecutingSwap}>
+							{isExecutingSwap ? "Processing..." : "NEXT"}
 						</CommonButton>
 					)}
 				</div>

@@ -22,9 +22,8 @@ export const SearchableCurrencyDropdown = ({
 	const { tokens, isLoading, error } = useGetBridgeTokens({
 		limit: 20,
 		metadata: "true",
-		testnet: true,
 		include_without_price: "true",
-		...(!debouncedSearchTerm && {
+		...(debouncedSearchTerm && {
 			name: debouncedSearchTerm,
 		}),
 	});

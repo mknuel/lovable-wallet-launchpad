@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { SearchableCurrencyDropdown } from "./SearchableCurrencyDropdown";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import WalletIcon from "../../assets/icons/wallet-icon.svg";
 
 export const ToCurrencyCard = ({
 	selectedCurrency,
@@ -29,39 +30,54 @@ export const ToCurrencyCard = ({
 						To
 					</label>
 
-					<div className="flex items-center justify-between w-full">
+					<div className="flex items-start justify-between w-full">
 						{/* --- Currency Selector --- */}
-						<div className="flex items-center gap-2">
-							<button
-								className="flex items-center gap-2 font-['Sansation']"
-								onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-								aria-expanded={isDropdownOpen}>
-								<div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
-									{selectedCurrency ? (
-										<img src={selectedCurrency?.iconUri} />
-									) : (
-										"?"
-									)}
-								</div>
-								<span>
-									{selectedCurrency ? selectedCurrency.symbol : "Select"}
+						<div className="flex flex-col">
+							<div className="flex items-center gap-2">
+								<button
+									className="flex items-center gap-2 font-['Sansation']"
+									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+									aria-expanded={isDropdownOpen}>
+									<div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
+										{selectedCurrency ? (
+											selectedCurrency?.iconUri ? (
+												<img src={selectedCurrency?.iconUri} />
+											) : (
+												<div className="w-10 h-10 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center text-white font-bold">
+													{selectedCurrency.symbol.substring(0, 2)}
+												</div>
+											)
+										) : (
+											<img src={WalletIcon} />
+										)}
+									</div>
+									<span>
+										{selectedCurrency ? selectedCurrency.symbol : "Select"}
+									</span>
+									<svg
+										className={`w-3 h-3 transition-transform ${
+											isDropdownOpen ? "rotate-180" : ""
+										}`}
+										fill="currentColor"
+										viewBox="0 0 20 20">
+										<path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+									</svg>
+								</button>
+								<SearchableCurrencyDropdown
+									isOpen={isDropdownOpen}
+									onClose={() => setIsDropdownOpen(false)}
+									onSelect={handleCurrencySelection}
+									searchTerm={searchTerm}
+									onSearchChange={setSearchTerm}
+								/>
+							</div>
+
+							{/* --- Balance and USD Value --- */}
+							<div className="flex justify-between items-center mt-2 pl-12">
+								<span className="text-gray-400 bg-clip-text text-sm">
+									Select currency
 								</span>
-								<svg
-									className={`w-3 h-3 transition-transform ${
-										isDropdownOpen ? "rotate-180" : ""
-									}`}
-									fill="currentColor"
-									viewBox="0 0 20 20">
-									<path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-								</svg>
-							</button>
-							<SearchableCurrencyDropdown
-								isOpen={isDropdownOpen}
-								onClose={() => setIsDropdownOpen(false)}
-								onSelect={handleCurrencySelection}
-								searchTerm={searchTerm}
-								onSearchChange={setSearchTerm}
-							/>
+							</div>
 						</div>
 
 						{/* --- Output Amount Display --- */}
