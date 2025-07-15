@@ -125,7 +125,13 @@ const safeToWei = (amount) => {
     throw new Error(`Invalid amount: ${amount}`);
   }
   
-  const result = toWei(numAmount.toString());
+  // Handle very small amounts by setting a minimum
+  const minAmount = 0.001; // 0.001 ETH minimum
+  const finalAmount = Math.max(numAmount, minAmount);
+  
+  // Convert to string with fixed decimals to avoid scientific notation
+  const amountStr = finalAmount.toFixed(18);
+  const result = toWei(amountStr);
   console.log('safeToWei result:', result);
   return result;
 };
