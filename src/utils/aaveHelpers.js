@@ -7,14 +7,14 @@ import {
   readContract,
   toWei,
 } from "thirdweb";
-import { polygonAmoy } from "thirdweb/chains";
+import { sepolia } from "thirdweb/chains";
 
-// 🔗 Contract addresses for Polygon Amoy testnet Aave v3
+// 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3
 export const CONTRACTS = {
   AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
-  WETH_GATEWAY: "0x1e4b7A6b903680eAb0c5dAbcb8fD429cD2a9598c", // Need to find correct Amoy address
-  WMATIC: "0x360ad4f9a9A8EFe9A8DCB5f461c4Cc1047E1Dcf9",
-  USDC: "0x41e94eb019c0762f9bfcf9fb1e58725bfb0e7582",
+  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D",
+  WETH: "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c",
+  USDC: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
 };
 
 // 🔎 ABIs
@@ -111,10 +111,10 @@ const WETH_GATEWAY_ABI = [
 ];
 
 // 🔧 Utilities
-const MATIC_PRICE_USD = 1.2; // Mock MATIC price for conversion
+const ETH_PRICE_USD = 2400; // Mock ETH price for conversion
 
-const usdToMatic = (usdAmount) => {
-  return (parseFloat(usdAmount) / MATIC_PRICE_USD).toString();
+const usdToEth = (usdAmount) => {
+  return (parseFloat(usdAmount) / ETH_PRICE_USD).toString();
 };
 
 const safeToWei = (amount) => {
@@ -131,39 +131,39 @@ const safeToWei = (amount) => {
 };
 
 const getTokenContract = (client, address) =>
-  getContract({ client, chain: polygonAmoy, address, abi: ERC20_ABI });
+  getContract({ client, chain: sepolia, address, abi: ERC20_ABI });
 
 const getPoolContract = (client) =>
-  getContract({ client, chain: polygonAmoy, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
+  getContract({ client, chain: sepolia, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
 
 const getWethGatewayContract = (client) =>
-  getContract({ client, chain: polygonAmoy, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
+  getContract({ client, chain: sepolia, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
 
-// ✅ Supply MATIC (as collateral) - Input amount in USD  
+// ✅ Supply ETH (as collateral) - Input amount in USD  
 export const supplySepoliaETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const maticAmount = usdToMatic(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${maticAmount} MATIC`);
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH`);
 
-  // Use the pool contract directly for WMATIC supply
-  const contract = getPoolContract(client);
+  // Use WETH Gateway for ETH deposits
+  const contract = getWethGatewayContract(client);
   
-  // First we need to get WMATIC by swapping or depositing
-  // For now, let's use a direct supply approach with WMATIC
   const tx = await prepareContractCall({
     contract,
-    method: "supply",
-    params: [CONTRACTS.WMATIC, safeToWei(maticAmount), account.address, 0],
-    gas: 50000n, // Set higher gas limit
+    method: "depositETH",
+    params: [CONTRACTS.AAVE_POOL, account.address, 0],
+    value: safeToWei(ethAmount),
+    gas: 150000n, // Set higher gas limit for Sepolia
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   // 🔍 Validate if collateral registered
+  const poolContract = getPoolContract(client);
   const data = await readContract({
-    contract,
+    contract: poolContract,
     method: "getUserAccountData", 
     params: [account.address],
   });
@@ -180,57 +180,57 @@ export const supplySepoliaETH = async (account, usdAmount) => {
 
   return {
     success: true,
-    message: `Supplied $${usdAmount} USD (${maticAmount} MATIC) successfully`,
+    message: `Supplied $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
 
-// ✅ Borrow WMATIC - Input amount in USD
+// ✅ Borrow WETH - Input amount in USD
 export const borrowETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const maticAmount = usdToMatic(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${maticAmount} MATIC for borrowing`);
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for borrowing`);
 
   const contract = getPoolContract(client);
   const tx = await prepareContractCall({
     contract,
     method: "borrow",
-    params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, 0, account.address],
-    gas: 50000n, // Set higher gas limit
+    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
+    gas: 150000n, // Set higher gas limit for Sepolia
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   return {
     success: true,
-    message: `Borrowed $${usdAmount} USD (${maticAmount} MATIC) successfully`,
+    message: `Borrowed $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
 
-// ✅ Repay WMATIC - Input amount in USD
+// ✅ Repay WETH - Input amount in USD
 export const repayETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const maticAmount = usdToMatic(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${maticAmount} MATIC for repayment`);
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for repayment`);
 
   const contract = getPoolContract(client);
   const tx = await prepareContractCall({
     contract,
     method: "repay",
-    params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, account.address],
-    gas: 50000n, // Set higher gas limit
+    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
+    gas: 150000n, // Set higher gas limit for Sepolia
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   return {
     success: true,
-    message: `Repaid $${usdAmount} USD (${maticAmount} MATIC) successfully`,
+    message: `Repaid $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
