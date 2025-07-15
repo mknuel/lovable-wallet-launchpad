@@ -151,10 +151,12 @@ export const supplySepoliaETH = async (account, usdAmount) => {
   if (!client) throw new Error("Thirdweb client not configured");
 
   const ethAmount = usdToEth(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH`);
+  console.log(`🔄 SUPPLY: Converting $${usdAmount} USD to ${ethAmount} ETH`);
+  console.log(`🔄 SUPPLY: Account address:`, account.address);
 
   // Use WETH Gateway for ETH deposits
   const contract = getWethGatewayContract(client);
+  console.log(`🔄 SUPPLY: WETH Gateway contract:`, contract);
   
   const tx = await prepareContractCall({
     contract,
@@ -164,7 +166,9 @@ export const supplySepoliaETH = async (account, usdAmount) => {
     gas: 150000n, // Set higher gas limit for Sepolia
   });
 
+  console.log(`🔄 SUPPLY: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
+  console.log(`✅ SUPPLY: Transaction result:`, result);
 
   // 🔍 Validate if collateral registered
   const poolContract = getPoolContract(client);
@@ -174,7 +178,9 @@ export const supplySepoliaETH = async (account, usdAmount) => {
     params: [account.address],
   });
 
+  console.log(`📊 SUPPLY: Account data after supply:`, data);
   const totalCollateralETH = Number(data.totalCollateralETH) / 1e18;
+  console.log(`📊 SUPPLY: Total collateral ETH:`, totalCollateralETH);
 
   if (totalCollateralETH === 0) {
     return {
@@ -184,11 +190,13 @@ export const supplySepoliaETH = async (account, usdAmount) => {
     };
   }
 
-  return {
+  const response = {
     success: true,
     message: `Supplied $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
+  console.log(`✅ SUPPLY: Final response:`, response);
+  return response;
 };
 
 // ✅ Borrow WETH - Input amount in USD
@@ -197,9 +205,12 @@ export const borrowETH = async (account, usdAmount) => {
   if (!client) throw new Error("Thirdweb client not configured");
 
   const ethAmount = usdToEth(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for borrowing`);
+  console.log(`🔄 BORROW: Converting $${usdAmount} USD to ${ethAmount} ETH for borrowing`);
+  console.log(`🔄 BORROW: Account address:`, account.address);
 
   const contract = getPoolContract(client);
+  console.log(`🔄 BORROW: Pool contract:`, contract);
+
   const tx = await prepareContractCall({
     contract,
     method: "borrow",
@@ -207,13 +218,17 @@ export const borrowETH = async (account, usdAmount) => {
     gas: 150000n, // Set higher gas limit for Sepolia
   });
 
+  console.log(`🔄 BORROW: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
+  console.log(`✅ BORROW: Transaction result:`, result);
 
-  return {
+  const response = {
     success: true,
     message: `Borrowed $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
+  console.log(`✅ BORROW: Final response:`, response);
+  return response;
 };
 
 // ✅ Repay WETH - Input amount in USD
@@ -222,9 +237,12 @@ export const repayETH = async (account, usdAmount) => {
   if (!client) throw new Error("Thirdweb client not configured");
 
   const ethAmount = usdToEth(usdAmount);
-  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for repayment`);
+  console.log(`🔄 REPAY: Converting $${usdAmount} USD to ${ethAmount} ETH for repayment`);
+  console.log(`🔄 REPAY: Account address:`, account.address);
 
   const contract = getPoolContract(client);
+  console.log(`🔄 REPAY: Pool contract:`, contract);
+
   const tx = await prepareContractCall({
     contract,
     method: "repay",
@@ -232,13 +250,17 @@ export const repayETH = async (account, usdAmount) => {
     gas: 150000n, // Set higher gas limit for Sepolia
   });
 
+  console.log(`🔄 REPAY: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
+  console.log(`✅ REPAY: Transaction result:`, result);
 
-  return {
+  const response = {
     success: true,
     message: `Repaid $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
+  console.log(`✅ REPAY: Final response:`, response);
+  return response;
 };
 
 // ✅ Get user account data
@@ -246,15 +268,21 @@ export const getUserAccountData = async (userAddress) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
+  console.log(`📊 GET_ACCOUNT_DATA: Fetching data for address:`, userAddress);
+
   try {
     const contract = getPoolContract(client);
+    console.log(`📊 GET_ACCOUNT_DATA: Pool contract:`, contract);
+
     const data = await readContract({
       contract,
       method: "getUserAccountData",
       params: [userAddress],
     });
 
-    return {
+    console.log(`📊 GET_ACCOUNT_DATA: Raw contract response:`, data);
+
+    const accountData = {
       totalCollateralETH: Number(data.totalCollateralETH) / 1e18,
       totalDebtETH: Number(data.totalDebtETH) / 1e18,
       availableBorrowsETH: Number(data.availableBorrowsETH) / 1e18,
@@ -262,10 +290,14 @@ export const getUserAccountData = async (userAddress) => {
       ltv: Number(data.ltv),
       healthFactor: Number(data.healthFactor) / 1e18,
     };
+
+    console.log(`📊 GET_ACCOUNT_DATA: Processed account data:`, accountData);
+    return accountData;
   } catch (error) {
-    console.log("No Aave positions found for user, returning zero values");
+    console.log("❌ GET_ACCOUNT_DATA: Error fetching account data:", error);
+    console.log("📊 GET_ACCOUNT_DATA: No Aave positions found for user, returning zero values");
     // Return zero values if user has no positions
-    return {
+    const zeroData = {
       totalCollateralETH: 0,
       totalDebtETH: 0,
       availableBorrowsETH: 0,
@@ -273,6 +305,8 @@ export const getUserAccountData = async (userAddress) => {
       ltv: 0,
       healthFactor: 0,
     };
+    console.log(`📊 GET_ACCOUNT_DATA: Returning zero data:`, zeroData);
+    return zeroData;
   }
 };
 
