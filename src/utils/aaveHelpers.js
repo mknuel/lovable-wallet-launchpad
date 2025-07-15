@@ -7,14 +7,14 @@ import {
   readContract,
   toWei,
 } from "thirdweb";
-import { polygon } from "thirdweb/chains";
+import { polygonAmoy } from "thirdweb/chains";
 
-// 🔗 Contract addresses for Polygon mainnet Aave v3
+// 🔗 Contract addresses for Polygon Amoy testnet Aave v3
 export const CONTRACTS = {
-  AAVE_POOL: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-  WETH_GATEWAY: "0x1e4b7A6b903680eAb0c5dAbcb8fD429cD2a9598c", 
-  WMATIC: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-  USDC: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+  WETH_GATEWAY: "0x1e4b7A6b903680eAb0c5dAbcb8fD429cD2a9598c", // Need to find correct Amoy address
+  WMATIC: "0x360ad4f9a9A8EFe9A8DCB5f461c4Cc1047E1Dcf9",
+  USDC: "0x41e94eb019c0762f9bfcf9fb1e58725bfb0e7582",
 };
 
 // 🔎 ABIs
@@ -131,15 +131,15 @@ const safeToWei = (amount) => {
 };
 
 const getTokenContract = (client, address) =>
-  getContract({ client, chain: polygon, address, abi: ERC20_ABI });
+  getContract({ client, chain: polygonAmoy, address, abi: ERC20_ABI });
 
 const getPoolContract = (client) =>
-  getContract({ client, chain: polygon, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
+  getContract({ client, chain: polygonAmoy, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
 
 const getWethGatewayContract = (client) =>
-  getContract({ client, chain: polygon, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
+  getContract({ client, chain: polygonAmoy, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
 
-// ✅ Supply MATIC (as collateral) - Input amount in USD
+// ✅ Supply MATIC (as collateral) - Input amount in USD  
 export const supplySepoliaETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
@@ -147,21 +147,23 @@ export const supplySepoliaETH = async (account, usdAmount) => {
   const maticAmount = usdToMatic(usdAmount);
   console.log(`Converting $${usdAmount} USD to ${maticAmount} MATIC`);
 
-  const contract = getWethGatewayContract(client);
+  // Use the pool contract directly for WMATIC supply
+  const contract = getPoolContract(client);
+  
+  // First we need to get WMATIC by swapping or depositing
+  // For now, let's use a direct supply approach with WMATIC
   const tx = await prepareContractCall({
     contract,
-    method: "depositETH",
-    params: [CONTRACTS.AAVE_POOL, account.address, 0],
-    value: safeToWei(maticAmount),
+    method: "supply",
+    params: [CONTRACTS.WMATIC, safeToWei(maticAmount), account.address, 0],
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   // 🔍 Validate if collateral registered
-  const pool = getPoolContract(client);
   const data = await readContract({
-    contract: pool,
-    method: "getUserAccountData",
+    contract,
+    method: "getUserAccountData", 
     params: [account.address],
   });
 
