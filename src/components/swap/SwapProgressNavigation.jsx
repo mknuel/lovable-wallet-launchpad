@@ -48,7 +48,7 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
                 onClick={() => onStepClick && onStepClick(step.id)}
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ${
                   isActive 
-                    ? 'bg-blue-100 scale-110' 
+                    ? 'bg-pink-purple-gradient scale-110' 
                     : isCompleted 
                       ? 'bg-green-100 hover:bg-green-200' 
                       : 'hover:bg-gray-100'
