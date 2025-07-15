@@ -282,13 +282,14 @@ export const getUserAccountData = async (userAddress) => {
 
     console.log(`📊 GET_ACCOUNT_DATA: Raw contract response:`, data);
 
+    // Handle tuple/array response format
     const accountData = {
-      totalCollateralETH: Number(data.totalCollateralETH) / 1e18,
-      totalDebtETH: Number(data.totalDebtETH) / 1e18,
-      availableBorrowsETH: Number(data.availableBorrowsETH) / 1e18,
-      currentLiquidationThreshold: Number(data.currentLiquidationThreshold),
-      ltv: Number(data.ltv),
-      healthFactor: Number(data.healthFactor) / 1e18,
+      totalCollateralETH: Number(data[0]) / 1e18,
+      totalDebtETH: Number(data[1]) / 1e18,
+      availableBorrowsETH: Number(data[2]) / 1e18,
+      currentLiquidationThreshold: Number(data[3]),
+      ltv: Number(data[4]),
+      healthFactor: Number(data[5]) / 1e18,
     };
 
     console.log(`📊 GET_ACCOUNT_DATA: Processed account data:`, accountData);
