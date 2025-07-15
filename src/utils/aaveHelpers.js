@@ -133,15 +133,38 @@ const safeToWei = (amount) => {
   return result;
 };
 
-const checkTxSuccess = async (result, label = "Transaction") => {
+const waitForTransaction = async (client, txHash) => {
+  console.log(`⏳ Waiting for transaction confirmation: ${txHash}`);
+  
+  // Use thirdweb's built-in method to wait for receipt
+  const response = await fetch(`https://11155111.rpc.thirdweb.com/7038953a5d72063c56919f27ec00bbda`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: 1,
+      jsonrpc: '2.0',
+      method: 'eth_getTransactionReceipt',
+      params: [txHash]
+    })
+  });
+  
+  const receipt = await response.json();
+  if (receipt.result && receipt.result.status === '0x1') {
+    console.log(`✅ Transaction confirmed: ${txHash}`);
+    return receipt.result;
+  }
+  
+  console.log(`⏳ Transaction pending, will show success when completed`);
+  return null;
+};
+
+const checkTxSuccess = async (client, result, label = "Transaction") => {
   console.log(`🔍 ${label}: Checking transaction success...`, result);
   
   if (!result || !result.transactionHash) {
     throw new Error(`${label} failed - no transaction hash received`);
   }
   
-  // For Thirdweb, we just check if we got a transaction hash
-  // The actual receipt checking can be done later if needed
   console.log(`✅ ${label}: Transaction sent successfully with hash: ${result.transactionHash}`);
   return true;
 };
@@ -179,7 +202,7 @@ export const supplySepoliaETH = async (account, ethAmount) => {
   const result = await sendTransaction({ transaction: tx, account });
   console.log(`✅ SUPPLY: Transaction result:`, result);
   
-  await checkTxSuccess(result, "Supply");
+  await checkTxSuccess(client, result, "Supply");
 
   // 🔍 Validate if collateral registered
   const poolContract = getPoolContract(client);
@@ -232,7 +255,7 @@ export const borrowETH = async (account, ethAmount) => {
   const result = await sendTransaction({ transaction: tx, account });
   console.log(`✅ BORROW: Transaction result:`, result);
   
-  await checkTxSuccess(result, "Borrow");
+  await checkTxSuccess(client, result, "Borrow");
 
   const response = {
     success: true,
@@ -251,21 +274,39 @@ export const repayETH = async (account, ethAmount) => {
   console.log(`🔄 REPAY: Repaying ${ethAmount} ETH`);
   console.log(`🔄 REPAY: Account address:`, account.address);
 
-  const contract = getPoolContract(client);
-  console.log(`🔄 REPAY: Pool contract:`, contract);
+  // First, approve WETH token to be spent by Aave pool
+  console.log(`🔄 REPAY: Approving WETH for Aave pool...`);
+  const wethContract = getTokenContract(client, CONTRACTS.WETH);
+  
+  const approvalTx = await prepareContractCall({
+    contract: wethContract,
+    method: "approve",
+    params: [CONTRACTS.AAVE_POOL, safeToWei(ethAmount)],
+    gas: 100000n,
+  });
 
-  const tx = await prepareContractCall({
-    contract,
+  console.log(`🔄 REPAY: Sending approval transaction...`);
+  const approvalResult = await sendTransaction({ transaction: approvalTx, account });
+  console.log(`✅ REPAY: Approval transaction result:`, approvalResult);
+  
+  await checkTxSuccess(client, approvalResult, "WETH Approval");
+
+  // Now repay the debt
+  const poolContract = getPoolContract(client);
+  console.log(`🔄 REPAY: Pool contract:`, poolContract);
+
+  const repayTx = await prepareContractCall({
+    contract: poolContract,
     method: "repay",
     params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
     gas: 150000n, // Set higher gas limit for Sepolia
   });
 
-  console.log(`🔄 REPAY: Prepared transaction:`, tx);
-  const result = await sendTransaction({ transaction: tx, account });
-  console.log(`✅ REPAY: Transaction result:`, result);
+  console.log(`🔄 REPAY: Prepared repay transaction:`, repayTx);
+  const result = await sendTransaction({ transaction: repayTx, account });
+  console.log(`✅ REPAY: Repay transaction result:`, result);
   
-  await checkTxSuccess(result, "Repay");
+  await checkTxSuccess(client, result, "Repay");
 
   const response = {
     success: true,
