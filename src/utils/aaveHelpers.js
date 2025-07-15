@@ -111,14 +111,6 @@ const WETH_GATEWAY_ABI = [
 ];
 
 // 🔧 Utilities
-const ETH_PRICE_USD = 2400; // Mock ETH price for conversion
-
-const usdToEth = (usdAmount) => {
-  const ethAmount = parseFloat(usdAmount) / ETH_PRICE_USD;
-  console.log(`💰 Converting $${usdAmount} USD to ${ethAmount} ETH`);
-  return ethAmount.toString();
-};
-
 const safeToWei = (amount) => {
   const numAmount = parseFloat(amount);
   console.log('safeToWei input:', amount, 'parsed:', numAmount);
@@ -128,7 +120,7 @@ const safeToWei = (amount) => {
   }
   
   // Set higher minimum for Sepolia testnet (Aave requires meaningful amounts)
-  const minAmount = 0.01; // 0.01 ETH minimum (~$24 USD at current price)
+  const minAmount = 0.01; // 0.01 ETH minimum
   if (numAmount < minAmount) {
     console.warn(`⚠️ Amount ${numAmount} ETH is below minimum ${minAmount} ETH, using minimum`);
   }
@@ -163,13 +155,12 @@ const getPoolContract = (client) =>
 const getWethGatewayContract = (client) =>
   getContract({ client, chain: sepolia, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
 
-// ✅ Supply ETH (as collateral) - Input amount in USD  
-export const supplySepoliaETH = async (account, usdAmount) => {
+// ✅ Supply ETH (as collateral) - Input amount in ETH  
+export const supplySepoliaETH = async (account, ethAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const ethAmount = usdToEth(usdAmount);
-  console.log(`🔄 SUPPLY: Converting $${usdAmount} USD to ${ethAmount} ETH`);
+  console.log(`🔄 SUPPLY: Supplying ${ethAmount} ETH`);
   console.log(`🔄 SUPPLY: Account address:`, account.address);
 
   // Use WETH Gateway for ETH deposits
@@ -212,20 +203,19 @@ export const supplySepoliaETH = async (account, usdAmount) => {
 
   const response = {
     success: true,
-    message: `Supplied $${usdAmount} USD (${ethAmount} ETH) successfully`,
+    message: `Supplied ${ethAmount} ETH successfully`,
     txHash: result.transactionHash,
   };
   console.log(`✅ SUPPLY: Final response:`, response);
   return response;
 };
 
-// ✅ Borrow WETH - Input amount in USD
-export const borrowETH = async (account, usdAmount) => {
+// ✅ Borrow WETH - Input amount in ETH
+export const borrowETH = async (account, ethAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const ethAmount = usdToEth(usdAmount);
-  console.log(`🔄 BORROW: Converting $${usdAmount} USD to ${ethAmount} ETH for borrowing`);
+  console.log(`🔄 BORROW: Borrowing ${ethAmount} ETH`);
   console.log(`🔄 BORROW: Account address:`, account.address);
 
   const contract = getPoolContract(client);
@@ -246,20 +236,19 @@ export const borrowETH = async (account, usdAmount) => {
 
   const response = {
     success: true,
-    message: `Borrowed $${usdAmount} USD (${ethAmount} ETH) successfully`,
+    message: `Borrowed ${ethAmount} ETH successfully`,
     txHash: result.transactionHash,
   };
   console.log(`✅ BORROW: Final response:`, response);
   return response;
 };
 
-// ✅ Repay WETH - Input amount in USD
-export const repayETH = async (account, usdAmount) => {
+// ✅ Repay WETH - Input amount in ETH
+export const repayETH = async (account, ethAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const ethAmount = usdToEth(usdAmount);
-  console.log(`🔄 REPAY: Converting $${usdAmount} USD to ${ethAmount} ETH for repayment`);
+  console.log(`🔄 REPAY: Repaying ${ethAmount} ETH`);
   console.log(`🔄 REPAY: Account address:`, account.address);
 
   const contract = getPoolContract(client);
@@ -280,7 +269,7 @@ export const repayETH = async (account, usdAmount) => {
 
   const response = {
     success: true,
-    message: `Repaid $${usdAmount} USD (${ethAmount} ETH) successfully`,
+    message: `Repaid ${ethAmount} ETH successfully`,
     txHash: result.transactionHash,
   };
   console.log(`✅ REPAY: Final response:`, response);
