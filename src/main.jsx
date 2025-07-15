@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")).render(
 		<LanguageProvider>
 			<ThirdwebProvider
 				client={client}
-				activeChain={ethereum}
+				activeChain={sepolia}
 				autoConnect={true}>
 				<WalletAccountProvider>
 					<StrictMode>
