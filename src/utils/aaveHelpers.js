@@ -119,12 +119,8 @@ const safeToWei = (amount) => {
     throw new Error(`Invalid amount: ${amount}`);
   }
   
-  // Set higher minimum for Sepolia testnet (Aave requires meaningful amounts)
-  const minAmount = 0.01; // 0.01 ETH minimum
-  if (numAmount < minAmount) {
-    console.warn(`⚠️ Amount ${numAmount} ETH is below minimum ${minAmount} ETH, using minimum`);
-  }
-  const finalAmount = Math.max(numAmount, minAmount);
+  // Use the EXACT amount provided by user - no minimum enforcement
+  const finalAmount = numAmount;
   
   // Convert to string with fixed decimals to avoid scientific notation
   const amountStr = finalAmount.toFixed(18);
