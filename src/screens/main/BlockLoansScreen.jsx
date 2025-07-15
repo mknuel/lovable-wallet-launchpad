@@ -43,11 +43,14 @@ const BlockLoansScreen = () => {
       if (activeWallet) {
         try {
           const account = activeWallet.getAccount();
-          const data = await getUserAccountData(account);
+          console.log('Loading account data for:', account?.address);
+          const data = await getUserAccountData(account?.address);
+          console.log('Account data loaded:', data);
           setAccountData(data);
-          setMaxBorrowAmount(Number(data.availableBorrowsETH) / 1e18);
+          setMaxBorrowAmount(data.availableBorrowsETH);
         } catch (error) {
           console.error('Error loading account data:', error);
+          showNotification(`Error loading account data: ${error.message}`, 'error');
         }
       }
     };
@@ -76,7 +79,7 @@ const BlockLoansScreen = () => {
         ];
 
     // Add real Aave loan data
-    const loansValue = accountData ? `${(Number(accountData.totalDebtETH) / 1e18).toFixed(1)} ETH` : "0 ETH";
+    const loansValue = accountData ? `${accountData.totalDebtETH.toFixed(4)} ETH` : "0 ETH";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
@@ -150,9 +153,9 @@ const BlockLoansScreen = () => {
 
       if (result.success) {
         // Reload account data after successful transaction
-        const newData = await getUserAccountData(account);
+        const newData = await getUserAccountData(account?.address);
         setAccountData(newData);
-        setMaxBorrowAmount(Number(newData.availableBorrowsETH) / 1e18);
+        setMaxBorrowAmount(newData.availableBorrowsETH);
         return Promise.resolve(result.message);
       } else {
         return Promise.reject(new Error(result.message));
