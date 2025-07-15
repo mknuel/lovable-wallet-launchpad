@@ -240,21 +240,34 @@ export const getUserAccountData = async (userAddress) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  const contract = getPoolContract(client);
-  const data = await readContract({
-    contract,
-    method: "getUserAccountData",
-    params: [userAddress],
-  });
+  try {
+    const contract = getPoolContract(client);
+    const data = await readContract({
+      contract,
+      method: "getUserAccountData",
+      params: [userAddress],
+    });
 
-  return {
-    totalCollateralETH: Number(data.totalCollateralETH) / 1e18,
-    totalDebtETH: Number(data.totalDebtETH) / 1e18,
-    availableBorrowsETH: Number(data.availableBorrowsETH) / 1e18,
-    currentLiquidationThreshold: Number(data.currentLiquidationThreshold),
-    ltv: Number(data.ltv),
-    healthFactor: Number(data.healthFactor) / 1e18,
-  };
+    return {
+      totalCollateralETH: Number(data.totalCollateralETH) / 1e18,
+      totalDebtETH: Number(data.totalDebtETH) / 1e18,
+      availableBorrowsETH: Number(data.availableBorrowsETH) / 1e18,
+      currentLiquidationThreshold: Number(data.currentLiquidationThreshold),
+      ltv: Number(data.ltv),
+      healthFactor: Number(data.healthFactor) / 1e18,
+    };
+  } catch (error) {
+    console.log("No Aave positions found for user, returning zero values");
+    // Return zero values if user has no positions
+    return {
+      totalCollateralETH: 0,
+      totalDebtETH: 0,
+      availableBorrowsETH: 0,
+      currentLiquidationThreshold: 0,
+      ltv: 0,
+      healthFactor: 0,
+    };
+  }
 };
 
 // ✅ Get token balance
