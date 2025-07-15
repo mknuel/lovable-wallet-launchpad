@@ -108,7 +108,7 @@ export const AaveConfirmationModal = ({
 
           {/* Modal Content */}
           <motion.div
-            className="relative bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl"
+            className="relative bg-white w-full max-w-[90%] p-6 rounded-2xl shadow-xl"
             variants={modalVariants}
           >
             {/* Success State */}
@@ -165,7 +165,7 @@ export const AaveConfirmationModal = ({
 
                 {/* Amount Input */}
                 <div className="mb-6">
-                  <div className="relative">
+                  <div className="relative ">
                     <input
                       type="number"
                       step="0.000001"
@@ -173,7 +173,7 @@ export const AaveConfirmationModal = ({
                       max={actionType === 'borrow' ? maxBorrowAmount : undefined}
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-lg"
+                      className="w-full px-4 py-4 pt-6 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-lg"
                       placeholder="Enter amount"
                       disabled={isLoading || actionType === 'stake'}
                     />
