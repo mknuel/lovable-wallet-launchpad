@@ -48,7 +48,7 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
                 onClick={() => onStepClick && onStepClick(step.id)}
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ${
                   isActive 
-                    ? 'bg-pink-purple-gradient scale-110' 
+                    ? 'scale-110' 
                     : isCompleted 
                       ? 'bg-green-100 hover:bg-green-200' 
                       : 'hover:bg-gray-100'
@@ -62,13 +62,19 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
                   className={`aspect-[1] object-contain transition-all duration-200 ${
                     step.id === 3 ? "w-4" : "w-5"
                   } ${
-                    isActive ? 'filter brightness-110' : 
+                    isActive ? 'bg-pink-purple-gradient bg-clip-content' : 
                     isCompleted ? 'filter hue-rotate-90' : 
                     status === 'upcoming' ? 'filter grayscale opacity-50' : ''
                   }`}
+                  style={isActive ? {
+                    background: 'linear-gradient(135deg, #DC2366, #4F5CAA)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'brightness(1.2) contrast(1.1)'
+                  } : {}}
                 />
                 {isActive && (
-                  <div className="w-1 h-1 bg-blue-500 rounded-full mt-1"></div>
+                  <div className="w-1 h-1 bg-pink-purple-gradient rounded-full mt-1"></div>
                 )}
               </button>
             </li>
