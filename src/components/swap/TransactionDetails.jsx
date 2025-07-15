@@ -53,10 +53,9 @@ export const TransactionDetails = ({ details, slippage, setSlippage }) => {
 							</span>
 
 							<div className="flex gap-2 items-center">
-								<span className="text-gray-600 text-sm font-['Sansation']">
-									-
+								<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
+									1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
 								</span>
-
 								<img src={SwapIcon} />
 							</div>
 						</div>
@@ -74,7 +73,15 @@ export const TransactionDetails = ({ details, slippage, setSlippage }) => {
 						</span>
 					</div>
 
-					{/* The "Total fee" section is removed as it's not in the provided data. */}
+					<div className="flex justify-between items-center py-2">
+						<span className="text-gray-600 text-sm font-['Sansation']">
+							Total fee
+						</span>
+						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
+							{/* Calculate bridge fee from the quote */}
+							{((fromAmount - (Number(details.destinationAmount) / 10 ** toToken.decimals * fromToken.priceUsd / toToken.priceUsd))).toFixed(6)} {fromToken.symbol}
+						</span>
+					</div>
 
 					<div className="flex justify-between items-center py-2">
 						<span className="text-gray-600 text-sm font-['Sansation']">

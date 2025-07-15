@@ -18,25 +18,9 @@ export const SwapForm = ({
 	const handleFromAmountChange = (amount) => {
 		setFromAmount(amount);
 
-		// Get the USD prices from the currency objects
-		const fromPriceUsd = fromCurrency?.price_data?.price_usd;
-		const toPriceUsd = toCurrency?.priceUsd;
-		const fromAmountNum = parseFloat(amount);
-
-		// Proceed only if we have valid prices and a valid input amount
-		if (fromAmountNum > 0 && fromPriceUsd > 0 && toPriceUsd > 0) {
-			// 1. Convert the "from" amount to its value in USD
-			const valueInUsd = fromAmountNum * fromPriceUsd;
-
-			// 2. Calculate how much of the "to" currency can be bought with that USD value
-			const convertedAmount = valueInUsd / toPriceUsd;
-
-			// 3. Update the "to" amount state, formatted to a reasonable precision
-			setToAmount(convertedAmount.toFixed(4));
-		} else {
-			// If the input is invalid or prices are missing, clear the "to" amount
-			setToAmount("");
-		}
+		// Don't calculate here - let the quote from Bridge API provide the exact amount
+		// This will be updated when we get the actual quote from thirdweb Bridge
+		setToAmount("");
 	};
 	// Swap the "from" and "to" currencies
 	const handleSwapCurrencies = () => {

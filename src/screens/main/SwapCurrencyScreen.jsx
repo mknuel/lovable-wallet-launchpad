@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
-import { SwapBottomNavigation } from "../../components/swap/SwapBottomNavigation";
+import SwapProgressNavigation from "../../components/swap/SwapProgressNavigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { SwapForm } from "../../components/swap/SwapForm";
 import { SecurityMessage } from "../../components/swap/SecurityMessage";
@@ -41,6 +41,7 @@ const SwapCurrencyScreen = () => {
 	const navigate = useNavigate();
 	// State for the swap form
 	const [step, setStep] = useState(1);
+	const [progressStep, setProgressStep] = useState(1); // For navigation progress
 	const [fromCurrency, setFromCurrency] = useState(undefined);
 	const [toCurrency, setToCurrency] = useState(undefined);
 	const [fromAmount, setFromAmount] = useState("");
@@ -100,7 +101,22 @@ const SwapCurrencyScreen = () => {
 		setQuote(null);
 		setToAmount("");
 		if (step === 2) setStep(1);
+		// Reset progress to from currency selection
+		setProgressStep(1);
 	};
+
+	// Update progress step based on form state
+	useEffect(() => {
+		if (fromCurrency && !toCurrency) {
+			setProgressStep(2); // Ready to select to currency
+		} else if (fromCurrency && toCurrency && !quote) {
+			setProgressStep(3); // Ready to get quote
+		} else if (quote && !isExecutingSwap) {
+			setProgressStep(4); // Ready to execute swap
+		} else if (isExecutingSwap) {
+			setProgressStep(5); // Transaction in progress
+		}
+	}, [fromCurrency, toCurrency, quote, isExecutingSwap]);
 
 	// --- Step 1: Get Quote ---
 	const handleGetQuote = async (e) => {
@@ -124,6 +140,13 @@ const SwapCurrencyScreen = () => {
 			const qt = await estimateGasCost(fetchedQuote);
 			console.log(qt, "quote");
 			setQuote(fetchedQuote, fetchedQuote.approval, "approval");
+			
+			// Update toAmount from the actual quote
+			const step = fetchedQuote.steps[0];
+			const toToken = step.destinationToken;
+			const actualToAmount = Number(fetchedQuote.destinationAmount) / 10 ** toToken.decimals;
+			setToAmount(actualToAmount.toFixed(6));
+			
 			setStep(2); // Move to the confirmation step
 		} catch (err) {
 			console.error("Failed to get quote:", err);
@@ -267,47 +290,24 @@ const SwapCurrencyScreen = () => {
 				isLoading={isExecutingSwap}
 			/>
 
-			{/* Bottom Navigation - Fixed to bottom */}
+			{/* Progress Navigation - Fixed to bottom */}
 			<div className="sticky w-full bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
-				<SwapBottomNavigation
-					items={[
-						{
-							id: "messages",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/ce980df59d2e45dfb2487bd1a267aa68c36d3c53?placeholderIfAbsent=true",
-							label: "Messages",
-							onClick: () => handleNavigation("messages"),
-						},
-						{
-							id: "dial1",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/03214bd6d68edcb29752f62522e6e5d597d50a77?placeholderIfAbsent=true",
-							label: "Dial",
-							onClick: () => handleNavigation("dial1"),
-						},
-						{
-							id: "dial2",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/44f4a511f05e8c6b1ae70f88f11a8032039468d4?placeholderIfAbsent=true",
-							label: "Dial",
-							onClick: () => handleNavigation("dial2"),
-						},
-						{
-							id: "dial3",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/9ef795a7e666f34dfeea6d31613d944f0b087e8c?placeholderIfAbsent=true",
-							label: "Dial",
-							onClick: () => handleNavigation("dial3"),
-						},
-						{
-							id: "dial4",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/34f0183867c6f73a05b1fb8d01546f290af7320b?placeholderIfAbsent=true",
-							label: "Dial",
-							onClick: () => handleNavigation("dial4"),
-						},
-						{
-							id: "contact",
-							icon: "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/1feb2a6cba270cf15db25be6dab70b3c838d28fe?placeholderIfAbsent=true",
-							label: "Contact",
-							onClick: () => handleNavigation("contact"),
-						},
-					]}
+				<SwapProgressNavigation 
+					currentStep={progressStep}
+					onStepClick={(stepId) => {
+						// Allow navigation only to completed or current steps
+						if (stepId <= progressStep) {
+							if (stepId === 1) {
+								setStep(1);
+								setQuote(null);
+								setToAmount("");
+							} else if (stepId === 2 && fromCurrency) {
+								setStep(1);
+							} else if (stepId === 3 && fromCurrency && toCurrency) {
+								setStep(1);
+							}
+						}
+					}}
 				/>
 			</div>
 		</div>

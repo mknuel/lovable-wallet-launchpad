@@ -78,8 +78,8 @@ const BlockLoansScreen = () => {
           { id: "crypto", value: "0", label: t("wallet.crypto") }
         ];
 
-    // Add real Aave loan data without units
-    const loansValue = accountData ? (accountData.totalDebtETH * 1.2).toFixed(2) : "0";
+    // Add real Aave loan data without units (integer format)
+    const loansValue = accountData ? Math.round(accountData.totalDebtETH * 1.2).toString() : "0";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
@@ -226,8 +226,10 @@ const BlockLoansScreen = () => {
 				</div>
 			</div>
 
-			{/* Bottom Navigation */}
-			<Navigation nav="BlockLoans" />
+			{/* Bottom Navigation - Fixed to bottom */}
+			<div className="fixed bottom-0 left-0 right-0 z-50">
+				<Navigation nav="BlockLoans" />
+			</div>
 
 			{/* Aave Confirmation Modal */}
 			<AaveConfirmationModal
