@@ -114,7 +114,9 @@ const WETH_GATEWAY_ABI = [
 const ETH_PRICE_USD = 2400; // Mock ETH price for conversion
 
 const usdToEth = (usdAmount) => {
-  return (parseFloat(usdAmount) / ETH_PRICE_USD).toString();
+  const ethAmount = parseFloat(usdAmount) / ETH_PRICE_USD;
+  console.log(`💰 Converting $${usdAmount} USD to ${ethAmount} ETH`);
+  return ethAmount.toString();
 };
 
 const safeToWei = (amount) => {
@@ -125,15 +127,28 @@ const safeToWei = (amount) => {
     throw new Error(`Invalid amount: ${amount}`);
   }
   
-  // Handle very small amounts by setting a minimum
-  const minAmount = 0.001; // 0.001 ETH minimum
+  // Set higher minimum for Sepolia testnet (Aave requires meaningful amounts)
+  const minAmount = 0.01; // 0.01 ETH minimum (~$24 USD at current price)
+  if (numAmount < minAmount) {
+    console.warn(`⚠️ Amount ${numAmount} ETH is below minimum ${minAmount} ETH, using minimum`);
+  }
   const finalAmount = Math.max(numAmount, minAmount);
   
   // Convert to string with fixed decimals to avoid scientific notation
   const amountStr = finalAmount.toFixed(18);
   const result = toWei(amountStr);
-  console.log('safeToWei result:', result);
+  console.log('safeToWei result:', result, 'final amount:', finalAmount, 'ETH');
   return result;
+};
+
+const checkTxSuccess = (result, label = "Transaction") => {
+  if (!result || result?.receipt?.status !== 1n) {
+    throw new Error(
+      `${label} failed on-chain (status: ${
+        result?.receipt?.status ?? "unknown"
+      })`
+    );
+  }
 };
 
 const getTokenContract = (client, address) =>
@@ -169,6 +184,8 @@ export const supplySepoliaETH = async (account, usdAmount) => {
   console.log(`🔄 SUPPLY: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
   console.log(`✅ SUPPLY: Transaction result:`, result);
+  
+  checkTxSuccess(result, "Supply");
 
   // 🔍 Validate if collateral registered
   const poolContract = getPoolContract(client);
@@ -221,6 +238,8 @@ export const borrowETH = async (account, usdAmount) => {
   console.log(`🔄 BORROW: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
   console.log(`✅ BORROW: Transaction result:`, result);
+  
+  checkTxSuccess(result, "Borrow");
 
   const response = {
     success: true,
@@ -253,6 +272,8 @@ export const repayETH = async (account, usdAmount) => {
   console.log(`🔄 REPAY: Prepared transaction:`, tx);
   const result = await sendTransaction({ transaction: tx, account });
   console.log(`✅ REPAY: Transaction result:`, result);
+  
+  checkTxSuccess(result, "Repay");
 
   const response = {
     success: true,
