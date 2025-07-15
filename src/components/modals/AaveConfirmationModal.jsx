@@ -88,15 +88,15 @@ export const AaveConfirmationModal = ({
 			case "deposit":
 				return {
 					symbol: "USD",
-					description: "Supply USD value equivalent in ETH",
+					description: "Supply USD value equivalent in MATIC",
 				};
 			case "borrow":
 				return {
 					symbol: "USD",
-					description: "Borrow USD value equivalent in WETH",
+					description: "Borrow USD value equivalent in WMATIC",
 				};
 			case "repay":
-				return { symbol: "USD", description: "Repay USD value equivalent in WETH" };
+				return { symbol: "USD", description: "Repay USD value equivalent in WMATIC" };
 			case "stake":
 				return {
 					symbol: "AAVE",

@@ -78,8 +78,8 @@ const BlockLoansScreen = () => {
           { id: "crypto", value: "0", label: t("wallet.crypto") }
         ];
 
-    // Add real Aave loan data
-    const loansValue = accountData ? `${accountData.totalDebtETH.toFixed(4)} ETH` : "0 ETH";
+    // Add real Aave loan data in MATIC
+    const loansValue = accountData ? `${(accountData.totalDebtETH * 1.2).toFixed(2)} MATIC` : "0 MATIC";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
@@ -95,7 +95,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'deposit',
-      title: 'Supply Sepolia ETH to Aave'
+      title: 'Supply MATIC to Aave'
     });
   };
 
@@ -104,7 +104,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'borrow',
-      title: 'Borrow WETH from Aave'
+      title: 'Borrow WMATIC from Aave'
     });
   };
 
@@ -118,7 +118,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'repay',
-      title: 'Repay WETH to Aave'
+      title: 'Repay WMATIC to Aave'
     });
   };
 
@@ -166,7 +166,7 @@ const BlockLoansScreen = () => {
       
       // Show helpful message for insufficient balance
       if (errorMessage.includes('Insufficient')) {
-        errorMessage += '\n\nMake sure you have enough Sepolia ETH in your wallet for the transaction and gas fees.';
+        errorMessage += '\n\nMake sure you have enough MATIC in your wallet for the transaction and gas fees.';
       }
       
       return Promise.reject(new Error(errorMessage));
