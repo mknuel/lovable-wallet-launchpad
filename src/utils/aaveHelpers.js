@@ -186,51 +186,64 @@ export const supplySepoliaETH = async (account, ethAmount) => {
   console.log(`🔄 SUPPLY: Supplying ${ethAmount} ETH`);
   console.log(`🔄 SUPPLY: Account address:`, account.address);
 
-  // Use WETH Gateway for ETH deposits
-  const contract = getWethGatewayContract(client);
-  console.log(`🔄 SUPPLY: WETH Gateway contract:`, contract);
-  
-  const tx = await prepareContractCall({
-    contract,
-    method: "depositETH",
-    params: [CONTRACTS.AAVE_POOL, account.address, 0],
-    value: safeToWei(ethAmount),
-    gas: 150000n, // Set higher gas limit for Sepolia
-  });
+  try {
+    // Use WETH Gateway for ETH deposits
+    const contract = getWethGatewayContract(client);
+    console.log(`🔄 SUPPLY: WETH Gateway contract:`, contract);
+    
+    const tx = await prepareContractCall({
+      contract,
+      method: "depositETH",
+      params: [CONTRACTS.AAVE_POOL, account.address, 0],
+      value: safeToWei(ethAmount),
+      gas: 200000n, // Increased gas limit
+    });
 
-  console.log(`🔄 SUPPLY: Prepared transaction:`, tx);
-  const result = await sendTransaction({ transaction: tx, account });
-  console.log(`✅ SUPPLY: Transaction result:`, result);
-  
-  await checkTxSuccess(client, result, "Supply");
+    console.log(`🔄 SUPPLY: Prepared transaction:`, tx);
+    const result = await sendTransaction({ transaction: tx, account });
+    console.log(`✅ SUPPLY: Transaction result:`, result);
+    
+    await checkTxSuccess(client, result, "Supply");
 
-  // 🔍 Validate if collateral registered
-  const poolContract = getPoolContract(client);
-  const data = await readContract({
-    contract: poolContract,
-    method: "getUserAccountData", 
-    params: [account.address],
-  });
+    // 🔍 Validate if collateral registered
+    const poolContract = getPoolContract(client);
+    const data = await readContract({
+      contract: poolContract,
+      method: "getUserAccountData", 
+      params: [account.address],
+    });
 
-  console.log(`📊 SUPPLY: Account data after supply:`, data);
-  const totalCollateralETH = Number(data.totalCollateralETH) / 1e18;
-  console.log(`📊 SUPPLY: Total collateral ETH:`, totalCollateralETH);
+    console.log(`📊 SUPPLY: Account data after supply:`, data);
+    const totalCollateralETH = Number(data.totalCollateralETH) / 1e18;
+    console.log(`📊 SUPPLY: Total collateral ETH:`, totalCollateralETH);
 
-  if (totalCollateralETH === 0) {
-    return {
-      success: false,
-      message: "Transaction confirmed but no collateral registered. Check transaction or retry.",
+    if (totalCollateralETH === 0) {
+      return {
+        success: false,
+        message: "Transaction confirmed but no collateral registered. Check transaction or retry.",
+        txHash: result.transactionHash,
+      };
+    }
+
+    const response = {
+      success: true,
+      message: `Supplied ${ethAmount} ETH successfully`,
       txHash: result.transactionHash,
     };
+    console.log(`✅ SUPPLY: Final response:`, response);
+    return response;
+  } catch (error) {
+    console.error(`❌ SUPPLY: Error:`, error);
+    let errorMessage = "Failed to supply ETH";
+    
+    if (error.message.includes("insufficient funds")) {
+      errorMessage = "Insufficient ETH balance in your wallet.";
+    } else if (error.message.includes("gas")) {
+      errorMessage = "Transaction failed due to gas issues. Please try again.";
+    }
+    
+    throw new Error(errorMessage);
   }
-
-  const response = {
-    success: true,
-    message: `Supplied ${ethAmount} ETH successfully`,
-    txHash: result.transactionHash,
-  };
-  console.log(`✅ SUPPLY: Final response:`, response);
-  return response;
 };
 
 // ✅ Borrow WETH - Input amount in ETH
@@ -241,29 +254,57 @@ export const borrowETH = async (account, ethAmount) => {
   console.log(`🔄 BORROW: Borrowing ${ethAmount} ETH`);
   console.log(`🔄 BORROW: Account address:`, account.address);
 
+  // First check user's account data to see if they can borrow
+  const accountData = await getUserAccountData(account.address);
+  console.log(`📊 BORROW: User account data:`, accountData);
+  
+  const borrowAmountETH = parseFloat(ethAmount);
+  if (borrowAmountETH > accountData.availableBorrowsETH) {
+    throw new Error(`Cannot borrow ${ethAmount} ETH. Available to borrow: ${accountData.availableBorrowsETH.toFixed(4)} ETH. You need more collateral.`);
+  }
+
+  if (accountData.totalCollateralETH === 0) {
+    throw new Error("No collateral found. Please supply collateral first before borrowing.");
+  }
+
   const contract = getPoolContract(client);
   console.log(`🔄 BORROW: Pool contract:`, contract);
 
-  const tx = await prepareContractCall({
-    contract,
-    method: "borrow",
-    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
-    gas: 150000n, // Set higher gas limit for Sepolia
-  });
+  try {
+    const tx = await prepareContractCall({
+      contract,
+      method: "borrow",
+      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
+      gas: 200000n, // Increased gas limit
+    });
 
-  console.log(`🔄 BORROW: Prepared transaction:`, tx);
-  const result = await sendTransaction({ transaction: tx, account });
-  console.log(`✅ BORROW: Transaction result:`, result);
-  
-  await checkTxSuccess(client, result, "Borrow");
+    console.log(`🔄 BORROW: Prepared transaction:`, tx);
+    const result = await sendTransaction({ transaction: tx, account });
+    console.log(`✅ BORROW: Transaction result:`, result);
+    
+    await checkTxSuccess(client, result, "Borrow");
 
-  const response = {
-    success: true,
-    message: `Borrowed ${ethAmount} ETH successfully`,
-    txHash: result.transactionHash,
-  };
-  console.log(`✅ BORROW: Final response:`, response);
-  return response;
+    const response = {
+      success: true,
+      message: `Borrowed ${ethAmount} ETH successfully`,
+      txHash: result.transactionHash,
+    };
+    console.log(`✅ BORROW: Final response:`, response);
+    return response;
+  } catch (error) {
+    console.error(`❌ BORROW: Error:`, error);
+    let errorMessage = "Failed to borrow ETH";
+    
+    if (error.message.includes("30")) {
+      errorMessage = "Insufficient collateral to borrow this amount. Please supply more collateral first.";
+    } else if (error.message.includes("32")) {
+      errorMessage = "This asset is not enabled for borrowing.";
+    } else if (error.message.includes("4")) {
+      errorMessage = "Health factor would be below 1. Reduce borrow amount.";
+    }
+    
+    throw new Error(errorMessage);
+  }
 };
 
 // ✅ Repay WETH - Input amount in ETH
@@ -274,47 +315,79 @@ export const repayETH = async (account, ethAmount) => {
   console.log(`🔄 REPAY: Repaying ${ethAmount} ETH`);
   console.log(`🔄 REPAY: Account address:`, account.address);
 
-  // First, approve WETH token to be spent by Aave pool
-  console.log(`🔄 REPAY: Approving WETH for Aave pool...`);
-  const wethContract = getTokenContract(client, CONTRACTS.WETH);
-  
-  const approvalTx = await prepareContractCall({
-    contract: wethContract,
-    method: "approve",
-    params: [CONTRACTS.AAVE_POOL, safeToWei(ethAmount)],
-    gas: 100000n,
-  });
+  try {
+    // Check user's debt first
+    const accountData = await getUserAccountData(account.address);
+    console.log(`📊 REPAY: User account data:`, accountData);
+    
+    if (accountData.totalDebtETH === 0) {
+      throw new Error("No debt found to repay.");
+    }
 
-  console.log(`🔄 REPAY: Sending approval transaction...`);
-  const approvalResult = await sendTransaction({ transaction: approvalTx, account });
-  console.log(`✅ REPAY: Approval transaction result:`, approvalResult);
-  
-  await checkTxSuccess(client, approvalResult, "WETH Approval");
+    // Check WETH balance
+    const wethBalance = await getTokenBalance(account.address, CONTRACTS.WETH);
+    console.log(`💰 REPAY: WETH Balance:`, wethBalance);
+    
+    const repayAmountETH = parseFloat(ethAmount);
+    if (repayAmountETH > wethBalance) {
+      throw new Error(`Insufficient WETH balance. Have: ${wethBalance.toFixed(4)} WETH, Need: ${ethAmount} WETH`);
+    }
 
-  // Now repay the debt
-  const poolContract = getPoolContract(client);
-  console.log(`🔄 REPAY: Pool contract:`, poolContract);
+    // First, approve WETH token to be spent by Aave pool
+    console.log(`🔄 REPAY: Approving WETH for Aave pool...`);
+    const wethContract = getTokenContract(client, CONTRACTS.WETH);
+    
+    const approvalTx = await prepareContractCall({
+      contract: wethContract,
+      method: "approve",
+      params: [CONTRACTS.AAVE_POOL, safeToWei(ethAmount)],
+      gas: 100000n,
+    });
 
-  const repayTx = await prepareContractCall({
-    contract: poolContract,
-    method: "repay",
-    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
-    gas: 150000n, // Set higher gas limit for Sepolia
-  });
+    console.log(`🔄 REPAY: Sending approval transaction...`);
+    const approvalResult = await sendTransaction({ transaction: approvalTx, account });
+    console.log(`✅ REPAY: Approval transaction result:`, approvalResult);
+    
+    await checkTxSuccess(client, approvalResult, "WETH Approval");
 
-  console.log(`🔄 REPAY: Prepared repay transaction:`, repayTx);
-  const result = await sendTransaction({ transaction: repayTx, account });
-  console.log(`✅ REPAY: Repay transaction result:`, result);
-  
-  await checkTxSuccess(client, result, "Repay");
+    // Now repay the debt
+    const poolContract = getPoolContract(client);
+    console.log(`🔄 REPAY: Pool contract:`, poolContract);
 
-  const response = {
-    success: true,
-    message: `Repaid ${ethAmount} ETH successfully`,
-    txHash: result.transactionHash,
-  };
-  console.log(`✅ REPAY: Final response:`, response);
-  return response;
+    const repayTx = await prepareContractCall({
+      contract: poolContract,
+      method: "repay",
+      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
+      gas: 200000n, // Increased gas limit
+    });
+
+    console.log(`🔄 REPAY: Prepared repay transaction:`, repayTx);
+    const result = await sendTransaction({ transaction: repayTx, account });
+    console.log(`✅ REPAY: Repay transaction result:`, result);
+    
+    await checkTxSuccess(client, result, "Repay");
+
+    const response = {
+      success: true,
+      message: `Repaid ${ethAmount} ETH successfully`,
+      txHash: result.transactionHash,
+    };
+    console.log(`✅ REPAY: Final response:`, response);
+    return response;
+  } catch (error) {
+    console.error(`❌ REPAY: Error:`, error);
+    let errorMessage = "Failed to repay ETH";
+    
+    if (error.message.includes("insufficient")) {
+      errorMessage = error.message; // Use the specific insufficient balance message
+    } else if (error.message.includes("No debt")) {
+      errorMessage = error.message; // Use the no debt message
+    } else if (error.message.includes("30")) {
+      errorMessage = "Cannot repay: insufficient balance or invalid amount.";
+    }
+    
+    throw new Error(errorMessage);
+  }
 };
 
 // ✅ Get user account data
