@@ -177,7 +177,7 @@ export const AaveConfirmationModal = ({
                       placeholder="Enter amount"
                       disabled={isLoading || actionType === 'stake'}
                     />
-                    <div className="absolute left-4 bottom-2 text-gray-400 text-sm">
+                    <div className="absolute left-4 top-2 text-gray-400 text-sm">
                       Enter here
                     </div>
                   </div>
