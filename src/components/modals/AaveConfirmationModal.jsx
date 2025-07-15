@@ -234,7 +234,7 @@ export const AaveConfirmationModal = ({
 								<div className="border-t border-gray-200 -mx-6"></div>
 								{/* Action Button */}
 								<button
-									onClick={onConfirm}
+									onClick={handleSubmit}
 									className="w-full py-3 pb-0 font-semibold rounded-lg focus:outline-none transition-all outline-none">
 									<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent text-lg">
 										{isLoading ? "Processing..." : "Confirm"}
