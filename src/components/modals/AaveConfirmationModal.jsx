@@ -87,16 +87,16 @@ export const AaveConfirmationModal = ({
 		switch (actionType) {
 			case "deposit":
 				return {
-					symbol: "ETH",
-					description: "Supply Sepolia ETH to earn interest",
+					symbol: "USD",
+					description: "Supply USD value equivalent in ETH",
 				};
 			case "borrow":
 				return {
-					symbol: "WETH",
-					description: "Borrow WETH with variable rate",
+					symbol: "USD",
+					description: "Borrow USD value equivalent in WETH",
 				};
 			case "repay":
-				return { symbol: "WETH", description: "Repay your WETH debt" };
+				return { symbol: "USD", description: "Repay USD value equivalent in WETH" };
 			case "stake":
 				return {
 					symbol: "AAVE",
@@ -214,7 +214,7 @@ export const AaveConfirmationModal = ({
 											value={amount}
 											onChange={(e) => setAmount(e.target.value)}
 											className="w-full px-4 py-2 pt-6 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-400 text-lg text-black placeholder:text-black"
-											placeholder="Enter amount"
+											placeholder="Enter USD amount"
 											disabled={isLoading || actionType === "stake"}
 										/>
 										<div className="absolute left-4 top-2 text-gray-400 text-sm">

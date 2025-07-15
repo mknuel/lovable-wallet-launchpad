@@ -111,10 +111,23 @@ const WETH_GATEWAY_ABI = [
 ];
 
 // 🔧 Utilities
+const ETH_PRICE_USD = 3400; // Mock ETH price for conversion
+
+const usdToEth = (usdAmount) => {
+  return (parseFloat(usdAmount) / ETH_PRICE_USD).toString();
+};
+
 const safeToWei = (amount) => {
-  const str = amount?.toString();
-  if (!str || isNaN(str)) throw new Error("Invalid amount");
-  return toWei(str);
+  const numAmount = parseFloat(amount);
+  console.log('safeToWei input:', amount, 'parsed:', numAmount);
+  
+  if (!amount || isNaN(numAmount) || numAmount <= 0) {
+    throw new Error(`Invalid amount: ${amount}`);
+  }
+  
+  const result = toWei(numAmount.toString());
+  console.log('safeToWei result:', result);
+  return result;
 };
 
 const getTokenContract = (client, address) =>
@@ -126,17 +139,20 @@ const getPoolContract = (client) =>
 const getWethGatewayContract = (client) =>
   getContract({ client, chain: sepolia, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
 
-// ✅ Supply ETH (as collateral)
-export const supplySepoliaETH = async (account, amount) => {
+// ✅ Supply ETH (as collateral) - Input amount in USD
+export const supplySepoliaETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
+
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH`);
 
   const contract = getWethGatewayContract(client);
   const tx = await prepareContractCall({
     contract,
     method: "depositETH",
     params: [CONTRACTS.AAVE_POOL, account.address, 0],
-    value: safeToWei(amount),
+    value: safeToWei(ethAmount),
   });
 
   const result = await sendTransaction({ transaction: tx, account });
@@ -161,49 +177,55 @@ export const supplySepoliaETH = async (account, amount) => {
 
   return {
     success: true,
-    message: `Supplied ${amount} ETH successfully (marked as collateral)`,
+    message: `Supplied $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
 
-// ✅ Borrow ETH
-export const borrowETH = async (account, amount) => {
+// ✅ Borrow ETH - Input amount in USD
+export const borrowETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
+
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for borrowing`);
 
   const contract = getPoolContract(client);
   const tx = await prepareContractCall({
     contract,
     method: "borrow",
-    params: [CONTRACTS.WETH, safeToWei(amount), 2, 0, account.address],
+    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   return {
     success: true,
-    message: `Borrowed ${amount} ETH successfully`,
+    message: `Borrowed $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
 
-// ✅ Repay ETH
-export const repayETH = async (account, amount) => {
+// ✅ Repay ETH - Input amount in USD
+export const repayETH = async (account, usdAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
+
+  const ethAmount = usdToEth(usdAmount);
+  console.log(`Converting $${usdAmount} USD to ${ethAmount} ETH for repayment`);
 
   const contract = getPoolContract(client);
   const tx = await prepareContractCall({
     contract,
     method: "repay",
-    params: [CONTRACTS.WETH, safeToWei(amount), 2, account.address],
+    params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
   });
 
   const result = await sendTransaction({ transaction: tx, account });
 
   return {
     success: true,
-    message: `Repaid ${amount} ETH successfully`,
+    message: `Repaid $${usdAmount} USD (${ethAmount} ETH) successfully`,
     txHash: result.transactionHash,
   };
 };
