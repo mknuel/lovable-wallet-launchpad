@@ -7,14 +7,14 @@ import {
   readContract,
   toWei,
 } from "thirdweb";
-import { polygonAmoy } from "thirdweb/chains";
+import { sepolia } from "thirdweb/chains";
 
-// 🔗 Contract addresses for Polygon Amoy testnet Aave v3
+// 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3
 export const CONTRACTS = {
-  AAVE_POOL: "0x6C7C332FB149e5E289dC1CEd33DFC6D0b154E6C5",
-  WETH_GATEWAY: "0x1fe7D3947c9b74fE7e9d82fEb7Bd126B164bC3F7",
-  WETH: "0x360ad4f9a9A8EFe9A8DCB5f461c4Cc1047E1Dcf9",
-  USDC: "0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582",
+  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D",
+  WETH: "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c",
+  USDC: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
 };
 
 // 🔎 ABIs
@@ -137,13 +137,13 @@ const safeToWei = (amount) => {
 };
 
 const getTokenContract = (client, address) =>
-  getContract({ client, chain: polygonAmoy, address, abi: ERC20_ABI });
+  getContract({ client, chain: sepolia, address, abi: ERC20_ABI });
 
 const getPoolContract = (client) =>
-  getContract({ client, chain: polygonAmoy, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
+  getContract({ client, chain: sepolia, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
 
 const getWethGatewayContract = (client) =>
-  getContract({ client, chain: polygonAmoy, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
+  getContract({ client, chain: sepolia, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
 
 // ✅ Supply ETH (as collateral) - Input amount in USD  
 export const supplySepoliaETH = async (account, usdAmount) => {
