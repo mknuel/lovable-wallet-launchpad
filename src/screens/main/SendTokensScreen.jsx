@@ -6,16 +6,17 @@ import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import SearchIcon from "../../assets/icons/Search.svg";
 import { FromCurrencyCard } from "../../components/swap/FromCurrencyCard";
-import { defineChain, getContract, NATIVE_TOKEN_ADDRESS } from "thirdweb";
+import { defineChain, getContract, NATIVE_TOKEN_ADDRESS, estimateGas, toWei } from "thirdweb";
 import { client } from "../../components/thirdweb/thirdwebClient";
 import {
 	useActiveAccount,
-	useEstimateGasCost,
+	useEstimateGas,
 	useSendTransaction,
 	useSimulateTransaction,
 } from "thirdweb/react";
 import { transfer } from "thirdweb/extensions/erc20";
 import { SendConfirmationModal } from "../../components/swap/ConfirmationModal";
+import CommonButton from "../../components/Buttons/CommonButton";
 
 function formatTokenBalance(token) {
 	if (
@@ -36,17 +37,15 @@ function formatTokenBalance(token) {
 	return `${balance} ${symbol}`;
 }
 
-function formatGasFee(gasCost, fromCurrency) {
-	if (!gasCost || !fromCurrency) return "--";
+function formatGasFee(gasEstimate, fromCurrency) {
+	if (!gasEstimate || !fromCurrency) return "--";
 
-	const etherValue = parseFloat(gasCost.ether);
-	const usdValue = fromCurrency.price_data?.price_usd
-		? (etherValue * fromCurrency.price_data.price_usd).toFixed(2)
-		: null;
+	// Convert gas estimate from wei to native token
+	const gasInNative = Number(gasEstimate) / 10**18;
+	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
+	const gasInUsd = gasInNative * nativeTokenPrice;
 
-	return usdValue
-		? `${etherValue.toFixed(8)} ${fromCurrency.symbol} ($${usdValue})`
-		: `${etherValue.toFixed(8)} ${fromCurrency.symbol}`;
+	return `${gasInNative.toFixed(6)} ${fromCurrency.symbol} ($${gasInUsd.toFixed(2)})`;
 }
 
 const SendTokensScreen = () => {
@@ -60,10 +59,11 @@ const SendTokensScreen = () => {
 	const [fromCurrency, setFromCurrency] = useState(undefined);
 	const [operationStatus, setOperationStatus] = useState(null); // 'searching', 'estimating', 'sending'
 	const [isOpen, setIsOpen] = useState(false);
+	const [gasEstimate, setGasEstimate] = useState(null);
 
 	const activeAccount = useActiveAccount();
 	const { mutate: sendTransaction } = useSendTransaction();
-	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
+	const { mutate: estimateGasForTx, data: gasCost } = useEstimateGas();
 	const [preparedTx, setPreparedTx] = useState();
 	const activeRequest = useRef(null);
 	const lastSearchQuery = useRef("");
@@ -225,7 +225,18 @@ const SendTokensScreen = () => {
 					});
 
 					setPreparedTx(tx);
-					await estimateGasCost(tx);
+					
+					// Estimate gas for the transaction
+					try {
+						const gas = await estimateGas({
+							transaction: tx,
+							from: activeAccount?.address,
+						});
+						setGasEstimate(gas);
+					} catch (gasError) {
+						console.warn("Could not estimate gas:", gasError);
+						setGasEstimate(null);
+					}
 				} catch (e) {
 					console.error("Error preparing transaction for estimation:", e);
 					setPreparedTx(null);
@@ -238,7 +249,7 @@ const SendTokensScreen = () => {
 		};
 
 		prepareTransaction();
-	}, [amount, fromCurrency, selectedUser, activeAccount, estimateGasCost]);
+	}, [amount, fromCurrency, selectedUser, activeAccount, estimateGasForTx]);
 
 	const isLoading = operationStatus !== null;
 	const isSendDisabled =
@@ -353,8 +364,8 @@ const SendTokensScreen = () => {
 										</span>
 									</div>
 									<div className="justify-between flex w-full">
-										<span>Fees:</span>
-										<span>{formatGasFee(gasCost, fromCurrency)}</span>
+										<span>Network Fee:</span>
+										<span>{formatGasFee(gasEstimate, fromCurrency)}</span>
 									</div>
 								</div>
 							</div>
@@ -389,24 +400,16 @@ const SendTokensScreen = () => {
 						<div className="flex-1"></div>
 
 						<div className="w-full mb-5">
-							<button
+							<CommonButton
 								onClick={() => setIsOpen(true)}
 								disabled={isSendDisabled}
-								className={`
-                  w-full h-[48px] rounded-lg text-[16px] font-['Sansation'] font-bold uppercase tracking-wide
-                  transition-all duration-200 flex items-center justify-center
-                  ${
-										!isSendDisabled
-											? "bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] text-white cursor-pointer hover:opacity-90"
-											: "bg-gray-300 text-gray-500 cursor-not-allowed"
-									}
-                `}>
+								className="w-full !text-[#fff] py-3 uppercase">
 								{operationStatus === "sending"
 									? "Sending..."
 									: operationStatus === "estimating"
 									? "Calculating..."
 									: "SEND TOKENS"}
-							</button>
+							</CommonButton>
 						</div>
 					</>
 				)}
