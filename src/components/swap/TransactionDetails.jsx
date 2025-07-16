@@ -54,18 +54,14 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 					<div className="bg-white p-4" style={{ borderRadius: "7px" }}>
 						<div className="flex justify-between items-center">
 							<span className="text-gray-600 text-sm font-['Sansation']">
-								Gas Fee:
+								Price:
 							</span>
 
-							<div className="flex flex-col items-end">
+							<div className="flex gap-2 items-center">
 								<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-									{gasEstimate ? `${gasInNative.toFixed(6)} ${fromToken.symbol}` : 'Estimating...'}
+									1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
 								</span>
-								{gasEstimate && (
-									<span className="text-gray-500 text-xs font-['Sansation']">
-										≈ ${gasInUsd.toFixed(2)}
-									</span>
-								)}
+								<img src={SwapIcon} />
 							</div>
 						</div>
 					</div>
@@ -87,13 +83,15 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 							Total fee
 						</span>
 						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							{/* Calculate the bridge fee as the difference between input and expected output value */}
+							{/* Calculate total fees: bridge fee + network/gas fee */}
 							{(() => {
 								const inputValueUsd = fromAmount * fromToken.priceUsd;
 								const outputValueUsd = toAmount * toToken.priceUsd;
-								const feeUsd = inputValueUsd - outputValueUsd;
-								const feeInFromToken = feeUsd / fromToken.priceUsd;
-								return `${feeInFromToken.toFixed(6)} ${fromToken.symbol}`;
+								const bridgeFeeUsd = inputValueUsd - outputValueUsd;
+								const networkFeeUsd = gasInUsd;
+								const totalFeeUsd = bridgeFeeUsd + networkFeeUsd;
+								const totalFeeInFromToken = totalFeeUsd / fromToken.priceUsd;
+								return `${totalFeeInFromToken.toFixed(6)} ${fromToken.symbol}`;
 							})()}
 						</span>
 					</div>
