@@ -209,12 +209,26 @@ const SwapCurrencyScreen = () => {
 			});
 
 			console.log("Prepared transactions:", prepared);
+			
+			// Execute all transactions and wait for completion
 			for (const txStep of prepared.steps) {
 				for (const transaction of txStep.transactions) {
-					await sendTransaction(transaction);
+					await new Promise((resolve, reject) => {
+						sendTransaction(transaction, {
+							onSuccess: (result) => {
+								console.log("Transaction successful:", result);
+								resolve(result);
+							},
+							onError: (error) => {
+								console.error("Transaction failed:", error);
+								reject(error);
+							}
+						});
+					});
 				}
 			}
-			console.log("Swap executed successfully!");
+			
+			console.log("All transactions completed successfully!");
 			setIsModalOpen(true);
 		} catch (err) {
 			console.error("Failed to execute swap:", err);

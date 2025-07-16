@@ -87,8 +87,14 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 							Total fee
 						</span>
 						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							{/* Calculate bridge fee from the quote */}
-							{((fromAmount - (Number(details.destinationAmount) / 10 ** toToken.decimals * fromToken.priceUsd / toToken.priceUsd))).toFixed(6)} {fromToken.symbol}
+							{/* Calculate the bridge fee as the difference between input and expected output value */}
+							{(() => {
+								const inputValueUsd = fromAmount * fromToken.priceUsd;
+								const outputValueUsd = toAmount * toToken.priceUsd;
+								const feeUsd = inputValueUsd - outputValueUsd;
+								const feeInFromToken = feeUsd / fromToken.priceUsd;
+								return `${feeInFromToken.toFixed(6)} ${fromToken.symbol}`;
+							})()}
 						</span>
 					</div>
 
