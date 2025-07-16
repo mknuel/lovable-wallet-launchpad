@@ -8,7 +8,7 @@ import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading } from '../../store/reducers/walletSlice';
-import { PATH_WALLET, PATH_SEND_TOKENS, PATH_SWAP_CURRENCY } from "../../context/paths";
+import { PATH_WALLET, PATH_SEND_TOKENS, PATH_SWAP_CURRENCY, PATH_BLOCKLOANS } from "../../context/paths";
 
 const WalletActionsScreen = () => {
   const { t } = useTranslation();
@@ -68,7 +68,7 @@ const WalletActionsScreen = () => {
     {
       id: "loan",
       label: t("wallet.actions.loan") || "Request Loan with your tokens",
-      onClick: () => console.log("Loan action triggered"),
+      onClick: () => navigate(PATH_BLOCKLOANS),
     },
   ], [t, navigate]);
 
