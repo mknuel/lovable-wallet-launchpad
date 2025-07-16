@@ -59,6 +59,11 @@ const WalletScreen = () => {
 			label: "Exchange tokens",
 			onClick: () => console.log("Exchange tokens clicked"),
 		},
+		{
+			id: "loan",
+			label: "Request Loan with your tokens",
+			onClick: () => console.log("Request loan clicked"),
+		},
 	], []);
 
 	const handleNextClick = () => {
