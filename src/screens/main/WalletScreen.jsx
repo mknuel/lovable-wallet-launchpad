@@ -62,7 +62,7 @@ const WalletScreen = () => {
 		{
 			id: "loan",
 			label: "Request Loan with your tokens",
-			onClick: () => console.log("Request loan clicked"),
+			onClick: () => navigate("/blockloans"),
 		},
 	], []);
 

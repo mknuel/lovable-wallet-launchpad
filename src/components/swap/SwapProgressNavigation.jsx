@@ -50,7 +50,7 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
                   isActive 
                     ? 'scale-110' 
                     : isCompleted 
-                      ? 'bg-green-100 hover:bg-green-200' 
+                      ? 'hover:bg-gray-100' 
                       : 'hover:bg-gray-100'
                 }`}
                 aria-label={`${step.label}: ${step.description}`}
@@ -62,15 +62,12 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
                   className={`aspect-[1] object-contain transition-all duration-200 ${
                     step.id === 3 ? "w-4" : "w-5"
                   } ${
-                    isActive ? 'bg-pink-purple-gradient bg-clip-content' : 
-                    isCompleted ? 'filter hue-rotate-90' : 
+                    isActive ? 'filter brightness-150 contrast-150' : 
+                    isCompleted ? 'filter brightness-110' : 
                     status === 'upcoming' ? 'filter grayscale opacity-50' : ''
                   }`}
                   style={isActive ? {
-                    background: 'linear-gradient(135deg, #DC2366, #4F5CAA)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'brightness(1.2) contrast(1.1)'
+                    filter: 'brightness(1.2) contrast(1.1) hue-rotate(315deg) saturate(1.5)'
                   } : {}}
                 />
                 {isActive && (
