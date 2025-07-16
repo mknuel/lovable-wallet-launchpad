@@ -3,7 +3,7 @@ import { SlippagePopup } from "./SlippagePopup";
 import SwapIcon from "../../assets/icons/round-arrow.svg";
 
 // The component now accepts a 'details' prop to dynamically display data.
-export const TransactionDetails = ({ details, slippage, setSlippage }) => {
+export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate }) => {
 	const [isSlippagePopupOpen, setIsSlippagePopupOpen] = useState(false);
 
 	const handleSlippageChange = (newSlippage) => {
@@ -35,6 +35,11 @@ export const TransactionDetails = ({ details, slippage, setSlippage }) => {
 	// Calculate the minimum amount the user will receive after applying slippage.
 	const minimumReceived = (toAmount * (1 - slippage / 100)).toFixed(4);
 
+	// Calculate gas fee in ETH/native token and USD
+	const gasInNative = gasEstimate ? Number(gasEstimate) / 10**18 : 0;
+	const nativeTokenPrice = fromToken?.priceUsd || toToken?.priceUsd || 3500; // Use either token's USD price as reference
+	const gasInUsd = gasInNative * nativeTokenPrice;
+
 	return (
 		<>
 			<div className="mt-6">
@@ -49,14 +54,18 @@ export const TransactionDetails = ({ details, slippage, setSlippage }) => {
 					<div className="bg-white p-4" style={{ borderRadius: "7px" }}>
 						<div className="flex justify-between items-center">
 							<span className="text-gray-600 text-sm font-['Sansation']">
-								Price:
+								Gas Fee:
 							</span>
 
-							<div className="flex gap-2 items-center">
+							<div className="flex flex-col items-end">
 								<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-									1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
+									{gasEstimate ? `${gasInNative.toFixed(6)} ${fromToken.symbol}` : 'Estimating...'}
 								</span>
-								<img src={SwapIcon} />
+								{gasEstimate && (
+									<span className="text-gray-500 text-xs font-['Sansation']">
+										≈ ${gasInUsd.toFixed(2)}
+									</span>
+								)}
 							</div>
 						</div>
 					</div>

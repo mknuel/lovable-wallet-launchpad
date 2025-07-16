@@ -13,7 +13,7 @@ import {
 	useActiveAccount,
 	useActiveWallet,
 	useWalletBalance,
-	useEstimateGasCost,
+	useEstimateGas,
 } from "thirdweb/react";
 import { useWalletAccount } from "../../context/WalletAccountContext";
 import { client } from "../../components/thirdweb/thirdwebClient";
@@ -26,6 +26,7 @@ import {
 	getContract,
 	sendTransaction,
 	toWei,
+	estimateGas,
 } from "thirdweb";
 import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
 import { useTonWallet } from "@tonconnect/ui-react";
@@ -51,7 +52,8 @@ const SwapCurrencyScreen = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [isExecutingSwap, setIsExecutingSwap] = useState(false);
-	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
+	const { mutate: estimateGasForTx, data: gasCost } = useEstimateGas();
+	const [gasEstimate, setGasEstimate] = useState(null);
 
 	const [slippage, setSlippage] = useState(0.5);
 	// State for tokens the user OWNS
@@ -128,25 +130,55 @@ const SwapCurrencyScreen = () => {
 		setQuote(null);
 
 		try {
-			const fetchedQuote = await Bridge.Buy.quote({
+			// Use Bridge.Sell.quote since user specifies how much they want to sell
+			const fetchedQuote = await Bridge.Sell.quote({
 				originChainId: fromCurrency.chain_id,
 				originTokenAddress: fromCurrency.token_address,
 				destinationChainId: toCurrency.chainId,
 				destinationTokenAddress: toCurrency.address,
-				amount: toWei(fromAmount, fromCurrency.decimals),
+				amount: toWei(fromAmount, fromCurrency.decimals || 18),
 				client,
 			});
 
-			const qt = await estimateGasCost(fetchedQuote);
-			console.log(qt, "quote");
-			setQuote(fetchedQuote, fetchedQuote.approval, "approval");
-			
+			console.log("Quote fetched:", fetchedQuote);
+			setQuote(fetchedQuote);
+
 			// Update toAmount from the actual quote
 			const step = fetchedQuote.steps[0];
 			const toToken = step.destinationToken;
 			const actualToAmount = Number(fetchedQuote.destinationAmount) / 10 ** toToken.decimals;
 			setToAmount(actualToAmount.toFixed(6));
-			
+
+			// Estimate gas for the transactions
+			try {
+				const prepared = await Bridge.Sell.prepare({
+					originChainId: fromCurrency.chain_id,
+					originTokenAddress: fromCurrency.token_address,
+					destinationChainId: toCurrency.chainId,
+					destinationTokenAddress: toCurrency.address,
+					amount: toWei(fromAmount, fromCurrency.decimals || 18),
+					sender: activeAccount?.address,
+					receiver: activeAccount?.address,
+					client,
+				});
+
+				// Estimate gas for all transactions
+				let totalGasEstimate = 0n;
+				for (const txStep of prepared.steps) {
+					for (const transaction of txStep.transactions) {
+						const gasEst = await estimateGas({
+							transaction,
+							from: activeAccount?.address,
+						});
+						totalGasEstimate += gasEst;
+					}
+				}
+				setGasEstimate(totalGasEstimate);
+			} catch (gasError) {
+				console.warn("Could not estimate gas:", gasError);
+				setGasEstimate(null);
+			}
+
 			setStep(2); // Move to the confirmation step
 		} catch (err) {
 			console.error("Failed to get quote:", err);
@@ -164,19 +196,19 @@ const SwapCurrencyScreen = () => {
 		setError(null);
 
 		try {
-			console.log(fromAmount, fromCurrency, toCurrency, activeAccount, "shad");
-			const prepared = await Bridge.Buy.prepare({
+			console.log(fromAmount, fromCurrency, toCurrency, activeAccount, "preparing swap");
+			const prepared = await Bridge.Sell.prepare({
 				originChainId: fromCurrency.chain_id,
 				originTokenAddress: fromCurrency.token_address,
 				destinationChainId: toCurrency.chainId,
 				destinationTokenAddress: toCurrency.address,
-				amount: toWei(fromAmount),
+				amount: toWei(fromAmount, fromCurrency.decimals || 18),
 				sender: activeAccount?.address,
 				receiver: activeAccount?.address,
 				client,
 			});
 
-			console.log(prepared, "prepared");
+			console.log("Prepared transactions:", prepared);
 			for (const txStep of prepared.steps) {
 				for (const transaction of txStep.transactions) {
 					await sendTransaction(transaction);
@@ -184,7 +216,6 @@ const SwapCurrencyScreen = () => {
 			}
 			console.log("Swap executed successfully!");
 			setIsModalOpen(true);
-			// navigate(PATH_WALLET_ACTIONS);
 		} catch (err) {
 			console.error("Failed to execute swap:", err);
 			setError("An error occurred during the swap.");
@@ -208,22 +239,8 @@ const SwapCurrencyScreen = () => {
 		fromCurrency && toCurrency && fromAmount && parseFloat(fromAmount) > 0;
 
 	useEffect(() => {
-		console.log("tokens", tokens);
-	}, [tokens]);
-	useEffect(() => {
-		console.log("bative ball", nativeBalance);
-	}, [nativeBalance]);
-
-	useEffect(() => {
-		console.log("tonative ball", userTokens);
-	}, [userTokens]);
-	useEffect(() => {
 		console.log("quote", quote);
 	}, [quote]);
-
-	useEffect(() => {
-		console.log("gascost", gasCost);
-	}, [gasCost]);
 
 	return (
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
@@ -251,6 +268,7 @@ const SwapCurrencyScreen = () => {
 						slippage={slippage}
 						setSlippage={setSlippage}
 						details={quote}
+						gasEstimate={gasEstimate}
 					/>
 				)}
 				{error && (
