@@ -40,47 +40,12 @@ function formatTokenBalance(token) {
 function formatGasFee(gasEstimate, fromCurrency) {
 	if (!gasEstimate || !fromCurrency) return "--";
 
-	console.log("Gas estimate:", gasEstimate, "Type:", typeof gasEstimate);
-
-	// Handle BigInt gas estimate properly
-	let gasInWei;
-	if (typeof gasEstimate === 'bigint') {
-		gasInWei = gasEstimate;
-	} else {
-		gasInWei = BigInt(gasEstimate);
-	}
-	
-	// Convert to native token with better precision
-	const gasInNative = Number(gasInWei) / 1e18;
+	// Convert gas estimate from wei to native token
+	const gasInNative = Number(gasEstimate) / 10**18;
 	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
-	// Get the native currency symbol based on chain
-	const getNativeCurrencySymbol = (chainId) => {
-		switch (chainId) {
-			case 1: // Ethereum Mainnet
-			case 11155111: // Sepolia
-				return "ETH";
-			case 137: // Polygon
-				return "MATIC";
-			case 56: // BSC
-				return "BNB";
-			case 43114: // Avalanche
-				return "AVAX";
-			case 250: // Fantom
-				return "FTM";
-			case 42161: // Arbitrum
-				return "ETH";
-			case 10: // Optimism
-				return "ETH";
-			default:
-				return "ETH"; // Default fallback
-		}
-	};
-
-	const nativeCurrency = getNativeCurrencySymbol(fromCurrency.chain_id);
-	
-	return `${gasInNative.toFixed(4)} ${nativeCurrency} ($${gasInUsd.toFixed(2)})`;
+	return `${gasInNative.toFixed(6)} ${fromCurrency.symbol} ($${gasInUsd.toFixed(2)})`;
 }
 
 const SendTokensScreen = () => {
@@ -201,7 +166,7 @@ const SendTokensScreen = () => {
 		try {
 			setOperationStatus("sending");
 
-			const result = await simulateTx(preparedTx);
+			const result = await simulateTx({transaction:preparedTx});
 
 			console.log(result, "res");
 			/* sendTransaction(preparedTx, {
@@ -267,7 +232,6 @@ const SendTokensScreen = () => {
 							transaction: tx,
 							from: activeAccount?.address,
 						});
-						console.log("Estimated gas:", gas, "Type:", typeof gas);
 						setGasEstimate(gas);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
@@ -396,7 +360,7 @@ const SendTokensScreen = () => {
 									<div className="justify-between flex w-full">
 										<span>Available Balance:</span>
 										<span>
-											{fromCurrency?.balance?.toFixed(4)} {fromCurrency?.symbol || "--"}
+											{fromCurrency?.balance} {fromCurrency?.symbol || "--"}
 										</span>
 									</div>
 									<div className="justify-between flex w-full">
