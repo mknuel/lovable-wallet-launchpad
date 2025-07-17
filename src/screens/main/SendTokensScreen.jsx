@@ -40,12 +40,13 @@ function formatTokenBalance(token) {
 function formatGasFee(gasEstimate, fromCurrency) {
 	if (!gasEstimate || !fromCurrency) return "--";
 
-	// Convert gas estimate from wei to native token
-	const gasInNative = Number(gasEstimate) / 10**18;
+	// Convert BigInt gas estimate from wei to native token
+	const gasInWei = BigInt(gasEstimate);
+	const gasInNative = Number(gasInWei) / 10**18;
 	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
-	return `${gasInNative.toFixed(6)} ${fromCurrency.symbol} ($${gasInUsd.toFixed(2)})`;
+	return `${gasInNative.toFixed(6)} ETH ($${gasInUsd.toFixed(2)})`;
 }
 
 const SendTokensScreen = () => {
