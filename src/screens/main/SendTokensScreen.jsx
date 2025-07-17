@@ -46,7 +46,32 @@ function formatGasFee(gasEstimate, fromCurrency) {
 	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
-	return `${gasInNative.toFixed(6)} ETH ($${gasInUsd.toFixed(2)})`;
+	// Get the native currency symbol based on chain
+	const getNativeCurrencySymbol = (chainId) => {
+		switch (chainId) {
+			case 1: // Ethereum Mainnet
+			case 11155111: // Sepolia
+				return "ETH";
+			case 137: // Polygon
+				return "MATIC";
+			case 56: // BSC
+				return "BNB";
+			case 43114: // Avalanche
+				return "AVAX";
+			case 250: // Fantom
+				return "FTM";
+			case 42161: // Arbitrum
+				return "ETH";
+			case 10: // Optimism
+				return "ETH";
+			default:
+				return "ETH"; // Default fallback
+		}
+	};
+
+	const nativeCurrency = getNativeCurrencySymbol(fromCurrency.chain_id);
+	
+	return `${gasInNative.toFixed(4)} ${nativeCurrency} ($${gasInUsd.toFixed(2)})`;
 }
 
 const SendTokensScreen = () => {
