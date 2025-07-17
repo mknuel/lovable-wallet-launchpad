@@ -40,9 +40,18 @@ function formatTokenBalance(token) {
 function formatGasFee(gasEstimate, fromCurrency) {
 	if (!gasEstimate || !fromCurrency) return "--";
 
-	// Convert BigInt gas estimate from wei to native token
-	const gasInWei = BigInt(gasEstimate);
-	const gasInNative = Number(gasInWei) / 10**18;
+	console.log("Gas estimate:", gasEstimate, "Type:", typeof gasEstimate);
+
+	// Handle BigInt gas estimate properly
+	let gasInWei;
+	if (typeof gasEstimate === 'bigint') {
+		gasInWei = gasEstimate;
+	} else {
+		gasInWei = BigInt(gasEstimate);
+	}
+	
+	// Convert to native token with better precision
+	const gasInNative = Number(gasInWei) / 1e18;
 	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
@@ -258,6 +267,7 @@ const SendTokensScreen = () => {
 							transaction: tx,
 							from: activeAccount?.address,
 						});
+						console.log("Estimated gas:", gas, "Type:", typeof gas);
 						setGasEstimate(gas);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
@@ -386,7 +396,7 @@ const SendTokensScreen = () => {
 									<div className="justify-between flex w-full">
 										<span>Available Balance:</span>
 										<span>
-											{fromCurrency?.balance} {fromCurrency?.symbol || "--"}
+											{fromCurrency?.balance?.toFixed(4)} {fromCurrency?.symbol || "--"}
 										</span>
 									</div>
 									<div className="justify-between flex w-full">
