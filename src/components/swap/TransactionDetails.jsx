@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SlippagePopup } from "./SlippagePopup";
 import SwapIcon from "../../assets/icons/round-arrow.svg";
 
 // The component now accepts a 'details' prop to dynamically display data.
-export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate }) => {
+export const TransactionDetails = ({
+	details,
+	slippage,
+	setSlippage,
+	gasEstimate,
+}) => {
 	const [isSlippagePopupOpen, setIsSlippagePopupOpen] = useState(false);
 
 	const handleSlippageChange = (newSlippage) => {
@@ -38,9 +43,9 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 	// Format gas fee with proper BigInt handling and currency symbol
 	const formatGasFee = (gasEstimate, chainId) => {
 		if (!gasEstimate) return "0 ETH ($0.00)";
-		
+
 		// Handle BigInt properly
-		const gasInNative = Number(gasEstimate) / 10**18;
+		const gasInNative = Number(gasEstimate) / 10 ** 18;
 		const nativeTokenPrice = fromToken?.priceUsd || toToken?.priceUsd || 3500;
 		const gasInUsd = gasInNative * nativeTokenPrice;
 
@@ -68,15 +73,22 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 		};
 
 		const nativeCurrency = getNativeCurrencySymbol(chainId);
-		
-		return `${gasInNative.toFixed(4)} ${nativeCurrency} ($${gasInUsd.toFixed(2)})`;
-	}
+
+		return `${gasInNative.toFixed(4)} ${nativeCurrency} ($${gasInUsd.toFixed(
+			2
+		)})`;
+	};
 
 	// Calculate gas fee in ETH/native token and USD
-	const gasInNative = gasEstimate ? Number(gasEstimate) / 10**18 : 0;
+	const gasInNative = gasEstimate ? Number(gasEstimate) / 10 ** 18 : 0;
 	const nativeTokenPrice = fromToken?.priceUsd || toToken?.priceUsd || 3500; // Use either token's USD price as reference
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
+	useEffect(() => {
+		if (gasEstimate) {
+			console.log("Gas estimate updated:", gasEstimate);
+		}
+	}, [gasEstimate]);
 	return (
 		<>
 			<div className="mt-6">
@@ -96,7 +108,7 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 
 							<div className="flex gap-2 items-center">
 								<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-									1 {fromToken.symbol} = {exchangeRate} {toToken.symbol}
+									{gasEstimate} ETH
 								</span>
 								<img src={SwapIcon} />
 							</div>
@@ -121,24 +133,7 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 						</span>
 						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
 							{/* Calculate total fees: bridge fee + network/gas fee */}
-							{(() => {
-								const inputValueUsd = fromAmount * fromToken.priceUsd;
-								const outputValueUsd = toAmount * toToken.priceUsd;
-								const bridgeFeeUsd = inputValueUsd - outputValueUsd;
-								const networkFeeUsd = gasInUsd;
-								const totalFeeUsd = bridgeFeeUsd + networkFeeUsd;
-								const totalFeeInFromToken = totalFeeUsd / fromToken.priceUsd;
-								return `${totalFeeInFromToken.toFixed(4)} ${fromToken.symbol}`;
-							})()}
-						</span>
-					</div>
-
-					<div className="flex justify-between items-center py-2">
-						<span className="text-gray-600 text-sm font-['Sansation']">
-							Gas fee
-						</span>
-						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							{formatGasFee(gasEstimate, fromToken?.chainId)}
+							{gasEstimate} ETH
 						</span>
 					</div>
 

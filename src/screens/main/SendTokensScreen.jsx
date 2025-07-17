@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
-import { PATH_WALLET_ACTIONS } from "../../context/paths";
+import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import SearchIcon from "../../assets/icons/Search.svg";
 import { FromCurrencyCard } from "../../components/swap/FromCurrencyCard";
-import { defineChain, getContract, NATIVE_TOKEN_ADDRESS, estimateGas, toWei } from "thirdweb";
+import {
+	defineChain,
+	getContract,
+	NATIVE_TOKEN_ADDRESS,
+	estimateGas,
+	toWei,
+	simulateTransaction,
+	estimateGasCost,
+} from "thirdweb";
 import { client } from "../../components/thirdweb/thirdwebClient";
 import {
 	useActiveAccount,
@@ -15,7 +23,10 @@ import {
 	useSimulateTransaction,
 } from "thirdweb/react";
 import { transfer } from "thirdweb/extensions/erc20";
-import { SendConfirmationModal } from "../../components/swap/ConfirmationModal";
+import {
+	SendConfirmationModal,
+	TransactionSuccessModal,
+} from "../../components/swap/ConfirmationModal";
 import CommonButton from "../../components/Buttons/CommonButton";
 
 function formatTokenBalance(token) {
@@ -34,18 +45,22 @@ function formatTokenBalance(token) {
 		return `$${usdValue.toFixed(2)}`;
 	}
 
-	return `${balance} ${symbol}`;
+	return `${balance?.toFixed(6)} ${symbol}`;
 }
 
 function formatGasFee(gasEstimate, fromCurrency) {
-	if (!gasEstimate || !fromCurrency) return "--";
+	if (!gasEstimate) return "--";
 
-	// Convert gas estimate from wei to native token
-	const gasInNative = Number(gasEstimate) / 10**18;
-	const nativeTokenPrice = fromCurrency.price_data?.price_usd || 3500; // Fallback price
+	const gasInNative = Number(gasEstimate) / 10 ** 18;
+
+	// Use fallback price if fromCurrency is missing or doesn't have price data
+	const nativeTokenPrice = fromCurrency?.price_data?.price_usd || 1;
+
+	console.log(gasEstimate, gasInNative, nativeTokenPrice, "gasEstimate");
 	const gasInUsd = gasInNative * nativeTokenPrice;
 
-	return `${gasInNative.toFixed(6)} ${fromCurrency.symbol} ($${gasInUsd.toFixed(2)})`;
+	console.log(gasInUsd, "gasInUsd");
+	return `$${gasInUsd.toFixed(14)}`;
 }
 
 const SendTokensScreen = () => {
@@ -60,6 +75,7 @@ const SendTokensScreen = () => {
 	const [operationStatus, setOperationStatus] = useState(null); // 'searching', 'estimating', 'sending'
 	const [isOpen, setIsOpen] = useState(false);
 	const [gasEstimate, setGasEstimate] = useState(null);
+	const [success, setSuccess] = useState(false);
 
 	const activeAccount = useActiveAccount();
 	const { mutate: sendTransaction } = useSendTransaction();
@@ -166,13 +182,14 @@ const SendTokensScreen = () => {
 		try {
 			setOperationStatus("sending");
 
-			const result = await simulateTx({transaction:preparedTx});
+			// const result = await simulateTransaction({ transaction: preparedTx });
 
-			console.log(result, "res");
-			/* sendTransaction(preparedTx, {
+			const result = await sendTransaction(preparedTx, {
 				onSuccess: (result) => {
 					console.log("Transaction successful:", result);
-					navigate(PATH_WALLET_ACTIONS);
+					// navigate(PATH_WALLET_ACTIONS);
+					// setIsOpen( true );
+					setSuccess(true);
 				},
 				onError: (error) => {
 					console.error("Transaction failed:", error);
@@ -180,10 +197,13 @@ const SendTokensScreen = () => {
 				onSettled: () => {
 					setOperationStatus(null);
 				},
-			}); */
+			});
+
+			console.log(result, "res");
 		} catch (error) {
 			console.error("Error preparing transaction:", error);
 			setOperationStatus(null);
+			setIsOpen(false);
 		}
 	}, [preparedTx, navigate, sendTransaction, simulateTx]);
 
@@ -225,14 +245,14 @@ const SendTokensScreen = () => {
 					});
 
 					setPreparedTx(tx);
-					
+
 					// Estimate gas for the transaction
 					try {
-						const gas = await estimateGas({
+						const gas = await estimateGasCost({
 							transaction: tx,
-							from: activeAccount?.address,
 						});
-						setGasEstimate(gas);
+						setGasEstimate(parseFloat(gas?.ether)?.toFixed(6) || "0.000000");
+						console.log("gas estimate", gas);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
 						setGasEstimate(null);
@@ -269,6 +289,16 @@ const SendTokensScreen = () => {
 				isOpen={isOpen}
 				onConfirm={handleSendTokens}
 				onClose={() => setIsOpen(false)}
+			/>
+
+			<TransactionSuccessModal
+				isOpen={success}
+				onClose={() => setSuccess(false)}
+				onConfirm={() => {
+					setSuccess(false);
+					navigate(PATH_MAIN);
+				}}
+				isLoading={false}
 			/>
 
 			<div className="flex-1 flex flex-col px-5 py-3 overflow-hidden mt-3">
@@ -360,12 +390,13 @@ const SendTokensScreen = () => {
 									<div className="justify-between flex w-full">
 										<span>Available Balance:</span>
 										<span>
-											{fromCurrency?.balance} {fromCurrency?.symbol || "--"}
+											{fromCurrency?.balance?.toFixed(6)}{" "}
+											{fromCurrency?.symbol || "--"}
 										</span>
 									</div>
 									<div className="justify-between flex w-full">
-										<span>Network Fee:</span>
-										<span>{formatGasFee(gasEstimate, fromCurrency)}</span>
+										<span>Fees:</span>
+										<span>{gasEstimate} ETH</span>
 									</div>
 								</div>
 							</div>

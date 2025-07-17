@@ -14,6 +14,7 @@ import {
 	useActiveWallet,
 	useWalletBalance,
 	useEstimateGas,
+	useSendAndConfirmTransaction,
 } from "thirdweb/react";
 import { useWalletAccount } from "../../context/WalletAccountContext";
 import { client } from "../../components/thirdweb/thirdwebClient";
@@ -27,6 +28,7 @@ import {
 	sendTransaction,
 	toWei,
 	estimateGas,
+	estimateGasCost,
 } from "thirdweb";
 import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
 import { useTonWallet } from "@tonconnect/ui-react";
@@ -52,7 +54,6 @@ const SwapCurrencyScreen = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [isExecutingSwap, setIsExecutingSwap] = useState(false);
-	const { mutate: estimateGasForTx, data: gasCost } = useEstimateGas();
 	const [gasEstimate, setGasEstimate] = useState(null);
 
 	const [slippage, setSlippage] = useState(0.5);
@@ -68,7 +69,7 @@ const SwapCurrencyScreen = () => {
 		useGetAccountTokens(activeAccount?.address);
 
 	const { mutate: sendTransaction } = useSendTransaction();
-	const { mutate: sendAndConfirmTx } = useSendTransaction();
+	const { mutate: sendAndConfirmTx } = useSendAndConfirmTransaction();
 	const [isLoading, setIsLoading] = useState(true);
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
@@ -146,38 +147,40 @@ const SwapCurrencyScreen = () => {
 			// Update toAmount from the actual quote
 			const step = fetchedQuote.steps[0];
 			const toToken = step.destinationToken;
-			const actualToAmount = Number(fetchedQuote.destinationAmount) / 10 ** toToken.decimals;
+			const actualToAmount =
+				Number(fetchedQuote.destinationAmount) / 10 ** toToken.decimals;
 			setToAmount(actualToAmount.toFixed(6));
 
-	// Estimate gas for the transactions
-	try {
-		const prepared = await Bridge.Sell.prepare({
-			originChainId: fromCurrency.chain_id,
-			originTokenAddress: fromCurrency.token_address,
-			destinationChainId: toCurrency.chainId,
-			destinationTokenAddress: toCurrency.address,
-			amount: toWei(fromAmount, fromCurrency.decimals || 18),
-			sender: activeAccount?.address,
-			receiver: activeAccount?.address,
-			client,
-		});
-
-		// Estimate gas for all transactions
-		let totalGasEstimate = 0n;
-		for (const txStep of prepared.steps) {
-			for (const transaction of txStep.transactions) {
-				const gasEst = await estimateGas({
-					transaction,
-					from: activeAccount?.address,
+			// Estimate gas for the transactions
+			try {
+				const prepared = await Bridge.Sell.prepare({
+					originChainId: fromCurrency.chain_id,
+					originTokenAddress: fromCurrency.token_address,
+					destinationChainId: toCurrency.chainId,
+					destinationTokenAddress: toCurrency.address,
+					amount: toWei(fromAmount, fromCurrency.decimals || 18),
+					sender: activeAccount?.address,
+					receiver: activeAccount?.address,
+					client,
 				});
-				totalGasEstimate += gasEst;
+
+				// Estimate gas for all transactions
+				let totalGasEstimate = 0;
+				for (const txStep of prepared.steps) {
+					for (const transaction of txStep.transactions) {
+						const gasEst = await estimateGasCost({
+							transaction,
+						});
+
+						console.log(gasEst, "gasEst");
+						totalGasEstimate = parseFloat(gasEst?.ether)?.toFixed(6) || 0;
+						setGasEstimate(totalGasEstimate);
+					}
+				}
+			} catch (gasError) {
+				console.warn("Could not estimate gas:", gasError);
+				setGasEstimate(null);
 			}
-		}
-		setGasEstimate(totalGasEstimate);
-	} catch (gasError) {
-		console.warn("Could not estimate gas:", gasError);
-		setGasEstimate(null);
-	}
 
 			setStep(2); // Move to the confirmation step
 		} catch (err) {
@@ -196,7 +199,13 @@ const SwapCurrencyScreen = () => {
 		setError(null);
 
 		try {
-			console.log(fromAmount, fromCurrency, toCurrency, activeAccount, "preparing swap");
+			console.log(
+				fromAmount,
+				fromCurrency,
+				toCurrency,
+				activeAccount,
+				"preparing swap"
+			);
 			const prepared = await Bridge.Sell.prepare({
 				originChainId: fromCurrency.chain_id,
 				originTokenAddress: fromCurrency.token_address,
@@ -209,7 +218,7 @@ const SwapCurrencyScreen = () => {
 			});
 
 			console.log("Prepared transactions:", prepared);
-			
+
 			// Execute all transactions and wait for completion
 			for (const txStep of prepared.steps) {
 				for (const transaction of txStep.transactions) {
@@ -222,12 +231,12 @@ const SwapCurrencyScreen = () => {
 							onError: (error) => {
 								console.error("Transaction failed:", error);
 								reject(error);
-							}
+							},
 						});
 					});
 				}
 			}
-			
+
 			console.log("All transactions completed successfully!");
 			setIsModalOpen(true);
 		} catch (err) {
@@ -324,7 +333,7 @@ const SwapCurrencyScreen = () => {
 
 			{/* Progress Navigation - Fixed to bottom */}
 			<div className="sticky w-full bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
-				<SwapProgressNavigation 
+				<SwapProgressNavigation
 					currentStep={progressStep}
 					onStepClick={(stepId) => {
 						// Allow navigation only to completed or current steps
