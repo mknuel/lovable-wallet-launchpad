@@ -15,10 +15,9 @@ import { ethereum, sepolia } from "thirdweb/chains";
 createRoot(document.getElementById("root")).render(
 	<Provider store={store}>
 		<LanguageProvider>
-			<ThirdwebProvider
-				client={client}
-				{/* activeChain={sepolia} */}
-				autoConnect={true}>
+		<ThirdwebProvider
+			client={client}
+			autoConnect={true}>
 				<WalletAccountProvider>
 					<StrictMode>
 						<TonConnectUIProvider manifestUrl="https://blockloan-mini-app.vercel.app/tonconnect-manifest.json">
