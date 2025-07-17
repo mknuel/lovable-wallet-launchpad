@@ -35,6 +35,43 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 	// Calculate the minimum amount the user will receive after applying slippage.
 	const minimumReceived = (toAmount * (1 - slippage / 100)).toFixed(4);
 
+	// Format gas fee with proper BigInt handling and currency symbol
+	const formatGasFee = (gasEstimate, chainId) => {
+		if (!gasEstimate) return "0 ETH ($0.00)";
+		
+		// Handle BigInt properly
+		const gasInNative = Number(gasEstimate) / 10**18;
+		const nativeTokenPrice = fromToken?.priceUsd || toToken?.priceUsd || 3500;
+		const gasInUsd = gasInNative * nativeTokenPrice;
+
+		// Get the native currency symbol based on chain
+		const getNativeCurrencySymbol = (chainId) => {
+			switch (chainId) {
+				case 1: // Ethereum Mainnet
+				case 11155111: // Sepolia
+					return "ETH";
+				case 137: // Polygon
+					return "MATIC";
+				case 56: // BSC
+					return "BNB";
+				case 43114: // Avalanche
+					return "AVAX";
+				case 250: // Fantom
+					return "FTM";
+				case 42161: // Arbitrum
+					return "ETH";
+				case 10: // Optimism
+					return "ETH";
+				default:
+					return "ETH"; // Default fallback
+			}
+		};
+
+		const nativeCurrency = getNativeCurrencySymbol(chainId);
+		
+		return `${gasInNative.toFixed(4)} ${nativeCurrency} ($${gasInUsd.toFixed(2)})`;
+	}
+
 	// Calculate gas fee in ETH/native token and USD
 	const gasInNative = gasEstimate ? Number(gasEstimate) / 10**18 : 0;
 	const nativeTokenPrice = fromToken?.priceUsd || toToken?.priceUsd || 3500; // Use either token's USD price as reference
@@ -91,8 +128,17 @@ export const TransactionDetails = ({ details, slippage, setSlippage, gasEstimate
 								const networkFeeUsd = gasInUsd;
 								const totalFeeUsd = bridgeFeeUsd + networkFeeUsd;
 								const totalFeeInFromToken = totalFeeUsd / fromToken.priceUsd;
-								return `${totalFeeInFromToken.toFixed(6)} ${fromToken.symbol}`;
+								return `${totalFeeInFromToken.toFixed(4)} ${fromToken.symbol}`;
 							})()}
+						</span>
+					</div>
+
+					<div className="flex justify-between items-center py-2">
+						<span className="text-gray-600 text-sm font-['Sansation']">
+							Gas fee
+						</span>
+						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
+							{formatGasFee(gasEstimate, fromToken?.chainId)}
 						</span>
 					</div>
 

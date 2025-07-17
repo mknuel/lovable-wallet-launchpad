@@ -149,35 +149,35 @@ const SwapCurrencyScreen = () => {
 			const actualToAmount = Number(fetchedQuote.destinationAmount) / 10 ** toToken.decimals;
 			setToAmount(actualToAmount.toFixed(6));
 
-			// Estimate gas for the transactions
-			try {
-				const prepared = await Bridge.Sell.prepare({
-					originChainId: fromCurrency.chain_id,
-					originTokenAddress: fromCurrency.token_address,
-					destinationChainId: toCurrency.chainId,
-					destinationTokenAddress: toCurrency.address,
-					amount: toWei(fromAmount, fromCurrency.decimals || 18),
-					sender: activeAccount?.address,
-					receiver: activeAccount?.address,
-					client,
-				});
+	// Estimate gas for the transactions
+	try {
+		const prepared = await Bridge.Sell.prepare({
+			originChainId: fromCurrency.chain_id,
+			originTokenAddress: fromCurrency.token_address,
+			destinationChainId: toCurrency.chainId,
+			destinationTokenAddress: toCurrency.address,
+			amount: toWei(fromAmount, fromCurrency.decimals || 18),
+			sender: activeAccount?.address,
+			receiver: activeAccount?.address,
+			client,
+		});
 
-				// Estimate gas for all transactions
-				let totalGasEstimate = 0n;
-				for (const txStep of prepared.steps) {
-					for (const transaction of txStep.transactions) {
-						const gasEst = await estimateGas({
-							transaction,
-							from: activeAccount?.address,
-						});
-						totalGasEstimate += gasEst;
-					}
-				}
-				setGasEstimate(totalGasEstimate);
-			} catch (gasError) {
-				console.warn("Could not estimate gas:", gasError);
-				setGasEstimate(null);
+		// Estimate gas for all transactions
+		let totalGasEstimate = 0n;
+		for (const txStep of prepared.steps) {
+			for (const transaction of txStep.transactions) {
+				const gasEst = await estimateGas({
+					transaction,
+					from: activeAccount?.address,
+				});
+				totalGasEstimate += gasEst;
 			}
+		}
+		setGasEstimate(totalGasEstimate);
+	} catch (gasError) {
+		console.warn("Could not estimate gas:", gasError);
+		setGasEstimate(null);
+	}
 
 			setStep(2); // Move to the confirmation step
 		} catch (err) {
