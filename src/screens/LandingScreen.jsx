@@ -63,12 +63,12 @@ const LandingScreen = () => {
 				// Use Telegram user ID as unique identifier for authentication
 				const uniqueUserId = initData.tgWebAppData.user.id.toString();
 				
-				// Connect to in-app wallet using the unique user ID
+				// Connect to in-app wallet using email strategy
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "jwt",
-						jwt: uniqueUserId, // Use Telegram user ID as JWT
+						strategy: "email",
+						email: `user${uniqueUserId}@telegram.app`, // Use Telegram user ID in email
 					});
 					return wallet;
 				});
@@ -99,8 +99,8 @@ const LandingScreen = () => {
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "jwt",
-						jwt: staticUserId, // Use static user ID as JWT
+						strategy: "email",
+						email: "test@example.com", // Static email for testing
 					});
 					return wallet;
 				});
