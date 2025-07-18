@@ -29,7 +29,6 @@ const LandingScreen = () => {
 	const { t } = useTranslation();
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
-	const [isLoading, setIsLoading] = useState(false);
 	const { login } = useAuth();
 
 	// --- thirdweb hooks ---
@@ -50,77 +49,40 @@ const LandingScreen = () => {
 
 	const handleSwipe = async (e) => {
 		e.preventDefault();
-		setIsLoading(true);
-		
 		try {
-			console.log("Starting authentication process...");
-			console.log("Is Telegram Mini App:", isTMA());
-			
-			let walletAddress = null;
-			
-			if (isTMA()) {
-				console.log("TMA Mode: Using custom auth endpoint for consistent wallet...");
-				// In TMA, use custom auth endpoint to ensure same wallet for same Telegram user
-				const initData = retrieveLaunchParams();
-				const userId = initData.tgWebAppData.user.id.toString();
-				console.log("Telegram User ID:", userId);
-				
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "auth_endpoint",
-						payload: JSON.stringify({
-							userId: userId,
-							username: initData.tgWebAppData.user.username,
-							first_name: initData.tgWebAppData.user.first_name,
-							timestamp: Date.now()
-						}),
-						encryptionKey: "blockloans_telegram_auth_key_2025"
-					});
-					return wallet;
+			// --- Connect to in-app wallet ---
+			const res = await connect(async () => {
+				await wallet.connect({
+					client,
+					strategy: "telegram",
+					auth: {
+						mode: "redirect",
+					},
 				});
-				console.log("TMA Wallet connected successfully:", res);
-				walletAddress = wallet.getAccount()?.address;
-			} else {
-				console.log("Web Mode: Using popup authentication...");
-				// Outside TMA, use popup for broader wallet connection
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "popup"
-					});
-					return wallet;
-				});
-				console.log("Web Wallet connected successfully:", res);
-				walletAddress = wallet.getAccount()?.address;
-			}
-			
-			console.log("Final wallet address:", walletAddress);
+				return wallet;
+			});
+			console.log("res===>", res);
 
+			const acct = wallet.getAccount();
+
+			console.log(acct, "walletAccount");
 			if (isTMA()) {
-				console.log("Getting Telegram Mini App user data...");
-				try {
-					const initData = retrieveLaunchParams();
-					console.log("Telegram launch params:", initData);
-					
-					data = {
-						hash: initData.tgWebAppData.hash,
-						id: initData.tgWebAppData.user.id,
-						username: initData.tgWebAppData.user.username,
-						first_name: initData.tgWebAppData.user.first_name,
-						last_name: initData.tgWebAppData.user.last_name,
-						roleId: role.id,
-						appsChannelKey: "abc",
-						deviceId: "Apple",
-						walletAddress: walletAddress,
-					};
-					console.log("Telegram Mini App data prepared:", data);
-				} catch (tgError) {
-					console.error("Error getting Telegram data:", tgError);
-					throw new Error(`Telegram data error: ${tgError.message}`);
-				}
+				console.log("It's Telegram Mini Apps");
+				const initData = retrieveLaunchParams();
+				data = {
+					hash: initData.tgWebAppData.hash,
+					id: initData.tgWebAppData.user.id,
+					username: initData.tgWebAppData.user.username,
+					first_name: initData.tgWebAppData.user.first_name,
+					last_name: initData.tgWebAppData.user.last_name,
+					roleId: role.id,
+					appsChannelKey: "abc",
+					deviceId: "Apple",
+					walletAddress: acct?.address, // --- Add wallet address ---
+				};
+				console.log("data==========>", data);
 			} else {
-				console.log("Using fallback data for web mode...");
+				// initData in Web mode
 				data = {
 					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
 					id: "7916246666",
@@ -130,33 +92,20 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
+					// walletAddress: address, // --- Add wallet address ---
 					appId: "notTmamk",
-					walletAddress: walletAddress,
+					walletAddress: acct?.address, // --- Add wallet address ---
 				};
-				console.log("Web mode data prepared:", data);
+				console.log("It's not Telegram Mini Apps");
 			}
 
-			// Register user with the data
-			console.log("Sending registration request...");
+			// --- The rest of your registration logic ---
 			api.post("/ssoauth/tgregister", data).then(async (res) => {
-				console.log("Registration successful:", res);
-				await handleLogin(PATH_MAIN);
-			}).catch((regError) => {
-				console.error("Registration failed:", regError);
-				console.error("Registration error details:", regError.response?.data);
-				throw new Error(`Registration failed: ${regError.message}`);
+				console.log("Register Res==========>", res);
+				handleLogin(PATH_MAIN);
 			});
 		} catch (error) {
-			console.error("Authentication error:", error);
-			console.error("Error stack:", error.stack);
-			console.error("Error details:", {
-				message: error.message,
-				name: error.name,
-				isTMA: isTMA(),
-				timestamp: new Date().toISOString()
-			});
-		} finally {
-			setIsLoading(false);
+			console.error("Unexpected error:", error);
 		}
 	};
 
@@ -228,17 +177,11 @@ const LandingScreen = () => {
 			</div>
 			<div className="flex flex-col justify-end items-center">
 				<div className="button-container">
-					<CommonButton onClick={handleSwipe} width="auto" height="48px" disabled={isLoading}>
-						{isLoading ? (
-							<span className="font-regular text-[13px]">Loading...</span>
-						) : (
-							<>
-								<ArrowForwardIcon className="icon mr-0.5" />
-								<span className="font-regular text-[13px]">
-									{t("landing.button") || "TAP TO BEGIN"}
-								</span>
-							</>
-						)}
+					<CommonButton onClick={handleSwipe} width="auto" height="48px">
+						<ArrowForwardIcon className="icon mr-0.5" />
+						<span className="font-regular text-[13px]">
+							{t("landing.button") || "SWIPE TO GET STARTED"}
+						</span>
 					</CommonButton>
 				</div>
 			</div>
