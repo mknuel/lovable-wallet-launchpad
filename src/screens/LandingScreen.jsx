@@ -34,7 +34,11 @@ const LandingScreen = () => {
 
 	// --- thirdweb hooks ---
 	const { connect } = useConnect();
-	const wallet = inAppWallet();
+	const wallet = inAppWallet({
+		auth: {
+			mode: "redirect", // Use redirect instead of popup
+		},
+	});
 
 	let data = {};
 
@@ -57,9 +61,6 @@ const LandingScreen = () => {
 				await wallet.connect({
 					client,
 					strategy: "telegram",
-					auth: {
-						mode: "redirect",
-					},
 				});
 				return wallet;
 			});
@@ -183,12 +184,12 @@ const LandingScreen = () => {
 				<div className="button-container">
 					<CommonButton onClick={handleSwipe} width="auto" height="48px" disabled={isLoading}>
 						{isLoading ? (
-							<span className="font-regular text-[13px]">Loading...</span>
+							<span className="font-regular text-[13px] text-white">Loading...</span>
 						) : (
 							<>
 								<ArrowForwardIcon className="icon mr-0.5" />
 								<span className="font-regular text-[13px]">
-									{t("landing.button") || "TAP TO GET STARTED"}
+									TAP TO START
 								</span>
 							</>
 						)}
