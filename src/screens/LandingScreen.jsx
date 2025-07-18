@@ -90,18 +90,17 @@ const LandingScreen = () => {
 				};
 				console.log("data==========>", data);
 			} else {
-				// For web mode, use email authentication
-				console.log("It's not Telegram Mini Apps - using email auth");
+				// For web mode, use static user ID for testing
+				console.log("It's not Telegram Mini Apps - using static user ID");
 				
-				// For demo purposes, using a default email
-				const defaultEmail = "user@example.com";
+				// Static user ID for testing purposes
+				const staticUserId = "test-user-12345";
 				
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "email",
-						email: defaultEmail,
-						verificationCode: "123456", // In production, this should be from user input
+						strategy: "jwt",
+						jwt: staticUserId, // Use static user ID as JWT
 					});
 					return wallet;
 				});
