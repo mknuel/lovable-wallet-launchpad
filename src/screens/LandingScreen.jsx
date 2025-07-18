@@ -29,6 +29,7 @@ const LandingScreen = () => {
 	const { t } = useTranslation();
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
+	const [isLoading, setIsLoading] = useState(false);
 	const { login } = useAuth();
 
 	// --- thirdweb hooks ---
@@ -49,6 +50,7 @@ const LandingScreen = () => {
 
 	const handleSwipe = async (e) => {
 		e.preventDefault();
+		setIsLoading(true);
 		try {
 			// --- Connect to in-app wallet ---
 			const res = await connect(async () => {
@@ -106,6 +108,8 @@ const LandingScreen = () => {
 			});
 		} catch (error) {
 			console.error("Unexpected error:", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -177,11 +181,17 @@ const LandingScreen = () => {
 			</div>
 			<div className="flex flex-col justify-end items-center">
 				<div className="button-container">
-					<CommonButton onClick={handleSwipe} width="auto" height="48px">
-						<ArrowForwardIcon className="icon mr-0.5" />
-						<span className="font-regular text-[13px]">
-							{t("landing.button") || "SWIPE TO GET STARTED"}
-						</span>
+					<CommonButton onClick={handleSwipe} width="auto" height="48px" disabled={isLoading}>
+						{isLoading ? (
+							<span className="font-regular text-[13px]">Loading...</span>
+						) : (
+							<>
+								<ArrowForwardIcon className="icon mr-0.5" />
+								<span className="font-regular text-[13px]">
+									{t("landing.button") || "TAP TO GET STARTED"}
+								</span>
+							</>
+						)}
 					</CommonButton>
 				</div>
 			</div>
