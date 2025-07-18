@@ -29,6 +29,7 @@ const LandingScreen = () => {
 	const { t } = useTranslation();
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
+	const [isLoading, setIsLoading] = useState(false);
 	const { login } = useAuth();
 
 	// --- thirdweb hooks ---
@@ -49,50 +50,50 @@ const LandingScreen = () => {
 
 	const handleSwipe = async (e) => {
 		e.preventDefault();
+		setIsLoading(true);
+		
 		try {
-			let acct = null;
+			console.log("Starting authentication process...");
+			console.log("Is Telegram Mini App:", isTMA());
+			
+			// Use telegram strategy for both TMA and web mode to ensure same wallet
+			console.log("Connecting wallet with telegram strategy...");
+			const res = await connect(async () => {
+				await wallet.connect({
+					client,
+					strategy: "telegram",
+				});
+				return wallet;
+			});
+			console.log("Wallet connected successfully:", res);
+			
+			const acct = wallet.getAccount();
+			console.log("Wallet account:", acct);
 
 			if (isTMA()) {
-				console.log("It's Telegram Mini Apps - using direct auth");
-				// For Telegram Mini App, use guest strategy (no popup)
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "guest",
-					});
-					return wallet;
-				});
-				console.log("Guest wallet connected:", res);
-				acct = wallet.getAccount();
-				
-				// Use Telegram user data directly
-				const initData = retrieveLaunchParams();
-				data = {
-					hash: initData.tgWebAppData.hash,
-					id: initData.tgWebAppData.user.id,
-					username: initData.tgWebAppData.user.username,
-					first_name: initData.tgWebAppData.user.first_name,
-					last_name: initData.tgWebAppData.user.last_name,
-					roleId: role.id,
-					appsChannelKey: "abc",
-					deviceId: "Apple",
-					walletAddress: acct?.address,
-				};
-				console.log("Telegram Mini App data:", data);
+				console.log("Getting Telegram Mini App user data...");
+				try {
+					const initData = retrieveLaunchParams();
+					console.log("Telegram launch params:", initData);
+					
+					data = {
+						hash: initData.tgWebAppData.hash,
+						id: initData.tgWebAppData.user.id,
+						username: initData.tgWebAppData.user.username,
+						first_name: initData.tgWebAppData.user.first_name,
+						last_name: initData.tgWebAppData.user.last_name,
+						roleId: role.id,
+						appsChannelKey: "abc",
+						deviceId: "Apple",
+						walletAddress: acct?.address,
+					};
+					console.log("Telegram Mini App data prepared:", data);
+				} catch (tgError) {
+					console.error("Error getting Telegram data:", tgError);
+					throw new Error(`Telegram data error: ${tgError.message}`);
+				}
 			} else {
-				console.log("It's Web mode - using telegram strategy with popup");
-				// For web mode, use telegram strategy (with popup)
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "telegram",
-					});
-					return wallet;
-				});
-				console.log("Telegram wallet connected:", res);
-				acct = wallet.getAccount();
-
-				// Use fallback data for web mode
+				console.log("Using fallback data for web mode...");
 				data = {
 					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
 					id: "7916246666",
@@ -105,16 +106,30 @@ const LandingScreen = () => {
 					appId: "notTmamk",
 					walletAddress: acct?.address,
 				};
-				console.log("Web mode data:", data);
+				console.log("Web mode data prepared:", data);
 			}
 
 			// Register user with the data
+			console.log("Sending registration request...");
 			api.post("/ssoauth/tgregister", data).then(async (res) => {
-				console.log("Register Res==========>", res);
-				handleLogin(PATH_MAIN);
+				console.log("Registration successful:", res);
+				await handleLogin(PATH_MAIN);
+			}).catch((regError) => {
+				console.error("Registration failed:", regError);
+				console.error("Registration error details:", regError.response?.data);
+				throw new Error(`Registration failed: ${regError.message}`);
 			});
 		} catch (error) {
 			console.error("Authentication error:", error);
+			console.error("Error stack:", error.stack);
+			console.error("Error details:", {
+				message: error.message,
+				name: error.name,
+				isTMA: isTMA(),
+				timestamp: new Date().toISOString()
+			});
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -186,11 +201,17 @@ const LandingScreen = () => {
 			</div>
 			<div className="flex flex-col justify-end items-center">
 				<div className="button-container">
-					<CommonButton onClick={handleSwipe} width="auto" height="48px">
-						<ArrowForwardIcon className="icon mr-0.5" />
-						<span className="font-regular text-[13px]">
-							{t("landing.button") || "SWIPE TO GET STARTED"}
-						</span>
+					<CommonButton onClick={handleSwipe} width="auto" height="48px" disabled={isLoading}>
+						{isLoading ? (
+							<span className="font-regular text-[13px]">Loading...</span>
+						) : (
+							<>
+								<ArrowForwardIcon className="icon mr-0.5" />
+								<span className="font-regular text-[13px]">
+									{t("landing.button") || "TAP TO BEGIN"}
+								</span>
+							</>
+						)}
 					</CommonButton>
 				</div>
 			</div>
