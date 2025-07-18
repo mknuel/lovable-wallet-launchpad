@@ -17,7 +17,7 @@ import { isTMA } from "@telegram-apps/bridge";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
 import { useConnect } from "thirdweb/react";
 import { inAppWallet } from "thirdweb/wallets";
-import { api } from "../../utils/api";
+import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 
 const Auth = () => {
