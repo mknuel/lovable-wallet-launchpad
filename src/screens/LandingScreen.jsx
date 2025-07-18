@@ -36,7 +36,7 @@ const LandingScreen = () => {
 	const { connect } = useConnect();
 	const wallet = inAppWallet({
 		auth: {
-			mode: "redirect", // Use redirect instead of popup
+			mode: "iframe", // Use iframe instead of popup
 		},
 	});
 
