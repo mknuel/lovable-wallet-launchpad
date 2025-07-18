@@ -56,19 +56,46 @@ const LandingScreen = () => {
 			console.log("Starting authentication process...");
 			console.log("Is Telegram Mini App:", isTMA());
 			
-			// Use telegram strategy for both TMA and web mode to ensure same wallet
-			console.log("Connecting wallet with telegram strategy...");
-			const res = await connect(async () => {
-				await wallet.connect({
-					client,
-					strategy: "telegram",
-				});
-				return wallet;
-			});
-			console.log("Wallet connected successfully:", res);
+			let walletAddress = null;
 			
-			const acct = wallet.getAccount();
-			console.log("Wallet account:", acct);
+			if (isTMA()) {
+				console.log("TMA Mode: Using custom auth endpoint for consistent wallet...");
+				// In TMA, use custom auth endpoint to ensure same wallet for same Telegram user
+				const initData = retrieveLaunchParams();
+				const userId = initData.tgWebAppData.user.id.toString();
+				console.log("Telegram User ID:", userId);
+				
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "auth_endpoint",
+						payload: JSON.stringify({
+							userId: userId,
+							username: initData.tgWebAppData.user.username,
+							first_name: initData.tgWebAppData.user.first_name,
+							timestamp: Date.now()
+						}),
+						encryptionKey: "blockloans_telegram_auth_key_2025"
+					});
+					return wallet;
+				});
+				console.log("TMA Wallet connected successfully:", res);
+				walletAddress = wallet.getAccount()?.address;
+			} else {
+				console.log("Web Mode: Using popup authentication...");
+				// Outside TMA, use popup for broader wallet connection
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "popup"
+					});
+					return wallet;
+				});
+				console.log("Web Wallet connected successfully:", res);
+				walletAddress = wallet.getAccount()?.address;
+			}
+			
+			console.log("Final wallet address:", walletAddress);
 
 			if (isTMA()) {
 				console.log("Getting Telegram Mini App user data...");
@@ -85,7 +112,7 @@ const LandingScreen = () => {
 						roleId: role.id,
 						appsChannelKey: "abc",
 						deviceId: "Apple",
-						walletAddress: acct?.address,
+						walletAddress: walletAddress,
 					};
 					console.log("Telegram Mini App data prepared:", data);
 				} catch (tgError) {
@@ -104,7 +131,7 @@ const LandingScreen = () => {
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
 					appId: "notTmamk",
-					walletAddress: acct?.address,
+					walletAddress: walletAddress,
 				};
 				console.log("Web mode data prepared:", data);
 			}
