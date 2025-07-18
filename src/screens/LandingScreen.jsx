@@ -34,11 +34,7 @@ const LandingScreen = () => {
 
 	// --- thirdweb hooks ---
 	const { connect } = useConnect();
-	const wallet = inAppWallet({
-		auth: {
-			mode: "redirect", // Use redirect instead of popup
-		},
-	});
+	const wallet = inAppWallet();
 
 	let data = {};
 
@@ -56,27 +52,22 @@ const LandingScreen = () => {
 		e.preventDefault();
 		setIsLoading(true);
 		try {
+			// --- Connect to in-app wallet ---
+			const res = await connect(async () => {
+				await wallet.connect({
+					client,
+					strategy: "telegram",
+				});
+				return wallet;
+			});
+			console.log("res===>", res);
+
+			const acct = wallet.getAccount();
+
+			console.log(acct, "walletAccount");
 			if (isTMA()) {
 				console.log("It's Telegram Mini Apps");
 				const initData = retrieveLaunchParams();
-				
-				// Use Telegram user ID as unique identifier for authentication
-				const uniqueUserId = initData.tgWebAppData.user.id.toString();
-				
-				// Connect to in-app wallet using email strategy
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "email",
-						email: `user${uniqueUserId}@telegram.app`, // Use Telegram user ID in email
-					});
-					return wallet;
-				});
-				console.log("res===>", res);
-
-				const acct = wallet.getAccount();
-				console.log(acct, "walletAccount");
-
 				data = {
 					hash: initData.tgWebAppData.hash,
 					id: initData.tgWebAppData.user.id,
@@ -86,29 +77,11 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "abc",
 					deviceId: "Apple",
-					walletAddress: acct?.address,
+					walletAddress: acct?.address, // --- Add wallet address ---
 				};
 				console.log("data==========>", data);
 			} else {
-				// For web mode, use static user ID for testing
-				console.log("It's not Telegram Mini Apps - using static user ID");
-				
-				// Static user ID for testing purposes
-				const staticUserId = "test-user-12345";
-				
-				const res = await connect(async () => {
-					await wallet.connect({
-						client,
-						strategy: "email",
-						email: "test@example.com", // Static email for testing
-					});
-					return wallet;
-				});
-				console.log("res===>", res);
-
-				const acct = wallet.getAccount();
-				console.log(acct, "walletAccount");
-
+				// initData in Web mode
 				data = {
 					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
 					id: "7916246666",
@@ -118,8 +91,9 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
+					// walletAddress: address, // --- Add wallet address ---
 					appId: "notTmamk",
-					walletAddress: acct?.address,
+					walletAddress: acct?.address, // --- Add wallet address ---
 				};
 				console.log("It's not Telegram Mini Apps");
 			}
