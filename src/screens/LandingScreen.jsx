@@ -50,21 +50,22 @@ const LandingScreen = () => {
 	const handleSwipe = async (e) => {
 		e.preventDefault();
 		try {
-			// --- Connect to in-app wallet ---
-			const res = await connect(async () => {
-				await wallet.connect({
-					client,
-					strategy: "telegram",
-				});
-				return wallet;
-			});
-			console.log("res===>", res);
+			let acct = null;
 
-			const acct = wallet.getAccount();
-
-			console.log(acct, "walletAccount");
 			if (isTMA()) {
-				console.log("It's Telegram Mini Apps");
+				console.log("It's Telegram Mini Apps - using direct auth");
+				// For Telegram Mini App, use guest strategy (no popup)
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "guest",
+					});
+					return wallet;
+				});
+				console.log("Guest wallet connected:", res);
+				acct = wallet.getAccount();
+				
+				// Use Telegram user data directly
 				const initData = retrieveLaunchParams();
 				data = {
 					hash: initData.tgWebAppData.hash,
@@ -75,11 +76,23 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "abc",
 					deviceId: "Apple",
-					walletAddress: acct?.address, // --- Add wallet address ---
+					walletAddress: acct?.address,
 				};
-				console.log("data==========>", data);
+				console.log("Telegram Mini App data:", data);
 			} else {
-				// initData in Web mode
+				console.log("It's Web mode - using telegram strategy with popup");
+				// For web mode, use telegram strategy (with popup)
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "telegram",
+					});
+					return wallet;
+				});
+				console.log("Telegram wallet connected:", res);
+				acct = wallet.getAccount();
+
+				// Use fallback data for web mode
 				data = {
 					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
 					id: "7916246666",
@@ -89,20 +102,19 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
-					// walletAddress: address, // --- Add wallet address ---
 					appId: "notTmamk",
-					walletAddress: acct?.address, // --- Add wallet address ---
+					walletAddress: acct?.address,
 				};
-				console.log("It's not Telegram Mini Apps");
+				console.log("Web mode data:", data);
 			}
 
-			// --- The rest of your registration logic ---
+			// Register user with the data
 			api.post("/ssoauth/tgregister", data).then(async (res) => {
 				console.log("Register Res==========>", res);
 				handleLogin(PATH_MAIN);
 			});
 		} catch (error) {
-			console.error("Unexpected error:", error);
+			console.error("Authentication error:", error);
 		}
 	};
 
