@@ -7,6 +7,7 @@ export const ToCurrencyCard = ({
 	selectedCurrency,
 	amount,
 	onCurrencySelect,
+	isLoading = false,
 }) => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +76,7 @@ export const ToCurrencyCard = ({
 							{/* --- Balance and USD Value --- */}
 							<div className="flex justify-between items-center mt-2 pl-12">
 								<span className="text-gray-400 bg-clip-text text-sm">
-									Select currency
+									{isLoading ? "Loading tokens..." : "Select currency"}
 								</span>
 							</div>
 						</div>

@@ -3,6 +3,7 @@ import { FromCurrencyCard } from "./FromCurrencyCard";
 import { ToCurrencyCard } from "./ToCurrencyCard";
 import { TransactionDetails } from "./TransactionDetails";
 import CommonButton from "../Buttons/CommonButton";
+import { useGetBridgeTokens } from "../../hooks/useBridge";
 // import { SwapIcon } from "../Icons/SwapIcon"; // Assuming you have a swap icon component
 
 export const SwapForm = ({
@@ -15,6 +16,12 @@ export const SwapForm = ({
 	setToCurrency,
 	setFromCurrency,
 }) => {
+	// Fetch tokens loading state for the ToCurrencyCard
+	const { isLoading: isLoadingTokens } = useGetBridgeTokens({
+		limit: 20,
+		metadata: "true",
+		include_without_price: "true",
+	});
 	const handleFromAmountChange = (amount) => {
 		setFromAmount(amount);
 
@@ -61,6 +68,7 @@ export const SwapForm = ({
 					selectedCurrency={toCurrency}
 					amount={toAmount}
 					onCurrencySelect={setToCurrency}
+					isLoading={isLoadingTokens}
 				/>
 			</div>
 		</div>
