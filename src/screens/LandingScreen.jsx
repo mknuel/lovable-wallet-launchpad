@@ -34,11 +34,7 @@ const LandingScreen = () => {
 
 	// --- thirdweb hooks ---
 	const { connect } = useConnect();
-	const wallet = inAppWallet({
-		auth: {
-			mode: "iframe", // Use iframe instead of popup
-		},
-	});
+	const wallet = inAppWallet();
 
 	let data = {};
 
