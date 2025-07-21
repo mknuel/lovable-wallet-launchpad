@@ -53,19 +53,19 @@ const LandingScreen = () => {
 		setIsLoading(true);
 		try {
 			// --- Connect to in-app wallet ---
-			const res = await connect(async () => {
-				await wallet.connect({
-					client,
-					strategy: "telegram",
-				});
-				return wallet;
-			});
-			console.log("res===>", res);
-
-			const acct = wallet.getAccount();
-
-			console.log(acct, "walletAccount");
 			if (isTMA()) {
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "telegram",
+					});
+					return wallet;
+				});
+				console.log("res===>", res);
+
+				const acct = wallet.getAccount();
+
+				console.log(acct, "walletAccount");
 				console.log("It's Telegram Mini Apps");
 				const initData = retrieveLaunchParams();
 				data = {
@@ -81,6 +81,14 @@ const LandingScreen = () => {
 				};
 				console.log("data==========>", data);
 			} else {
+				const res = await connect(async () => {
+					await wallet.connect({
+						client,
+						strategy: "telegram",
+					});
+					return wallet;
+				});
+
 				// initData in Web mode
 				data = {
 					hash: "b40d003c86ed00d73608f08dce055eafc1eec4d2a83a516c62ac16541ce556e2",
@@ -96,6 +104,12 @@ const LandingScreen = () => {
 					walletAddress: acct?.address, // --- Add wallet address ---
 				};
 				console.log("It's not Telegram Mini Apps");
+
+				await wallet.connect({
+					client,
+					strategy: "telegram",
+				});
+				return wallet;
 			}
 
 			// --- The rest of your registration logic ---
