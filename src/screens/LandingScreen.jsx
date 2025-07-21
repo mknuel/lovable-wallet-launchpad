@@ -81,6 +81,7 @@ const LandingScreen = () => {
 				};
 				console.log("data==========>", data);
 			} else {
+				console.log("It's not Telegram Mini Apps");
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
@@ -88,6 +89,10 @@ const LandingScreen = () => {
 					});
 					return wallet;
 				});
+				console.log("res===>", res);
+
+				const acct = wallet.getAccount();
+				console.log(acct, "walletAccount");
 
 				// initData in Web mode
 				data = {
@@ -99,17 +104,9 @@ const LandingScreen = () => {
 					roleId: role.id,
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
-					// walletAddress: address, // --- Add wallet address ---
 					appId: "notTmamk",
-					walletAddress: acct?.address, // --- Add wallet address ---
+					walletAddress: acct?.address,
 				};
-				console.log("It's not Telegram Mini Apps");
-
-				await wallet.connect({
-					client,
-					strategy: "telegram",
-				});
-				return wallet;
 			}
 
 			// --- The rest of your registration logic ---
