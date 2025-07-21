@@ -52,21 +52,21 @@ const LandingScreen = () => {
 		e.preventDefault();
 		setIsLoading(true);
 		try {
-			// --- Connect to in-app wallet ---
 			if (isTMA()) {
+				console.log("It's Telegram Mini Apps");
+				
+				// Use guest mode for TMA to avoid popup issues
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "telegram",
+						strategy: "guest",
 					});
 					return wallet;
 				});
 				console.log("res===>", res);
 
 				const acct = wallet.getAccount();
-
 				console.log(acct, "walletAccount");
-				console.log("It's Telegram Mini Apps");
 				const initData = retrieveLaunchParams();
 				data = {
 					hash: initData.tgWebAppData.hash,
