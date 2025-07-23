@@ -27,7 +27,7 @@ const Header = ({ title, action, className, onBack }) => {
   return (
 		<>
 			<div className={`w-full bg-white ${className || ""}`}>
-				<div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 relative">
+				<div className="flex items-center justify-between px-4 py-4 relative">
 					<div className="flex items-center">
 						{action && (
 							<button
