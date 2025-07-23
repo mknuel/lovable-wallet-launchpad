@@ -11,6 +11,7 @@ import { ProtectedRouteArray } from "./context/ProtectedRouteArray";
 import ProtectedRoute from "./context/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { PATH_AUTH } from "./context/paths";
+import ScrollToTop from "./components/layout/ScrollToTop";
 
 import "./App.css";
 import { useAutoConnect } from "thirdweb/react";
@@ -48,23 +49,24 @@ function App() {
 	}, [dispatch, navigate]);
 
 	return (
-		<div className="app-container">
-			<AuthProvider>
-				<Routes>
-					<Route index element={<MainScreen />} />
-					{PublicRouteArray.map((route) => (
-						<Route key={route.path} path={route.path} element={route.element} />
-					))}
-					{ProtectedRouteArray.map((route) => (
-						<Route
-							key={route.path}
-							path={route.path}
-							element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-						/>
-					))}
-				</Routes>
-			</AuthProvider>
-		</div>
+	<div className="app-container">
+		<AuthProvider>
+			<ScrollToTop />
+			<Routes>
+				<Route index element={<MainScreen />} />
+				{PublicRouteArray.map((route) => (
+					<Route key={route.path} path={route.path} element={route.element} />
+				))}
+				{ProtectedRouteArray.map((route) => (
+					<Route
+						key={route.path}
+						path={route.path}
+						element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+					/>
+				))}
+			</Routes>
+		</AuthProvider>
+	</div>
 	);
 }
 
