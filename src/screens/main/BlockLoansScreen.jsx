@@ -180,7 +180,7 @@ const BlockLoansScreen = () => {
   };
 
   return (
-		<div className="min-h-screen bg-gray-50 flex flex-col pt-16">
+		<div className="min-h-screen bg-gray-50 flex flex-col">
 			{/* Header */}
 			<MainHeader title="BlockLoans" action={true} onBack={handleBackClick} />
 
