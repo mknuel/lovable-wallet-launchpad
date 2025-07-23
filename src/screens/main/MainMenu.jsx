@@ -11,6 +11,7 @@ import {
 	selectWalletData,
 	selectWalletLoading,
 	selectWalletError,
+	invalidateWalletCache,
 } from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
 import WalletScreen from "./WalletScreen";
@@ -110,7 +111,11 @@ const MainMenu = () => {
 
 	const handlePinCreated = () => {
 		localStorage.setItem("userHasPin", "true");
-
+		
+		// Invalidate wallet cache and refetch to get updated PIN status
+		dispatch(invalidateWalletCache());
+		dispatch(fetchWallet());
+		
 		setShowPinConfirmation(true);
 	};
 

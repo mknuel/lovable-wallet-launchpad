@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import { useTranslation } from "../../hooks/useTranslation";
 import Success from "../../assets/icons/pin-success.svg";
 import { PATH_WALLET } from "../../context/paths";
+import { fetchWallet, invalidateWalletCache } from "../../store/reducers/walletSlice";
 
 const CreatePinScreen = ({ onBack, walletData }) => {
 	const { t } = useTranslation();
+	const dispatch = useDispatch();
 	const [pin, setPin] = useState(["", "", "", ""]);
 	const inputRefs = useRef([]);
 	const [isButtonEnabled, setIsButtonEnabled] = useState(false);
@@ -20,10 +23,14 @@ const CreatePinScreen = ({ onBack, walletData }) => {
 		inputRefs.current = inputRefs.current.slice(0, 4);
 	}, []);
 
-	const onPinCreated = () => {
+	const onPinCreated = async () => {
 		setShowPinConfirmation(true);
 		localStorage.setItem("userHasPin", "true");
 		localStorage.removeItem("needsPinEntry");
+		
+		// Invalidate wallet cache and refetch to get updated PIN status
+		dispatch(invalidateWalletCache());
+		dispatch(fetchWallet());
 	};
 
 	// Check if all PIN digits are filled
