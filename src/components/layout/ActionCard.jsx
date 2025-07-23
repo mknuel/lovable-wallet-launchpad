@@ -8,7 +8,7 @@ export const ActionCard = ({
   disabled = false
 }) => {
   const baseClasses = `flex h-[108px] items-center relative rounded-2xl transition-all duration-200 ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105 cursor-pointer'}`;
-  const highlightedClasses = "flex-1 min-w-0";
+  const highlightedClasses = "flex-1 min-w-0 pl-4 pr-[82px] pt-14 pb-7";
   const normalClasses = `flex flex-1 min-w-0 border bg-white pl-4 pr-[82px] pt-14 pb-7 border-solid border-[#D9D4D4] ${disabled ? '' : 'hover:border-gray-300'}`;
 
   if (isHighlighted) {
