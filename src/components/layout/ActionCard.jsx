@@ -25,7 +25,7 @@ export const ActionCard = ({
         <div className="text-white text-lg font-bold leading-6 absolute w-16 h-6 left-4 top-14">
           {title}
         </div>
-        <div className="inline-flex flex-col justify-center items-center gap-2.5 absolute w-9 h-9 bg-white p-2 rounded-[27px] left-[105px] top-4">
+        <div className="inline-flex flex-col justify-center items-center gap-2.5 absolute w-9 h-9 bg-white p-2 rounded-[27px] right-4 top-4">
           <div className="w-5 h-5 relative">
             <div className="w-5 h-5 shrink-0 absolute bg-[#D9D9D9] left-0 top-0" />
             <div>
