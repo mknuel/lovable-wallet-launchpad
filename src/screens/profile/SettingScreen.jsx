@@ -4,6 +4,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
+import { useActiveAccount } from "thirdweb/react";
 
 import Header from "../../components/layout/MainHeader";
 import Navigation from "../../components/layout/Navigation";
@@ -47,6 +48,7 @@ const SettingScreen = () => {
 	const { t } = useTranslation();
 	const { currentWalletAccount } = useWalletAccount();
 	const userTonAddress = useTonAddress();
+	const activeAccount = useActiveAccount();
 
 	const [userData, setUserData] = useState({
 		firstName: "",
@@ -194,9 +196,10 @@ const SettingScreen = () => {
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div
 								className="flex flex-row items-center gap-[13px]"
-								onClick={() =>
-									copyToClipboard(userData.walletAddress, setCopied)
-								}>
+								onClick={() => {
+									const addressToCopy = userTonAddress || activeAccount?.address || currentWalletAccount || userData.walletAddress;
+									copyToClipboard(addressToCopy, setCopied);
+								}}>
 								<QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
 								<div className="flex flex-col">
 									<div className="font-regular text-[14px]">
@@ -204,11 +207,13 @@ const SettingScreen = () => {
 									</div>
 									<div className="wallet-address-container">
 										<span className="wallet-address">
-											{/* {formatAddress(currentWalletAccount, 8, 4)} */}
-											{/* {userTonAddress} */}
 											{userTonAddress
-												? userTonAddress
-												: formatAddress(currentWalletAccount, 8, 4)}
+												? formatAddress(userTonAddress, 8, 4)
+												: activeAccount?.address
+												? formatAddress(activeAccount.address, 8, 4)
+												: currentWalletAccount
+												? formatAddress(currentWalletAccount, 8, 4)
+												: formatAddress(userData.walletAddress, 8, 4)}
 										</span>
 										{copied ? (
 											<CheckIcon className="settings-icon check-icon" />
