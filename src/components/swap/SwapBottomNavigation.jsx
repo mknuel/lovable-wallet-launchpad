@@ -13,7 +13,7 @@ const defaultNavItems = [
 export const SwapBottomNavigation = ({ items = defaultNavItems }) => {
   return (
 		<nav
-			className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h- w-full flex-col items-center justify-center px-5 py-[23px] mt-0"
+			className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h- w-full flex-col items-center justify-center px-5 pt-[23px] pb-3 mt-0"
 			aria-label="Bottom navigation">
 			<ul className="flex max-w-full w-80 items-center justify-between">
 				{items.map((item) => (
