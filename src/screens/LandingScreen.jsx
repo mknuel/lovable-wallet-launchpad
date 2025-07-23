@@ -58,12 +58,11 @@ const LandingScreen = () => {
 			if (isTMA()) {
 				console.log("It's Telegram Mini Apps");
 				
-				// Use telegram auth with redirect for TMA
+				// Use guest mode for TMA to avoid popup issues
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "telegram",
-						redirectUrl: window.location.origin + "/main"
+						strategy: "guest",
 					});
 					return wallet;
 				});
