@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import LandingBackground from "../assets/images/landing_background.png";
 import CommonButton from "../components/Buttons/CommonButton";
@@ -52,20 +53,23 @@ const LandingScreen = () => {
 		e.preventDefault();
 		setIsLoading(true);
 		try {
+			let acct;
+			
 			if (isTMA()) {
 				console.log("It's Telegram Mini Apps");
 				
-				// Use guest mode for TMA to avoid popup issues
+				// Use telegram auth with redirect for TMA
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
-						strategy: "guest",
+						strategy: "telegram",
+						redirectUrl: window.location.origin + "/main"
 					});
 					return wallet;
 				});
 				console.log("res===>", res);
 
-				const acct = wallet.getAccount();
+				acct = wallet.getAccount();
 				console.log(acct, "walletAccount");
 				const initData = retrieveLaunchParams();
 				data = {
@@ -74,10 +78,10 @@ const LandingScreen = () => {
 					username: initData.tgWebAppData.user.username,
 					first_name: initData.tgWebAppData.user.first_name,
 					last_name: initData.tgWebAppData.user.last_name,
-					roleId: role.id,
+					roles: [role.id], // Fix: Send as array of ObjectIds
 					appsChannelKey: "abc",
 					deviceId: "Apple",
-					walletAddress: acct?.address, // --- Add wallet address ---
+					walletAddress: acct?.address,
 				};
 				console.log("data==========>", data);
 			} else {
@@ -91,7 +95,7 @@ const LandingScreen = () => {
 				});
 				console.log("res===>", res);
 
-				const acct = wallet.getAccount();
+				acct = wallet.getAccount();
 				console.log(acct, "walletAccount");
 
 				// initData in Web mode
@@ -101,7 +105,7 @@ const LandingScreen = () => {
 					username: "mknuel",
 					first_name: "Mk",
 					last_name: "Nuel",
-					roleId: role.id,
+					roles: [role.id], // Fix: Send as array of ObjectIds
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
 					appId: "notTmamk",
