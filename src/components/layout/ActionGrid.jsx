@@ -9,7 +9,7 @@ export const ActionGrid = ({
   selectedAction = 'deposit'
 }) => {
   return (
-		<section className="flex w-3/4 flex-col items-start gap-6 relative max-sm:w-[400px] max-sm:gap-4 max-sm:mx-3 max-sm:my-0 px-7">
+		<section className="flex w-full max-w-md flex-col items-start gap-6 relative px-4">
 			<div className="flex items-center gap-[7px] self-stretch relative max-sm:gap-2">
 				<ActionCard
 					title="Deposit"

@@ -110,7 +110,6 @@ const Navigation = ({ nav }) => {
             </div>
           </IconButton>
         </div>
-        <hr className="w-full text-[#EEEEEE]"></hr>
       </div>
     );
   }
@@ -220,7 +219,6 @@ const Navigation = ({ nav }) => {
           </div>
         </IconButton>
       </div>
-      <hr className="w-full text-[#EEEEEE]"></hr>
     </div>
   );
 };
