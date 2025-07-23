@@ -133,14 +133,14 @@ const Navigation = ({ nav }) => {
             sx={{
               width: 20,
               height: 20,
-              color: (nav === "Main Menu" || nav === "My Wallet") ? "#9C27B0" : "#837E7E",
+              color: (nav === "Main Menu" || nav === "My Wallet" || nav === "BlockLoans") ? "#9C27B0" : "#837E7E",
             }}
           />
           <div
             className="font-bold text-[14px] text-center"
             style={{
               background:
-                (nav === "Main Menu" || nav === "My Wallet")
+                (nav === "Main Menu" || nav === "My Wallet" || nav === "BlockLoans")
                   ? "linear-gradient(to right, #DC2366, #4F5CAA)"
                   : "#ACB1B5",
               WebkitBackgroundClip: "text",
