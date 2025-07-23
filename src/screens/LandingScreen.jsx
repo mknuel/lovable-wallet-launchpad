@@ -77,7 +77,7 @@ const LandingScreen = () => {
 					username: initData.tgWebAppData.user.username,
 					first_name: initData.tgWebAppData.user.first_name,
 					last_name: initData.tgWebAppData.user.last_name,
-					roles: [role.id], // Fix: Send as array of ObjectIds
+					roleId: role.id,
 					appsChannelKey: "abc",
 					deviceId: "Apple",
 					walletAddress: acct?.address,
@@ -104,7 +104,7 @@ const LandingScreen = () => {
 					username: "mknuel",
 					first_name: "Mk",
 					last_name: "Nuel",
-					roles: [role.id], // Fix: Send as array of ObjectIds
+					roleId: role.id,
 					appsChannelKey: "tg",
 					deviceId: "Samsung",
 					appId: "notTmamk",
