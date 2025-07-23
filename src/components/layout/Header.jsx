@@ -11,7 +11,7 @@ export const Header = ({
 }) => {
   return (
 		<nav
-			className={`w-full items-center border-b-[color:var(--Gray-200,#EEE)] flex justify-between bg-white  pl-5 pr-4 py-4 border-b border-solid ${
+			className={`w-full items-center flex justify-between bg-white  pl-5 pr-4 py-4 ${
 				className || ""
 			}`}
 			role="navigation"

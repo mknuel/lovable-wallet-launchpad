@@ -143,7 +143,7 @@ const MainMenu = () => {
 						/>
 					</div>
 
-					<div className="relative w-full max-w-full overflow-y-auto overflow-x-hidden px-6 py-6 mt-3 mb-[40px]">
+					<div className="relative w-full max-w-full overflow-y-auto overflow-x-hidden px-6 pt-6 mb-[40px]">
 						<div className="w-full max-w-full mb-6">
 							<StatsCard stats={statsData} />
 						</div>
