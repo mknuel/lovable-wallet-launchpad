@@ -110,54 +110,55 @@ const LandingScreen = () => {
 			}
 
 			// --- The rest of your registration logic ---
-			api.post("/ssoauth/tgregister", data).then(async (res) => {
-				console.log("Register Res==========>", res);
-				handleLogin(PATH_MAIN);
-			});
+			const registerRes = await api.post("/ssoauth/tgregister", data);
+			console.log("Register Res==========>", registerRes);
+			await handleLogin(PATH_MAIN);
 		} catch (error) {
 			console.error("Unexpected error:", error);
-		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	async function handleLogin(link) {
-		const loginData = {
-			id: data.id,
-			first_name: data.first_name,
-			deviceId: data.deviceId,
-			hash: data.hash,
-			username: data.username,
-			last_name: data.last_name,
-		};
-		await api
-			.post("/ssoauth/tglogin", loginData)
-			.then((response) => {
-				console.log("Login response:", response);
-				if (response && response.success) {
-					const userData = {
-						userId: response.user._id,
-						userName: response.user.userName,
-						firstName: response.user.profile.firstName,
-						lastName: response.user.profile.lastName,
-						country: "",
-						role: response.user.roles,
-						email: response.user.email,
-						profileId: response.user.profile._id,
-						photo: response.user.profile.photo,
-						gender: "male",
-						walletAddress: response?.user?.walletAddress,
-					};
-					console.log(response);
-					login(response.token, userData);
-					navigate(link);
-				} else {
-					console.error("Login failed:", response.data);
-				}
-			})
-			.catch((error) => {
-				console.error("Login error:", error);
-			});
+		try {
+			const loginData = {
+				id: data.id,
+				first_name: data.first_name,
+				deviceId: data.deviceId,
+				hash: data.hash,
+				username: data.username,
+				last_name: data.last_name,
+			};
+			
+			const response = await api.post("/ssoauth/tglogin", loginData);
+			console.log("Login response:", response);
+			
+			if (response && response.success) {
+				const userData = {
+					userId: response.user._id,
+					userName: response.user.userName,
+					firstName: response.user.profile.firstName,
+					lastName: response.user.profile.lastName,
+					country: "",
+					role: response.user.roles,
+					email: response.user.email,
+					profileId: response.user.profile._id,
+					photo: response.user.profile.photo,
+					gender: "male",
+					walletAddress: response?.user?.walletAddress,
+				};
+				console.log(response);
+				login(response.token, userData);
+				setIsLoading(false); // Clear loading before navigation
+				navigate(link);
+			} else {
+				console.error("Login failed:", response.data);
+				setIsLoading(false);
+			}
+		} catch (error) {
+			console.error("Login error:", error);
+			setIsLoading(false);
+		}
 	}
 
 	return (
