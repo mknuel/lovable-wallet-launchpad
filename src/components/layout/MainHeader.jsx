@@ -26,7 +26,7 @@ const Header = ({ title, action, className, onBack }) => {
 
   return (
 		<>
-			<div className={`w-full bg-white ${className || ""}`}>
+			<div className={`w-full bg-white fixed top-0 left-0 right-0 z-40 shadow-md ${className || ""}`}>
 				<div className="flex items-center justify-between px-4 py-4 relative">
 					<div className="flex items-center">
 						{action && (
