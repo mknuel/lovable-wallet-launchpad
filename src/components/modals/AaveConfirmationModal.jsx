@@ -83,29 +83,29 @@ export const AaveConfirmationModal = ({
 		}
 	};
 
-	const getTokenInfo = () => {
-		switch (actionType) {
-			case "deposit":
-				return {
-					symbol: "USD",
-					description: "Supply USD value equivalent in MATIC",
-				};
-			case "borrow":
-				return {
-					symbol: "USD",
-					description: "Borrow USD value equivalent in WMATIC",
-				};
-			case "repay":
-				return { symbol: "USD", description: "Repay USD value equivalent in WMATIC" };
-			case "stake":
-				return {
-					symbol: "AAVE",
-					description: "Stake AAVE tokens (coming soon)",
-				};
-			default:
-				return { symbol: "TOKEN", description: "" };
-		}
-	};
+  const getTokenInfo = () => {
+    switch (actionType) {
+      case "deposit":
+        return {
+          symbol: "ETH",
+          description: "Supply ETH as collateral to earn interest and enable borrowing",
+        };
+      case "borrow":
+        return {
+          symbol: "WETH",
+          description: "Borrow WETH against your collateral",
+        };
+      case "repay":
+        return { symbol: "WETH", description: "Repay your WETH debt to reduce risk" };
+      case "stake":
+        return {
+          symbol: "AAVE",
+          description: "Stake AAVE tokens (coming soon)",
+        };
+      default:
+        return { symbol: "TOKEN", description: "" };
+    }
+  };
 
 	const { symbol, description } = getTokenInfo();
 

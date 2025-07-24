@@ -95,7 +95,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'deposit',
-      title: 'Supply MATIC to Aave'
+      title: 'Supply ETH to Aave'
     });
   };
 
@@ -104,7 +104,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'borrow',
-      title: 'Borrow WMATIC from Aave'
+      title: 'Borrow WETH from Aave'
     });
   };
 
@@ -118,7 +118,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'repay',
-      title: 'Repay WMATIC to Aave'
+      title: 'Repay WETH to Aave'
     });
   };
 
@@ -166,7 +166,7 @@ const BlockLoansScreen = () => {
       
       // Show helpful message for insufficient balance
       if (errorMessage.includes('Insufficient')) {
-        errorMessage += '\n\nMake sure you have enough MATIC in your wallet for the transaction and gas fees.';
+        errorMessage += '\n\nMake sure you have enough ETH in your wallet for the transaction and gas fees.';
       }
       
       return Promise.reject(new Error(errorMessage));
