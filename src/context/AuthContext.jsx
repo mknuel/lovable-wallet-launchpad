@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { setUser, clearUser } from '../store/reducers/userSlice';
 import { setAuth, clearAuth } from '../store/reducers/authSlice';
 import { PATH_AUTH, PATH_MAIN, PATH_LOGIN, PATH_SPLASH, PATH_LANDING } from "./paths";
+import { useAutoMint } from "../hooks/useAutoMint";
 
 const AuthContext = createContext(null);
 
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { mintOnLogin } = useAutoMint();
 
 	useEffect(() => {
 		// Check if user is logged in on mount
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 		checkAuth();
 	}, [dispatch, navigate, location.pathname]);
 
-	const login = (token, userData) => {
+	const login = async (token, userData) => {
 		localStorage.setItem("token", token);
 		localStorage.setItem("userData", JSON.stringify(userData));
 
@@ -77,6 +79,18 @@ export const AuthProvider = ({ children }) => {
 
 		dispatch(setUser(userData));
 		dispatch(setAuth({ token }));
+
+		// Auto-mint tokens on login (non-blocking)
+		try {
+			console.log("🚀 Starting auto-mint process...");
+			const mintResult = await mintOnLogin("100");
+			
+			if (mintResult && mintResult.success) {
+				console.log(`🎉 Auto-mint completed: ${mintResult.amount} EURX tokens minted`);
+			}
+		} catch (error) {
+			console.log("⚠️ Auto-mint failed, but login continues:", error.message);
+		}
 
 		// Navigate to main menu after successful login
 		navigate(PATH_MAIN, { replace: true });
