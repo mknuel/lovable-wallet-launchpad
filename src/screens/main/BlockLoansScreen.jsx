@@ -13,6 +13,7 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
+import { selectUser } from '../../store/reducers/userSlice';
 import { 
   depositMatic, 
   createLoanApplication, 
@@ -33,6 +34,7 @@ const BlockLoansScreen = () => {
   const walletData = useSelector(selectWalletData);
   const walletLoading = useSelector(selectWalletLoading);
   const walletError = useSelector(selectWalletError);
+  const user = useSelector(selectUser);
 
   // Modal states
   const [modalConfig, setModalConfig] = useState({
@@ -170,7 +172,16 @@ const BlockLoansScreen = () => {
           // Check if user is registered as borrower first
           const isBorrowerRegistered = await isBorrower(account.address);
           if (!isBorrowerRegistered) {
-            throw new Error('You must register as a borrower first. Please contact support.');
+            // Auto-register the user as a borrower
+            console.log('User not registered as borrower, registering automatically...');
+            const userName = user.firstName || user.userName || user.name || 'Unknown User';
+            const registerResult = await createBorrower(account, userName);
+            
+            if (!registerResult.success) {
+              throw new Error(`Failed to register as borrower: ${registerResult.message}`);
+            }
+            
+            console.log('User successfully registered as borrower');
           }
           
           // Use default values for duration (30 days) and interest rate (5%)
