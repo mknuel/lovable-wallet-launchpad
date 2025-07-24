@@ -165,7 +165,10 @@ const BlockLoansScreen = () => {
           result = await depositMatic(account, amount);
           break;
         case 'borrow':
-          const [loanAmount, duration, interestRate] = args;
+          const [loanAmount] = args;
+          // Use default values for duration (30 days) and interest rate (5%)
+          const duration = 30;
+          const interestRate = 5;
           result = await createLoanApplication(account, duration, interestRate, loanAmount);
           break;
         case 'repay':

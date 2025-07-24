@@ -114,10 +114,10 @@ const getBlockLoanContract = () => {
   });
 };
 
-// Utility function to convert USD to Wei (assuming 1 ETH = $2000)
+// Utility function to convert USD to Wei (assuming 1 MATIC = $0.50)
 const usdToWei = (usdAmount) => {
-  const ethAmount = parseFloat(usdAmount) / 2000; // Simple conversion
-  return BigInt(Math.floor(ethAmount * 1e18));
+  const maticAmount = parseFloat(usdAmount) / 0.5; // Simple conversion
+  return BigInt(Math.floor(maticAmount * 1e18));
 };
 
 // Check if user is registered borrower
@@ -221,6 +221,12 @@ export const depositMatic = async (account, usdAmount) => {
 export const createLoanApplication = async (account, duration, interestRate, creditAmount, otherData = "") => {
   try {
     const contract = getBlockLoanContract();
+    
+    // Validate parameters
+    if (!duration || !interestRate || !creditAmount) {
+      throw new Error('Missing required parameters for loan application');
+    }
+    
     const amountWei = usdToWei(creditAmount.toString());
     
     const transaction = prepareContractCall({
@@ -228,9 +234,9 @@ export const createLoanApplication = async (account, duration, interestRate, cre
       method: "createApplication",
       params: [
         BigInt(duration), // duration in days/months
-        BigInt(interestRate * 100), // interest rate as percentage * 100
+        BigInt(Math.floor(interestRate * 100)), // interest rate as percentage * 100
         amountWei, // credit amount in wei
-        otherData
+        otherData || ""
       ]
     });
 
@@ -329,7 +335,7 @@ export const getUserBalance = async (userAddress) => {
       params: []
     });
     
-    // Convert wei to ETH
+    // Convert wei to MATIC
     return parseFloat(balance.toString()) / 1e18;
   } catch (error) {
     console.error('Error getting user balance:', error);
