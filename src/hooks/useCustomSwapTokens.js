@@ -31,11 +31,11 @@ export const useCustomSwapTokens = () => {
 
   // Create EURX token object using contract data
   const eurxToken = useMemo(() => {
-    if (!activeAccount || !eurxInfo || !eurxInfo.address) return null;
+    if (!activeAccount || !eurxInfo || !eurxInfo.contractAddress) return null;
     
     return {
-      address: eurxInfo.address,
-      token_address: eurxInfo.address,
+      address: eurxInfo.contractAddress,
+      token_address: eurxInfo.contractAddress,
       chainId: 80002, // Polygon Amoy
       chain_id: 80002,
       symbol: eurxInfo.symbol,
