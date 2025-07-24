@@ -8,6 +8,7 @@ import Navigation from '../../components/layout/Navigation';
 import { AaveConfirmationModal } from '../../components/modals/AaveConfirmationModal';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
+import { useERC20Token } from '../../hooks/useERC20';
 import {
   selectWalletData,
   selectWalletLoading,
@@ -58,14 +59,20 @@ const BlockLoansScreen = () => {
     loadAccountData();
   }, [activeWallet]);
 
+  // Import the ERC20 token hook
+  const { balance: erc20Balance, loading: erc20Loading } = useERC20Token();
+
   // Use the same stats calculation as MainMenu but include real Aave data
   const statsData = useMemo(() => {
+    // Format EURX balance to 1 decimal place
+    const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
+    
     const baseStats = walletData?.data
       ? [
           {
             id: "tokens",
-            value: walletData.data.token || "0",
-            label: t("wallet.tokens"),
+            value: eurxValue,
+            label: "Tokens",
           },
           {
             id: "crypto", 
@@ -74,7 +81,7 @@ const BlockLoansScreen = () => {
           }
         ]
       : [
-          { id: "tokens", value: "0", label: t("wallet.tokens") },
+          { id: "tokens", value: eurxValue, label: "Tokens" },
           { id: "crypto", value: "0", label: t("wallet.crypto") }
         ];
 
@@ -83,7 +90,7 @@ const BlockLoansScreen = () => {
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
-  }, [walletData, accountData, t]);
+  }, [walletData, accountData, t, erc20Balance, erc20Loading]);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });

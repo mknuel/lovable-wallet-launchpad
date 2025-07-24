@@ -32,11 +32,14 @@ const WalletActionsScreen = () => {
 
   // Memoize stats data to prevent unnecessary recalculations
   const statsData = useMemo(() => {
+    // Format EURX balance to 1 decimal place
+    const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
+    
     return [
       { 
         id: "erc20", 
-        value: erc20Loading ? "..." : formattedBalance, 
-        label: tokenInfo?.symbol || "EURX" 
+        value: eurxValue, 
+        label: "Tokens" 
       },
       {
         id: "crypto",
@@ -45,7 +48,7 @@ const WalletActionsScreen = () => {
       },
       { id: "loans", value: "0", label: t("wallet.loans") },
     ];
-  }, [walletData, t, erc20Loading, formattedBalance, tokenInfo]);
+  }, [walletData, t, erc20Loading, erc20Balance]);
 
   // Memoize menu items to prevent unnecessary re-renders
   const menuItems = useMemo(() => [

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { useCustomSwapTokens } from "../../hooks/useCustomSwapTokens";
+import { usePolygonTokens } from "../../hooks/usePolygonTokens";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
 import { useActiveAccount } from "thirdweb/react";
@@ -19,7 +19,7 @@ export const SearchableCurrencyDropdown = ({
 	const debouncedSearchTerm = useDebounce(search, 300); // 300ms debounce
 	const activeAccount = useActiveAccount();
 
-	const { availableTokens, isLoading } = useCustomSwapTokens();
+	const { availableTokens, isLoading } = usePolygonTokens();
 	
 	// Filter tokens based on search
 	const tokens = availableTokens?.filter(token => {

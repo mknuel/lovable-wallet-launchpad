@@ -6,6 +6,7 @@ import { MenuSection } from "../../components/layout/MenuSection";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
+import { useERC20Token } from "../../hooks/useERC20";
 import {
 	fetchWallet,
 	selectWalletData,
@@ -55,14 +56,20 @@ const MainMenu = () => {
 		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
 	}, [walletData, walletLoading]);
 
+	// Import the ERC20 token hook
+	const { balance: erc20Balance, tokenInfo, loading: erc20Loading } = useERC20Token();
+
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
+		// Format EURX balance to 1 decimal place
+		const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
+		
 		return walletData?.data
 			? [
 					{
 						id: "tokens",
-						value: walletData.data.token || "0",
-						label: t("wallet.tokens"),
+						value: eurxValue,
+						label: "Tokens",
 					},
 					{
 						id: "crypto",
@@ -72,11 +79,11 @@ const MainMenu = () => {
 					{ id: "loans", value: "0", label: t("wallet.loans") },
 			  ]
 			: [
-					{ id: "tokens", value: "0", label: t("wallet.tokens") },
+					{ id: "tokens", value: eurxValue, label: "Tokens" },
 					{ id: "crypto", value: "0", label: t("wallet.crypto") },
 					{ id: "loans", value: "0", label: t("wallet.loans") },
 			  ];
-	}, [walletData, t]);
+	}, [walletData, t, erc20Balance, erc20Loading]);
 
 	const handleWalletClick = () => {
 		 	if (!walletData?.data) return;
