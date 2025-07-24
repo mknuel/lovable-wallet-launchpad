@@ -104,12 +104,15 @@ export const useCustomSwapTokens = () => {
     // Always include EURX token
     if (eurxToken) {
       tokens.push(eurxToken);
+      console.log('✅ EURX token added to availableTokens:', eurxToken);
+    } else {
+      console.log('❌ EURX token not available:', { eurxInfo, eurxError, activeAccount: !!activeAccount });
     }
     
     // Add filtered bridge tokens
     tokens.push(...filteredBridgeTokens);
     
-    console.log('🔍 Available tokens for TO:', tokens);
+    console.log('🔍 Final availableTokens for TO dropdown:', tokens);
     return tokens;
   }, [eurxToken, filteredBridgeTokens]);
 
