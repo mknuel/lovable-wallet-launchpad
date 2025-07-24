@@ -234,18 +234,33 @@ const SendTokensScreen = () => {
 
 					const chain = defineChain({ id: fromCurrency?.chain_id });
 					
+					console.log("Token details:", {
+						address: fromCurrency.token_address,
+						symbol: fromCurrency.symbol,
+						chainId: fromCurrency.chain_id,
+						amount: amount,
+						isNative: fromCurrency.token_address === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+					});
+					
 					let tx;
 					
-					// Check if this is a native token (POL)
-					if (fromCurrency.token_address === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+					// Check if this is a native token (POL) - also check for NATIVE_TOKEN_ADDRESS
+					if (fromCurrency.token_address === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" || 
+						fromCurrency.token_address === NATIVE_TOKEN_ADDRESS ||
+						fromCurrency.symbol === "POL") {
+						
+						console.log("Preparing native POL transfer");
+						
 						// For native POL, use prepareTransaction for simple value transfer
 						tx = prepareTransaction({
 							client,
 							chain,
-							to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							to: selectedUser.walletAddress || "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
 							value: toWei(amount),
 						});
 					} else {
+						console.log("Preparing ERC20 token transfer");
+						
 						// For ERC20 tokens, use contract transfer
 						const contract = getContract({
 							client,
@@ -255,11 +270,12 @@ const SendTokensScreen = () => {
 
 						tx = transfer({
 							contract,
-							to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							to: selectedUser.walletAddress || "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
 							amount: amount,
 						});
 					}
 
+					console.log("Prepared transaction:", tx);
 					setPreparedTx(tx);
 
 					// Estimate gas for the transaction
