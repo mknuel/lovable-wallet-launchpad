@@ -14,6 +14,7 @@ import {
 	toWei,
 	simulateTransaction,
 	estimateGasCost,
+	prepareTransaction,
 } from "thirdweb";
 import { client } from "../../components/thirdweb/thirdwebClient";
 import {
@@ -218,7 +219,7 @@ const SendTokensScreen = () => {
 	};
 
 	useEffect(() => {
-		const prepareTransaction = async () => {
+		const prepareTransactionForSend = async () => {
 			if (
 				amount &&
 				parseFloat(amount) > 0 &&
@@ -232,17 +233,32 @@ const SendTokensScreen = () => {
 					setOperationStatus("estimating");
 
 					const chain = defineChain({ id: fromCurrency?.chain_id });
-					const contract = getContract({
-						client,
-						chain,
-						address: fromCurrency.token_address,
-					});
+					
+					let tx;
+					
+					// Check if this is a native token (POL)
+					if (fromCurrency.token_address === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
+						// For native POL, use prepareTransaction for simple value transfer
+						tx = prepareTransaction({
+							client,
+							chain,
+							to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							value: toWei(amount),
+						});
+					} else {
+						// For ERC20 tokens, use contract transfer
+						const contract = getContract({
+							client,
+							chain,
+							address: fromCurrency.token_address,
+						});
 
-					const tx = transfer({
-						contract,
-						to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
-						amount: amount,
-					});
+						tx = transfer({
+							contract,
+							to: "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							amount: amount,
+						});
+					}
 
 					setPreparedTx(tx);
 
@@ -268,7 +284,7 @@ const SendTokensScreen = () => {
 			}
 		};
 
-		prepareTransaction();
+		prepareTransactionForSend();
 	}, [amount, fromCurrency, selectedUser, activeAccount, estimateGasForTx]);
 
 	const isLoading = operationStatus !== null;
