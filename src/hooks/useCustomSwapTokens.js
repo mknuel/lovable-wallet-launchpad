@@ -4,15 +4,15 @@ import { useERC20Token } from './useERC20';
 import { useActiveAccount } from 'thirdweb/react';
 
 /**
- * Custom hook for swap tokens - includes only EURX, POL, and USDT
+ * Custom hook for swap tokens - now includes all owned tokens from Polygon mainnet and Amoy
  */
 export const useCustomSwapTokens = () => {
   const activeAccount = useActiveAccount();
   const { balance: eurxBalance, tokenInfo: eurxInfo, loading: eurxLoading, error: eurxError } = useERC20Token();
   
-  // Get bridge tokens for filtering POL and USDT
+  // Get all bridge tokens (no filtering)
   const { tokens: bridgeTokens, isLoading: bridgeLoading } = useGetBridgeTokens({
-    limit: 50,
+    limit: 100, // Increased limit to show more tokens
     metadata: true,
   });
 
@@ -49,52 +49,55 @@ export const useCustomSwapTokens = () => {
     };
   }, [eurxBalance, eurxInfo, activeAccount, eurxError]);
 
-  // Filter for only POL and USDT from bridge tokens
-  const filteredBridgeTokens = useMemo(() => {
+  // Include all bridge tokens (no filtering)
+  const allBridgeTokens = useMemo(() => {
     if (!bridgeTokens) return [];
     
-    const filtered = bridgeTokens.filter(token => {
-      const symbol = token.symbol?.toLowerCase();
-      return symbol === 'pol' || symbol === 'usdt' || symbol === 'matic';
-    });
-    
-    console.log('🔍 Filtered bridge tokens:', filtered);
-    return filtered;
+    console.log('🔍 All bridge tokens:', bridgeTokens);
+    return bridgeTokens;
   }, [bridgeTokens]);
 
-  // Filter user tokens for POL, USDT, and EURX
-  const filteredUserTokens = useMemo(() => {
-    const filtered = [];
+  // Include all user tokens + ensure EURX is available
+  const allUserTokens = useMemo(() => {
+    const tokens = [];
     
-    // Add user tokens (POL, USDT, MATIC etc.)
+    // Add ALL user tokens (no filtering)
     if (userTokens) {
-      const userFiltered = userTokens.filter(token => {
-        const symbol = token.symbol?.toLowerCase();
-        const address = token.token_address?.toLowerCase();
-        
-        return (
-          symbol === 'pol' || 
-          symbol === 'usdt' || 
-          symbol === 'matic' ||
-          address === '0x520c59c9cbd971431347f26b1fe3657a73736110'
-        );
+      // Filter out spam tokens or tokens with 0 balance if desired
+      const validTokens = userTokens.filter(token => {
+        // Keep tokens with positive balance or important tokens
+        return token.balance > 0 || 
+               token.symbol?.toLowerCase() === 'eurx' ||
+               token.token_address?.toLowerCase() === '0x520c59c9cbd971431347f26b1fe3657a73736110';
       });
-      filtered.push(...userFiltered);
+      tokens.push(...validTokens);
     }
 
     // Always add EURX token for display (even with 0 balance)
     if (eurxToken && eurxToken.address) {
-      const hasEurx = filtered.some(token => 
+      const hasEurx = tokens.some(token => 
         token.token_address?.toLowerCase() === eurxToken.address.toLowerCase()
       );
       
       if (!hasEurx) {
-        filtered.push(eurxToken);
+        tokens.push(eurxToken);
       }
     }
 
-    console.log('🔍 Filtered user tokens:', filtered);
-    return filtered;
+    // Sort tokens by balance (highest first) and then by symbol
+    const sortedTokens = tokens.sort((a, b) => {
+      // First sort by balance (highest first)
+      const balanceA = a.balance || 0;
+      const balanceB = b.balance || 0;
+      if (balanceB !== balanceA) {
+        return balanceB - balanceA;
+      }
+      // Then sort alphabetically by symbol
+      return (a.symbol || '').localeCompare(b.symbol || '');
+    });
+
+    console.log('🔍 All user tokens (sorted):', sortedTokens);
+    return sortedTokens;
   }, [userTokens, eurxToken]);
 
   // Available tokens for "TO" selection (what you can swap to)
@@ -109,15 +112,15 @@ export const useCustomSwapTokens = () => {
       console.log('❌ EURX token not available:', { eurxInfo, eurxError, activeAccount: !!activeAccount });
     }
     
-    // Add filtered bridge tokens
-    tokens.push(...filteredBridgeTokens);
+    // Add all bridge tokens
+    tokens.push(...allBridgeTokens);
     
     console.log('🔍 Final availableTokens for TO dropdown:', tokens);
     return tokens;
-  }, [eurxToken, filteredBridgeTokens]);
+  }, [eurxToken, allBridgeTokens]);
 
   // User's owned tokens for "FROM" selection  
-  const ownedTokens = filteredUserTokens;
+  const ownedTokens = allUserTokens;
 
   const isLoading = eurxLoading || bridgeLoading || userLoading;
 
