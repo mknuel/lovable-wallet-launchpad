@@ -66,9 +66,6 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 									<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
 										{symbol}
 									</div>
-									<span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-										{chainName}
-									</span>
 								</div>
 								<div className="text-gray-400 text-sm truncate w-40">
 									{token_address}
