@@ -1,4 +1,4 @@
-// aaveHelper.js – Sepolia ETH + Aave v3 + Thirdweb SDK
+// aaveHelper.js – Polygon Amoy MATIC + Aave v3 + Thirdweb SDK
 
 import {
   getContract,
@@ -7,14 +7,14 @@ import {
   readContract,
   toWei,
 } from "thirdweb";
-import { sepolia } from "thirdweb/chains";
+import { polygonAmoy } from "thirdweb/chains";
 
-// 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3
+// 🔗 Contract addresses for Polygon Amoy testnet Aave v3
 export const CONTRACTS = {
-  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
-  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D",
-  WETH: "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c",
-  USDC: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+  AAVE_POOL: "0xD05e3E715d945B59290df0ae8eF85c1BdB684744",
+  WMATIC_GATEWAY: "0xD0C84453b3945cd7e84BF7fc53BcDd3B2F1c976a", 
+  WMATIC: "0x360ad4f9a9A8EFe9A8DCB5f461c4Cc1047E1Dcf9",
+  USDC: "0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582",
 };
 
 // 🔎 ABIs
@@ -96,7 +96,7 @@ const AAVE_POOL_ABI = [
   },
 ];
 
-const WETH_GATEWAY_ABI = [
+const WMATIC_GATEWAY_ABI = [
   {
     name: "depositETH",
     type: "function",
@@ -132,8 +132,8 @@ const safeToWei = (amount) => {
 const waitForTransaction = async (client, txHash) => {
   console.log(`⏳ Waiting for transaction confirmation: ${txHash}`);
   
-  // Use thirdweb's built-in method to wait for receipt
-  const response = await fetch(`https://11155111.rpc.thirdweb.com/7038953a5d72063c56919f27ec00bbda`, {
+  // Use Polygon Amoy RPC endpoint
+  const response = await fetch(`https://80002.rpc.thirdweb.com/7038953a5d72063c56919f27ec00bbda`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -166,32 +166,32 @@ const checkTxSuccess = async (client, result, label = "Transaction") => {
 };
 
 const getTokenContract = (client, address) =>
-  getContract({ client, chain: sepolia, address, abi: ERC20_ABI });
+  getContract({ client, chain: polygonAmoy, address, abi: ERC20_ABI });
 
 const getPoolContract = (client) =>
-  getContract({ client, chain: sepolia, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
+  getContract({ client, chain: polygonAmoy, address: CONTRACTS.AAVE_POOL, abi: AAVE_POOL_ABI });
 
-const getWethGatewayContract = (client) =>
-  getContract({ client, chain: sepolia, address: CONTRACTS.WETH_GATEWAY, abi: WETH_GATEWAY_ABI });
+const getWmaticGatewayContract = (client) =>
+  getContract({ client, chain: polygonAmoy, address: CONTRACTS.WMATIC_GATEWAY, abi: WMATIC_GATEWAY_ABI });
 
-// ✅ Supply ETH (as collateral) - Input amount in ETH  
-export const supplySepoliaETH = async (account, ethAmount) => {
+// ✅ Supply MATIC (as collateral) - Input amount in MATIC  
+export const supplySepoliaETH = async (account, maticAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  console.log(`🔄 SUPPLY: Supplying ${ethAmount} ETH`);
+  console.log(`🔄 SUPPLY: Supplying ${maticAmount} MATIC`);
   console.log(`🔄 SUPPLY: Account address:`, account.address);
 
   try {
-    // Use WETH Gateway for ETH deposits
-    const contract = getWethGatewayContract(client);
-    console.log(`🔄 SUPPLY: WETH Gateway contract:`, contract);
+    // Use WMATIC Gateway for MATIC deposits
+    const contract = getWmaticGatewayContract(client);
+    console.log(`🔄 SUPPLY: WMATIC Gateway contract:`, contract);
     
     const tx = await prepareContractCall({
       contract,
       method: "depositETH",
       params: [CONTRACTS.AAVE_POOL, account.address, 0],
-      value: safeToWei(ethAmount),
+      value: safeToWei(maticAmount),
       gas: 200000n, // Increased gas limit
     });
 
@@ -211,7 +211,7 @@ export const supplySepoliaETH = async (account, ethAmount) => {
 
     console.log(`📊 SUPPLY: Account data after supply:`, data);
     const totalCollateralETH = Number(data.totalCollateralETH) / 1e18;
-    console.log(`📊 SUPPLY: Total collateral ETH:`, totalCollateralETH);
+    console.log(`📊 SUPPLY: Total collateral MATIC:`, totalCollateralETH);
 
     if (totalCollateralETH === 0) {
       return {
@@ -223,7 +223,7 @@ export const supplySepoliaETH = async (account, ethAmount) => {
 
     const response = {
       success: true,
-      message: `Supplied ${ethAmount} ETH successfully`,
+      message: `Supplied ${maticAmount} MATIC successfully`,
       txHash: result.transactionHash,
     };
     console.log(`✅ SUPPLY: Final response:`, response);
@@ -233,7 +233,7 @@ export const supplySepoliaETH = async (account, ethAmount) => {
     let errorMessage = "Failed to supply ETH";
     
     if (error.message.includes("insufficient funds")) {
-      errorMessage = "Insufficient ETH balance in your wallet.";
+      errorMessage = "Insufficient MATIC balance in your wallet.";
     } else if (error.message.includes("gas")) {
       errorMessage = "Transaction failed due to gas issues. Please try again.";
     }
@@ -242,21 +242,21 @@ export const supplySepoliaETH = async (account, ethAmount) => {
   }
 };
 
-// ✅ Borrow WETH - Input amount in ETH
-export const borrowETH = async (account, ethAmount) => {
+// ✅ Borrow WMATIC - Input amount in MATIC
+export const borrowETH = async (account, maticAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  console.log(`🔄 BORROW: Borrowing ${ethAmount} ETH`);
+  console.log(`🔄 BORROW: Borrowing ${maticAmount} MATIC`);
   console.log(`🔄 BORROW: Account address:`, account.address);
 
   // First check user's account data to see if they can borrow
   const accountData = await getUserAccountData(account.address);
   console.log(`📊 BORROW: User account data:`, accountData);
   
-  const borrowAmountETH = parseFloat(ethAmount);
-  if (borrowAmountETH > accountData.availableBorrowsETH) {
-    throw new Error(`Cannot borrow ${ethAmount} ETH. Available to borrow: ${accountData.availableBorrowsETH.toFixed(4)} ETH. You need more collateral.`);
+  const borrowAmountMATIC = parseFloat(maticAmount);
+  if (borrowAmountMATIC > accountData.availableBorrowsETH) {
+    throw new Error(`Cannot borrow ${maticAmount} MATIC. Available to borrow: ${accountData.availableBorrowsETH.toFixed(4)} MATIC. You need more collateral.`);
   }
 
   if (accountData.totalCollateralETH === 0) {
@@ -270,7 +270,7 @@ export const borrowETH = async (account, ethAmount) => {
     const tx = await prepareContractCall({
       contract,
       method: "borrow",
-      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
+      params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, 0, account.address],
       gas: 200000n, // Increased gas limit
     });
 
@@ -282,7 +282,7 @@ export const borrowETH = async (account, ethAmount) => {
 
     const response = {
       success: true,
-      message: `Borrowed ${ethAmount} ETH successfully`,
+      message: `Borrowed ${maticAmount} MATIC successfully`,
       txHash: result.transactionHash,
     };
     console.log(`✅ BORROW: Final response:`, response);
@@ -303,12 +303,12 @@ export const borrowETH = async (account, ethAmount) => {
   }
 };
 
-// ✅ Repay WETH - Input amount in ETH
-export const repayETH = async (account, ethAmount) => {
+// ✅ Repay WMATIC - Input amount in MATIC
+export const repayETH = async (account, maticAmount) => {
   const { client } = await import("../components/thirdweb/thirdwebClient.js");
   if (!client) throw new Error("Thirdweb client not configured");
 
-  console.log(`🔄 REPAY: Repaying ${ethAmount} ETH`);
+  console.log(`🔄 REPAY: Repaying ${maticAmount} MATIC`);
   console.log(`🔄 REPAY: Account address:`, account.address);
 
   try {
@@ -320,23 +320,23 @@ export const repayETH = async (account, ethAmount) => {
       throw new Error("No debt found to repay.");
     }
 
-    // Check WETH balance
-    const wethBalance = await getTokenBalance(account.address, CONTRACTS.WETH);
-    console.log(`💰 REPAY: WETH Balance:`, wethBalance);
+    // Check WMATIC balance
+    const wmaticBalance = await getTokenBalance(account.address, CONTRACTS.WMATIC);
+    console.log(`💰 REPAY: WMATIC Balance:`, wmaticBalance);
     
-    const repayAmountETH = parseFloat(ethAmount);
-    if (repayAmountETH > wethBalance) {
-      throw new Error(`Insufficient WETH balance. Have: ${wethBalance.toFixed(4)} WETH, Need: ${ethAmount} WETH`);
+    const repayAmountMATIC = parseFloat(maticAmount);
+    if (repayAmountMATIC > wmaticBalance) {
+      throw new Error(`Insufficient WMATIC balance. Have: ${wmaticBalance.toFixed(4)} WMATIC, Need: ${maticAmount} WMATIC`);
     }
 
-    // First, approve WETH token to be spent by Aave pool
-    console.log(`🔄 REPAY: Approving WETH for Aave pool...`);
-    const wethContract = getTokenContract(client, CONTRACTS.WETH);
+    // First, approve WMATIC token to be spent by Aave pool
+    console.log(`🔄 REPAY: Approving WMATIC for Aave pool...`);
+    const wmaticContract = getTokenContract(client, CONTRACTS.WMATIC);
     
     const approvalTx = await prepareContractCall({
-      contract: wethContract,
+      contract: wmaticContract,
       method: "approve",
-      params: [CONTRACTS.AAVE_POOL, safeToWei(ethAmount)],
+      params: [CONTRACTS.AAVE_POOL, safeToWei(maticAmount)],
       gas: 100000n,
     });
 
@@ -344,7 +344,7 @@ export const repayETH = async (account, ethAmount) => {
     const approvalResult = await sendTransaction({ transaction: approvalTx, account });
     console.log(`✅ REPAY: Approval transaction result:`, approvalResult);
     
-    await checkTxSuccess(client, approvalResult, "WETH Approval");
+    await checkTxSuccess(client, approvalResult, "WMATIC Approval");
 
     // Now repay the debt
     const poolContract = getPoolContract(client);
@@ -353,7 +353,7 @@ export const repayETH = async (account, ethAmount) => {
     const repayTx = await prepareContractCall({
       contract: poolContract,
       method: "repay",
-      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
+      params: [CONTRACTS.WMATIC, safeToWei(maticAmount), 2, account.address],
       gas: 200000n, // Increased gas limit
     });
 
@@ -365,7 +365,7 @@ export const repayETH = async (account, ethAmount) => {
 
     const response = {
       success: true,
-      message: `Repaid ${ethAmount} ETH successfully`,
+      message: `Repaid ${maticAmount} MATIC successfully`,
       txHash: result.transactionHash,
     };
     console.log(`✅ REPAY: Final response:`, response);
