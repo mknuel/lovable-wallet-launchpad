@@ -2,8 +2,8 @@ import { getContract, readContract } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 import { client } from "../components/thirdweb/thirdwebClient";
 
-// Your ERC20 contract address - replace with your deployed contract address
-const ERC20_CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+// EURX Stablecoin contract address
+const ERC20_CONTRACT_ADDRESS = "0x520c59c9CbD971431347f26B1Fe3657a73736110";
 
 // ERC20 ABI - minimal ABI for balance checking
 const ERC20_ABI = [

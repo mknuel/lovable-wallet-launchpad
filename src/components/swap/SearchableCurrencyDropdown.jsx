@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { useGetBridgeTokens } from "../../hooks/useBridge";
+import { useCustomSwapTokens } from "../../hooks/useCustomSwapTokens";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
 import { useActiveAccount } from "thirdweb/react";
@@ -19,14 +19,19 @@ export const SearchableCurrencyDropdown = ({
 	const debouncedSearchTerm = useDebounce(search, 300); // 300ms debounce
 	const activeAccount = useActiveAccount();
 
-	const { tokens, isLoading, error } = useGetBridgeTokens({
-		limit: 20,
-		metadata: "true",
-		include_without_price: "true",
-		...(debouncedSearchTerm && {
-			name: debouncedSearchTerm,
-		}),
-	});
+	const { availableTokens, isLoading } = useCustomSwapTokens();
+	
+	// Filter tokens based on search
+	const tokens = availableTokens?.filter(token => {
+		if (!debouncedSearchTerm) return true;
+		const searchLower = debouncedSearchTerm.toLowerCase();
+		return (
+			token.symbol?.toLowerCase().includes(searchLower) ||
+			token.name?.toLowerCase().includes(searchLower)
+		);
+	}) || [];
+	
+	const error = null;
 
 	useOutsideClick(dropdownRef, onClose);
 

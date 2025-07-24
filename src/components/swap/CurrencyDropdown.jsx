@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGetAccountTokens } from "../../hooks/useBridge";
+import { useCustomSwapTokens } from "../../hooks/useCustomSwapTokens";
 import { useActiveAccount } from "thirdweb/react";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 
@@ -9,8 +9,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 	useOutsideClick(dropdownRef, onClose);
 	const activeAccount = useActiveAccount();
 
-	const { tokens: userTokens, isLoading: isGettingTokens } =
-		useGetAccountTokens(activeAccount?.address);
+	const { ownedTokens: userTokens, isLoading: isGettingTokens } = useCustomSwapTokens();
 
 	const itemVariants = {
 		hidden: { opacity: 0, y: -5 },
