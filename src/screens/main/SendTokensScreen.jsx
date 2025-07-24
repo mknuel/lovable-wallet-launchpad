@@ -283,8 +283,15 @@ const SendTokensScreen = () => {
 						const gas = await estimateGasCost({
 							transaction: tx,
 						});
-						setGasEstimate(parseFloat(gas?.ether)?.toFixed(6) || "0.000000");
-						console.log("gas estimate", gas);
+						const gasInEther = parseFloat(gas?.ether) || 0;
+						
+						// Convert gas fee to USDT equivalent
+						// Use ETH price (approximately $3500) for now, but this could be fetched dynamically
+						const ethPriceUSD = 3500; // This could be fetched from an API
+						const gasInUSDT = (gasInEther * ethPriceUSD).toFixed(2);
+						
+						setGasEstimate(`$${gasInUSDT} USDT`);
+						console.log("gas estimate", gas, "USDT equivalent:", gasInUSDT);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
 						setGasEstimate(null);
@@ -431,7 +438,7 @@ const SendTokensScreen = () => {
 									</div>
 									<div className="justify-between flex w-full">
 										<span>Fees:</span>
-										<span>{gasEstimate} ETH</span>
+										<span>{gasEstimate || "--"}</span>
 									</div>
 								</div>
 							</div>

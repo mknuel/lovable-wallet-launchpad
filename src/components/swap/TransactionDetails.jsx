@@ -108,7 +108,14 @@ export const TransactionDetails = ({
 
 							<div className="flex gap-2 items-center">
 								<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-									{gasEstimate} ETH
+									{(() => {
+										if (!gasEstimate) return "--";
+										// Convert gas estimate to USDT
+										const gasInEther = parseFloat(gasEstimate) || 0;
+										const ethPriceUSD = 3500;
+										const gasInUSDT = (gasInEther * ethPriceUSD).toFixed(2);
+										return `$${gasInUSDT} USDT`;
+									})()}
 								</span>
 								<img src={SwapIcon} />
 							</div>
@@ -132,8 +139,14 @@ export const TransactionDetails = ({
 							Total fee
 						</span>
 						<span className="text-gray-900 text-sm font-['Sansation'] font-semibold">
-							{/* Calculate total fees: bridge fee + network/gas fee */}
-							{gasEstimate} ETH
+							{(() => {
+								if (!gasEstimate) return "--";
+								// Convert gas estimate to USDT
+								const gasInEther = parseFloat(gasEstimate) || 0;
+								const ethPriceUSD = 3500;
+								const gasInUSDT = (gasInEther * ethPriceUSD).toFixed(2);
+								return `$${gasInUSDT} USDT`;
+							})()}
 						</span>
 					</div>
 
