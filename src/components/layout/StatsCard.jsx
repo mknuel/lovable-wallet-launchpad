@@ -2,6 +2,11 @@
 import React from 'react';
 
 export const StatsCard = ({ stats, className }) => {
+  // Add safety check for stats array
+  if (!stats || !Array.isArray(stats)) {
+    return null;
+  }
+
   return (
 		<section
 			className={`relative w-full max-w-full mx-auto text-white stats-box ${

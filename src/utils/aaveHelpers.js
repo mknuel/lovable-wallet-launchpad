@@ -405,14 +405,16 @@ export const getUserAccountData = async (userAddress) => {
 
     console.log(`📊 GET_ACCOUNT_DATA: Raw contract response:`, data);
 
-    // Handle tuple/array response format
+    // Handle tuple/array response format - Fix decimal conversion
     const accountData = {
       totalCollateralETH: Number(data[0]) / 1e18,
       totalDebtETH: Number(data[1]) / 1e18,
       availableBorrowsETH: Number(data[2]) / 1e18,
-      currentLiquidationThreshold: Number(data[3]),
-      ltv: Number(data[4]),
-      healthFactor: Number(data[5]) / 1e18,
+      currentLiquidationThreshold: Number(data[3]) / 100, // Convert basis points to percentage
+      ltv: Number(data[4]) / 100, // Convert basis points to percentage  
+      healthFactor: data[5] === "115792089237316195423570985008687907853269984665640564039457584007913129639935" 
+        ? Infinity 
+        : Number(data[5]) / 1e18,
     };
 
     console.log(`📊 GET_ACCOUNT_DATA: Processed account data:`, accountData);
