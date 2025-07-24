@@ -5,7 +5,7 @@ import MainHeader from '../../components/layout/MainHeader';
 import { StatsCard } from '../../components/layout/StatsCard';
 import { ActionGrid } from '../../components/layout/ActionGrid';
 import Navigation from '../../components/layout/Navigation';
-import { AaveConfirmationModal } from '../../components/modals/AaveConfirmationModal';
+import BlockLoanModal from '../../components/modals/BlockLoanModal';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
 import {
@@ -13,7 +13,16 @@ import {
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplySepoliaETH, borrowETH, repayETH, getUserAccountData, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
+import { 
+  depositMatic, 
+  createLoanApplication, 
+  repayLoan, 
+  getUserBalance, 
+  getNumApplications, 
+  getNumLoans, 
+  createBorrower,
+  isBorrower 
+} from '../../utils/blockLoanHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
@@ -34,31 +43,44 @@ const BlockLoansScreen = () => {
   const [isTransactionLoading, setIsTransactionLoading] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' });
   const [selectedAction, setSelectedAction] = useState('deposit');
-  const [maxBorrowAmount, setMaxBorrowAmount] = useState(0);
-  const [accountData, setAccountData] = useState(null);
+  const [blockLoanData, setBlockLoanData] = useState({
+    userBalance: 0,
+    numApplications: 0,
+    numLoans: 0
+  });
 
-  // Load account data when wallet connects
+  // Load BlockLoan data when wallet connects
   useEffect(() => {
-    const loadAccountData = async () => {
+    const loadBlockLoanData = async () => {
       if (activeWallet) {
         try {
           const account = activeWallet.getAccount();
-          console.log('Loading account data for:', account?.address);
-          const data = await getUserAccountData(account?.address);
-          console.log('Account data loaded:', data);
-          setAccountData(data);
-          setMaxBorrowAmount(data.availableBorrowsETH);
+          console.log('Loading BlockLoan data for:', account?.address);
+          
+          const [userBalance, numApplications, numLoans] = await Promise.all([
+            getUserBalance(account?.address),
+            getNumApplications(),
+            getNumLoans()
+          ]);
+          
+          setBlockLoanData({
+            userBalance,
+            numApplications,
+            numLoans
+          });
+          
+          console.log('BlockLoan data loaded:', { userBalance, numApplications, numLoans });
         } catch (error) {
-          console.error('Error loading account data:', error);
-          showNotification(`Error loading account data: ${error.message}`, 'error');
+          console.error('Error loading BlockLoan data:', error);
+          showNotification(`Error loading BlockLoan data: ${error.message}`, 'error');
         }
       }
     };
     
-    loadAccountData();
+    loadBlockLoanData();
   }, [activeWallet]);
 
-  // Use the same stats calculation as MainMenu but include real Aave data
+  // Use BlockLoan data for stats
   const statsData = useMemo(() => {
     const baseStats = walletData?.data
       ? [
@@ -69,21 +91,21 @@ const BlockLoansScreen = () => {
           },
           {
             id: "crypto", 
-            value: walletData.data.balance || "0",
+            value: Math.round(blockLoanData.userBalance * 2000).toString(), // Convert MATIC to USD
             label: t("wallet.crypto"),
           }
         ]
       : [
           { id: "tokens", value: "0", label: t("wallet.tokens") },
-          { id: "crypto", value: "0", label: t("wallet.crypto") }
+          { id: "crypto", value: Math.round(blockLoanData.userBalance * 2000).toString(), label: t("wallet.crypto") }
         ];
 
-    // Add real Aave loan data without units (integer format)
-    const loansValue = accountData ? Math.round(accountData.totalDebtETH * 1.2).toString() : "0";
+    // Add BlockLoan data
+    const loansValue = blockLoanData.numLoans.toString();
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
-  }, [walletData, accountData, t]);
+  }, [walletData, blockLoanData, t]);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -95,7 +117,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'deposit',
-      title: 'Supply ETH to Aave'
+      title: 'Deposit MATIC'
     });
   };
 
@@ -104,13 +126,13 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'borrow',
-      title: 'Borrow WETH from Aave'
+      title: 'Apply for Loan'
     });
   };
 
   const handleStakeClick = () => {
     setSelectedAction('stake');
-    showNotification('Staking functionality is coming soon! This feature will allow you to stake AAVE tokens for rewards.', 'info');
+    showNotification('Staking allows you to grant loans to borrowers and earn interest!', 'info');
   };
 
   const handleRepayClick = () => {
@@ -118,7 +140,7 @@ const BlockLoansScreen = () => {
     setModalConfig({
       isOpen: true,
       type: 'repay',
-      title: 'Repay WETH to Aave'
+      title: 'Repay Loan'
     });
   };
 
@@ -126,7 +148,7 @@ const BlockLoansScreen = () => {
     setModalConfig({ isOpen: false, type: '', title: '' });
   };
 
-  const handleConfirmAction = async (amount) => {
+  const handleConfirmAction = async (...args) => {
     if (!activeWallet) {
       return Promise.reject(new Error('Please connect your wallet first'));
     }
@@ -139,23 +161,41 @@ const BlockLoansScreen = () => {
 
       switch (modalConfig.type) {
         case 'deposit':
-          result = await supplySepoliaETH(account, amount);
+          const [amount] = args;
+          result = await depositMatic(account, amount);
           break;
         case 'borrow':
-          result = await borrowETH(account, amount);
+          const [loanAmount, duration, interestRate] = args;
+          result = await createLoanApplication(account, duration, interestRate, loanAmount);
           break;
         case 'repay':
-          result = await repayETH(account, amount);
+          const [repayAmount] = args;
+          // For now, use simple repayment - in real app you'd calculate interest and time
+          result = await repayLoan(account, repayAmount, repayAmount * 1.05, 30);
+          break;
+        case 'register':
+          const [borrowerName] = args;
+          result = await createBorrower(account, borrowerName);
           break;
         default:
           throw new Error('Unknown action type');
       }
 
       if (result.success) {
-        // Reload account data after successful transaction
-        const newData = await getUserAccountData(account?.address);
-        setAccountData(newData);
-        setMaxBorrowAmount(newData.availableBorrowsETH);
+        // Reload BlockLoan data after successful transaction
+        const [userBalance, numApplications, numLoans] = await Promise.all([
+          getUserBalance(account?.address),
+          getNumApplications(),
+          getNumLoans()
+        ]);
+        
+        setBlockLoanData({
+          userBalance,
+          numApplications,
+          numLoans
+        });
+        
+        showNotification(result.message, 'success');
         return Promise.resolve(result.message);
       } else {
         return Promise.reject(new Error(result.message));
@@ -166,9 +206,10 @@ const BlockLoansScreen = () => {
       
       // Show helpful message for insufficient balance
       if (errorMessage.includes('Insufficient')) {
-        errorMessage += '\n\nMake sure you have enough ETH in your wallet for the transaction and gas fees.';
+        errorMessage += '\n\nMake sure you have enough MATIC in your wallet for the transaction and gas fees.';
       }
       
+      showNotification(errorMessage, 'error');
       return Promise.reject(new Error(errorMessage));
     } finally {
       setIsTransactionLoading(false);
@@ -231,16 +272,15 @@ const BlockLoansScreen = () => {
 				<Navigation nav="BlockLoans" />
 			</div>
 
-			{/* Aave Confirmation Modal */}
-			<AaveConfirmationModal
+			{/* BlockLoan Modal */}
+			<BlockLoanModal
 				isOpen={modalConfig.isOpen}
 				onClose={handleModalClose}
 				title={modalConfig.title}
 				actionType={modalConfig.type}
 				onConfirm={handleConfirmAction}
 				isLoading={isTransactionLoading}
-				maxBorrowAmount={maxBorrowAmount}
-				accountData={accountData}
+				userBalance={blockLoanData.userBalance}
 			/>
 		</div>
 	);
