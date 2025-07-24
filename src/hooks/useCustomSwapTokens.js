@@ -100,7 +100,7 @@ export const useCustomSwapTokens = () => {
     return sortedTokens;
   }, [userTokens, eurxToken]);
 
-  // Available tokens for "TO" selection (what you can swap to)
+  // Available tokens for "TO" selection (what you can swap to) - Only Polygon/Amoy + EURX
   const availableTokens = useMemo(() => {
     const tokens = [];
     
@@ -112,10 +112,15 @@ export const useCustomSwapTokens = () => {
       console.log('❌ EURX token not available:', { eurxInfo, eurxError, activeAccount: !!activeAccount });
     }
     
-    // Add all bridge tokens
-    tokens.push(...allBridgeTokens);
+    // Filter bridge tokens to only include Polygon mainnet (137) and Amoy (80002)
+    const polygonTokens = allBridgeTokens.filter(token => {
+      const chainId = token.chainId || token.chain_id;
+      return chainId === 137 || chainId === 80002; // Polygon mainnet and Amoy
+    });
     
-    console.log('🔍 Final availableTokens for TO dropdown:', tokens);
+    tokens.push(...polygonTokens);
+    
+    console.log('🔍 Final availableTokens for TO dropdown (Polygon/Amoy only):', tokens);
     return tokens;
   }, [eurxToken, allBridgeTokens]);
 
