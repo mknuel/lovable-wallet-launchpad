@@ -8,7 +8,7 @@ const client = createThirdwebClient({
 });
 
 // Contract address on Amoy testnet
-export const BLOCKLOAN_CONTRACT_ADDRESS = "0xc960417B0362d73235230984910fd3e0F6dEaF49";
+export const BLOCKLOAN_CONTRACT_ADDRESS = "0x0B20c9D8cF7B088450bB83272eA2dcfd5e29aC33";
 
 // Contract ABI (essential functions only)
 const BLOCKLOAN_ABI = [
