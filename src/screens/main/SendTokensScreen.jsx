@@ -161,7 +161,7 @@ const SendTokensScreen = () => {
 							avatar: "",
 							walletAddress:
 								user?.walletAddress ||
-								"0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+								"0x572B727f98018Cc5632d3C443692A2c775612674",
 						};
 					});
 			}
@@ -262,7 +262,7 @@ const SendTokensScreen = () => {
 						tx = prepareTransaction({
 							client,
 							chain,
-							to: selectedUser.walletAddress || "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							to: selectedUser.walletAddress || "0x572B727f98018Cc5632d3C443692A2c775612674",
 							value: toWei(amount),
 						});
 					} else {
@@ -277,7 +277,7 @@ const SendTokensScreen = () => {
 
 						tx = transfer({
 							contract,
-							to: selectedUser.walletAddress || "0x538b7442ec68E1fcDA65818104d4b46ccB74CDEF",
+							to: selectedUser.walletAddress || "0x572B727f98018Cc5632d3C443692A2c775612674",
 							amount: amount,
 						});
 					}
