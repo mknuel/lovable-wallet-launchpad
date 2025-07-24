@@ -1,4 +1,4 @@
-import { getContract, readContract, sendTransaction } from "thirdweb";
+import { getContract, readContract, sendTransaction, prepareContractCall } from "thirdweb";
 import { polygonAmoy } from "thirdweb/chains";
 import { client } from "../components/thirdweb/thirdwebClient";
 
@@ -194,13 +194,15 @@ export const mintTokens = async (toAddress, amount, account) => {
     
     console.log(`💰 Minting amount in wei: ${amountWei.toString()}`);
     
-    // Send the mint transaction using thirdweb's sendTransaction
+    // Prepare and send the mint transaction using thirdweb v5
+    const transaction = prepareContractCall({
+      contract,
+      method: "mint",
+      params: [toAddress, amountWei]
+    });
+    
     const result = await sendTransaction({
-      transaction: {
-        to: ERC20_CONTRACT_ADDRESS,
-        data: contract.abi.find(f => f.name === 'mint'), 
-        args: [toAddress, amountWei]
-      },
+      transaction,
       account
     });
     
