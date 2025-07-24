@@ -9,6 +9,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading } from '../../store/reducers/walletSlice';
 import { PATH_WALLET, PATH_SEND_TOKENS, PATH_SWAP_CURRENCY, PATH_BLOCKLOANS } from "../../context/paths";
+import { useERC20Token } from "../../hooks/useERC20";
 
 const WalletActionsScreen = () => {
   const { t } = useTranslation();
@@ -18,6 +19,9 @@ const WalletActionsScreen = () => {
   // Use optimized selectors
   const walletData = useSelector(selectWalletData);
   const walletLoading = useSelector(selectWalletLoading);
+  
+  // ERC20 token data
+  const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
   // Fetch wallet data on component mount - only if not already loading/loaded
   useEffect(() => {
@@ -28,26 +32,20 @@ const WalletActionsScreen = () => {
 
   // Memoize stats data to prevent unnecessary recalculations
   const statsData = useMemo(() => {
-    return walletData?.data
-      ? [
-          {
-            id: "tokens",
-            value: walletData.data.token || "0",
-            label: t("wallet.tokens") || "Tokens",
-          },
-          {
-            id: "crypto",
-            value: walletData.data.balance || "0",
-            label: t("wallet.crypto") || "Crypto",
-          },
-          { id: "loans", value: "0", label: t("wallet.loans") || "Loans" },
-        ]
-      : [
-          { id: "tokens", value: "0", label: t("wallet.tokens") || "Tokens" },
-          { id: "crypto", value: "0", label: t("wallet.crypto") || "Crypto" },
-          { id: "loans", value: "0", label: t("wallet.loans") || "Loans" },
-        ];
-  }, [walletData, t]);
+    return [
+      { 
+        id: "erc20", 
+        value: erc20Loading ? "..." : formattedBalance, 
+        label: tokenInfo?.symbol || "EURX" 
+      },
+      {
+        id: "crypto",
+        value: walletData?.data?.balance || "0",
+        label: t("wallet.crypto"),
+      },
+      { id: "loans", value: "0", label: t("wallet.loans") },
+    ];
+  }, [walletData, t, erc20Loading, formattedBalance, tokenInfo]);
 
   // Memoize menu items to prevent unnecessary re-renders
   const menuItems = useMemo(() => [

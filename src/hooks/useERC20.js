@@ -99,6 +99,6 @@ export const useERC20Token = () => {
     
     // Computed values
     hasBalance: parseFloat(balance) > 0,
-    formattedBalance: parseFloat(balance).toFixed(4)
+    formattedBalance: parseFloat(balance).toFixed(1)
   };
 };
