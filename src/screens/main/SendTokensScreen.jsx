@@ -290,11 +290,43 @@ const SendTokensScreen = () => {
 						const gas = await estimateGasCost({
 							transaction: tx,
 						});
-						const gasInEther = parseFloat(gas?.ether) || 0;
 						
-						// Display gas fee in POL (native token)
-						setGasEstimate(`${gasInEther.toFixed(6)} POL`);
-						console.log("gas estimate", gas);
+						console.log("Raw gas estimate:", gas);
+						
+						// Extract the native token amount from the gas estimate
+						const gasInNative = parseFloat(gas?.ether) || 0;
+						
+						// Get the native token symbol based on chain ID
+						const getNativeTokenSymbol = (chainId) => {
+							switch (chainId) {
+								case 1: // Ethereum Mainnet
+								case 11155111: // Sepolia
+									return "ETH";
+								case 137: // Polygon
+									return "MATIC";
+								case 80002: // Polygon Amoy
+									return "POL";
+								case 56: // BSC
+									return "BNB";
+								case 43114: // Avalanche
+									return "AVAX";
+								case 250: // Fantom
+									return "FTM";
+								case 42161: // Arbitrum
+									return "ETH";
+								case 10: // Optimism
+									return "ETH";
+								default:
+									return "ETH"; // Default fallback
+							}
+						};
+
+						const nativeSymbol = getNativeTokenSymbol(fromCurrency.chain_id);
+						
+						// Format to 4 decimal places with native token symbol
+						setGasEstimate(`${gasInNative.toFixed(4)} ${nativeSymbol}`);
+						
+						console.log("Formatted gas estimate:", `${gasInNative.toFixed(4)} ${nativeSymbol}`);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
 						setGasEstimate(null);
@@ -307,6 +339,7 @@ const SendTokensScreen = () => {
 				}
 			} else {
 				setPreparedTx(null);
+				setGasEstimate(null);
 			}
 		};
 
