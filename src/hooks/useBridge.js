@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import bridge from "../components/thirdweb/thirdwebBridge"; // Adjust path to your axios instance
 import axios from "axios";
 import qs from "qs";

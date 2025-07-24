@@ -30,7 +30,7 @@ import {
 	estimateGas,
 	estimateGasCost,
 } from "thirdweb";
-import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
+import { useSimpleBridgeTokens, useSimpleAccountTokens } from "../../hooks/useSimpleBridge";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { balanceOf } from "thirdweb/extensions/erc20";
 import CommonButton from "../../components/Buttons/CommonButton";
@@ -61,13 +61,13 @@ const SwapCurrencyScreen = () => {
 	const [ownedTokens, setOwnedTokens] = useState([]);
 	// State for ALL tokens available to swap TO
 	const [swappableTokens, setSwappableTokens] = useState([]);
-	// Hook calls must be at the top level - before any early returns or conditional logic
-	const { tokens, isLoading: isGetting } = useGetBridgeTokens({
+	// Use simplified bridge hooks to avoid React instance conflicts
+	const { tokens, isLoading: isGetting } = useSimpleBridgeTokens({
 		limit: 10,
 	});
 
 	const { tokens: userTokens, isLoading: isGettingTOkens } =
-		useGetAccountTokens(activeAccount?.address);
+		useSimpleAccountTokens(activeAccount?.address);
 
 	const { mutate: sendTransaction } = useSendTransaction();
 	const { mutate: sendAndConfirmTx } = useSendAndConfirmTransaction();
