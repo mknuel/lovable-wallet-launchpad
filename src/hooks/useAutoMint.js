@@ -1,12 +1,15 @@
-import { useCallback } from 'react';
-import { useActiveAccount } from 'thirdweb/react';
+import { useCallback, useState } from 'react';
+// Temporarily disable thirdweb hooks to fix React instance issue
+// import { useActiveAccount } from 'thirdweb/react';
 import { mintTokens, hasTokenBalance } from '../utils/erc20Helpers';
 
 /**
  * Hook for automatic token minting on login
  */
 export const useAutoMint = () => {
-  const account = useActiveAccount();
+  // Temporarily disable thirdweb hook to fix React instance issue
+  // const account = useActiveAccount();
+  const [account, setAccount] = useState(null);
 
   /**
    * Mint tokens to user on login if they don't have any
@@ -76,6 +79,7 @@ export const useAutoMint = () => {
   return {
     mintOnLogin,
     forceMint,
+    setAccount, // Allow manual account setting
     isWalletConnected: !!account?.address,
     walletAddress: account?.address
   };
