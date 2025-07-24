@@ -1,5 +1,5 @@
 import { getContract, readContract } from "thirdweb";
-import { sepolia } from "thirdweb/chains";
+import { polygonAmoy } from "thirdweb/chains";
 import { client } from "../components/thirdweb/thirdwebClient";
 
 // EURX Stablecoin contract address
@@ -54,7 +54,7 @@ export const getERC20Contract = () => {
   
   return getContract({
     client,
-    chain: sepolia,
+    chain: polygonAmoy,
     address: ERC20_CONTRACT_ADDRESS,
     abi: ERC20_ABI
   });

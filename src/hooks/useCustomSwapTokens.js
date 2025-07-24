@@ -37,8 +37,8 @@ export const useCustomSwapTokens = () => {
     return {
       address: '0x520c59c9CbD971431347f26B1Fe3657a73736110',
       token_address: '0x520c59c9CbD971431347f26B1Fe3657a73736110',
-      chainId: 11155111, // Sepolia
-      chain_id: 11155111,
+      chainId: 80002, // Polygon Amoy
+      chain_id: 80002,
       symbol: 'EURXr',
       name: 'EURXr Stable Coin',
       decimals: 18,
