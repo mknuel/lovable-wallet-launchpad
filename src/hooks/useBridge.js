@@ -3,7 +3,7 @@ import bridge from "../components/thirdweb/thirdwebBridge"; // Adjust path to yo
 import axios from "axios";
 import qs from "qs";
 
-const CHAIN_IDS = [80002, 11155111, 137, 1];
+const CHAIN_IDS = [137, 80002]; // Polygon mainnet and Amoy only
 export const useGetBridgeTokens = (params = {}) => {
 	const [tokens, setTokens] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +78,7 @@ export const useGetAccountTokens = (ownerAddress) => {
 				// https://insight.thirdweb.com/v1/tokens?chain_id=1&chain_id=137&chain_id=11155111&limit=50&metadata=false&resolve_metadata_links=true&include_spam=false&owner_address=0xffe11A9c158811FC86fAEdEAA63cD92404B62feD&include_native=true&clientId=YOUR_THIRDWEB_CLIENT_ID
 				if (!ownerAddress) throw new Error("No address");
 				const response = await bridge.get(
-					`https://insight.thirdweb.com/v1/tokens?owner_address=${ownerAddress}&chain_id=${CHAIN_IDS[0]}&chain_id=${CHAIN_IDS[1]}&chain_id=${CHAIN_IDS[3]}`,
+					`https://insight.thirdweb.com/v1/tokens?owner_address=${ownerAddress}&chain_id=${CHAIN_IDS[0]}&chain_id=${CHAIN_IDS[1]}`,
 					{
 						params: {
 							metadata: true,

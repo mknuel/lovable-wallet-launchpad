@@ -11,7 +11,7 @@ import "./assets/fonts/fonts.css";
 import { ThirdwebProvider } from "thirdweb/react";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { client } from "./components/thirdweb/thirdwebClient.js";
-import { ethereum, sepolia } from "thirdweb/chains";
+import { polygon, polygonAmoy } from "thirdweb/chains";
 createRoot(document.getElementById("root")).render(
 	<Provider store={store}>
 		<LanguageProvider>
