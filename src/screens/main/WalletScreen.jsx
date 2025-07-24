@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError } from '../../store/reducers/walletSlice';
 import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
+import { useERC20Token } from "../../hooks/useERC20";
 
 const WalletScreen = () => {
 	const { t } = useTranslation();
@@ -19,6 +20,9 @@ const WalletScreen = () => {
 	const walletData = useSelector(selectWalletData);
 	const walletLoading = useSelector(selectWalletLoading);
 	const walletError = useSelector(selectWalletError);
+	
+	// ERC20 token data
+	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
 	// Fetch wallet data on component mount - only if not already loading/loaded
 	useEffect(() => {
@@ -30,22 +34,20 @@ const WalletScreen = () => {
 
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
-		return walletData?.data
-			? [
-					{ id: "tokens", value: walletData.data.token || "0", label: t("wallet.tokens") },
-					{
-						id: "crypto",
-						value: walletData.data.balance || "0",
-						label: t("wallet.crypto"),
-					},
-					{ id: "loans", value: "0", label: t("wallet.loans") },
-			  ]
-			: [
-					{ id: "tokens", value: "234", label: t("wallet.tokens") },
-					{ id: "crypto", value: "190", label: t("wallet.crypto") },
-					{ id: "loans", value: "715", label: t("wallet.loans") },
-			  ];
-	}, [walletData, t]);
+		return [
+			{ 
+				id: "erc20", 
+				value: erc20Loading ? "..." : formattedBalance, 
+				label: tokenInfo?.symbol || "HASC Tokens" 
+			},
+			{
+				id: "crypto",
+				value: walletData?.data?.balance || "0",
+				label: t("wallet.crypto"),
+			},
+			{ id: "loans", value: "0", label: t("wallet.loans") },
+		];
+	}, [walletData, t, erc20Loading, formattedBalance, tokenInfo]);
 
 	// Memoize wallet-specific menu items
 	const menuItems = useMemo(() => [
