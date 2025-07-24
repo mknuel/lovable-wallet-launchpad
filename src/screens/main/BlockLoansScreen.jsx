@@ -170,18 +170,34 @@ const BlockLoansScreen = () => {
           const [loanAmount] = args;
           
           // Check if user is registered as borrower first
+          console.log('Checking if user is registered as borrower...');
           const isBorrowerRegistered = await isBorrower(account.address);
+          console.log('Is borrower registered:', isBorrowerRegistered);
+          
           if (!isBorrowerRegistered) {
             // Auto-register the user as a borrower
             console.log('User not registered as borrower, registering automatically...');
             const userName = user.firstName || user.userName || user.name || 'Unknown User';
+            console.log('Registering user with name:', userName);
+            
             const registerResult = await createBorrower(account, userName);
+            console.log('Registration result:', registerResult);
             
             if (!registerResult.success) {
               throw new Error(`Failed to register as borrower: ${registerResult.message}`);
             }
             
             console.log('User successfully registered as borrower');
+            
+            // Double-check registration after creating borrower
+            const isNowRegistered = await isBorrower(account.address);
+            console.log('Is user now registered after registration:', isNowRegistered);
+            
+            if (!isNowRegistered) {
+              throw new Error('Registration appeared successful but user is still not registered. Please try again.');
+            }
+          } else {
+            console.log('User is already registered as borrower');
           }
           
           // Use default values for duration (30 days) and interest rate (5%)

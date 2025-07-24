@@ -234,6 +234,14 @@ export const createLoanApplication = async (account, duration, interestRate, cre
       account: account.address
     });
     
+    // Double-check user is registered before creating application
+    const isRegistered = await isBorrower(account.address);
+    console.log('Final check - is user registered as borrower before loan application:', isRegistered);
+    
+    if (!isRegistered) {
+      throw new Error('User is not registered as borrower. Registration may have failed.');
+    }
+    
     const amountWei = usdToWei(creditAmount.toString());
     console.log('Amount in Wei:', amountWei.toString());
     
