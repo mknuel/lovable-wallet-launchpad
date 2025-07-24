@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../store/reducers/userSlice";
 import { useTranslation } from "../../hooks/useTranslation";
 import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import api from "../../utils/api";
@@ -67,6 +69,7 @@ function formatGasFee(gasEstimate, fromCurrency) {
 const SendTokensScreen = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const currentUser = useSelector(selectUser);
 	const [users, setUsers] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [amount, setAmount] = useState("");
@@ -124,7 +127,11 @@ const SendTokensScreen = () => {
 				activeUsers = response.data
 					.filter((user) => {
 						const status = user.status || user.userBasicDetails?.status;
-						return status === "active";
+						// Exclude current logged-in user
+						const isCurrentUser = user._id === currentUser.id || 
+											   user._id === currentUser.userId ||
+											   user.email === currentUser.email;
+						return status === "active" && !isCurrentUser;
 					})
 					.map((user) => {
 						const userName = user.userName || "";
