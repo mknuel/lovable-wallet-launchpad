@@ -358,9 +358,12 @@ const SendTokensScreen = () => {
 											onClick={() => handleUserSelect(user)}
 											className="w-full flex items-center py-2 px-1 bg-white hover:bg-gray-50 transition-colors text-left border-b border-gray-100">
 											<img
-												src={user.avatar}
+												src={user.avatar || "/default-avatar.png"}
 												alt={user.name}
 												className="w-12 h-12 rounded-full object-cover mr-4"
+												onError={(e) => {
+													e.currentTarget.src = "/default-avatar.png";
+												}}
 											/>
 											<div className="flex-1">
 												<h3 className="text-lg capitalize font-semibold text-gray-900">
@@ -429,9 +432,12 @@ const SendTokensScreen = () => {
 							<div className="text-gray-400">Send To:</div>
 							<div className="flex items-center">
 								<img
-									src={selectedUser.avatar}
+									src={selectedUser.avatar || "/default-avatar.png"}
 									alt={selectedUser.name}
 									className="w-12 h-12 rounded-full object-cover mr-4"
+									onError={(e) => {
+										e.currentTarget.src = "/default-avatar.png";
+									}}
 								/>
 								<div>
 									<h3 className="text-lg font-semibold text-gray-900">
