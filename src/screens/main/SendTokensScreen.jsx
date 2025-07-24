@@ -294,7 +294,7 @@ const SendTokensScreen = () => {
 						
 						// Display gas fee in POL (native token)
 						setGasEstimate(`${gasInEther.toFixed(6)} POL`);
-						console.log("gas estimate", gas, "USDT equivalent:", gasInUSDT);
+						console.log("gas estimate", gas);
 					} catch (gasError) {
 						console.warn("Could not estimate gas:", gasError);
 						setGasEstimate(null);
