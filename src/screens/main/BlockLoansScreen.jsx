@@ -169,42 +169,40 @@ const BlockLoansScreen = () => {
         case 'borrow':
           const [loanAmount] = args;
           
-          // Check if user is registered as borrower first
-          console.log('Checking if user is registered as borrower...');
-          const isBorrowerRegistered = await isBorrower(account.address);
-          console.log('Is borrower registered:', isBorrowerRegistered);
+          console.log('=== STARTING BORROW PROCESS ===');
           
-          if (!isBorrowerRegistered) {
-            // Auto-register the user as a borrower
-            console.log('User not registered as borrower, registering automatically...');
-            const userName = user.firstName || user.userName || user.name || 'Unknown User';
-            console.log('Registering user with name:', userName);
-            
-            const registerResult = await createBorrower(account, userName);
-            console.log('Registration result:', registerResult);
-            
-            if (!registerResult.success) {
-              throw new Error(`Failed to register as borrower: ${registerResult.message}`);
-            }
-            
-            console.log('User successfully registered as borrower');
-            
-            // Double-check registration after creating borrower
-            const isNowRegistered = await isBorrower(account.address);
-            console.log('Is user now registered after registration:', isNowRegistered);
-            
-            if (!isNowRegistered) {
-              throw new Error('Registration appeared successful but user is still not registered. Please try again.');
-            }
+          // Step 1: Register user as borrower FIRST (always attempt registration)
+          console.log('Step 1: Registering user as borrower...');
+          const userName = user.firstName || user.userName || user.name || `User_${account.address.slice(-6)}`;
+          console.log('Using name for registration:', userName);
+          
+          const registerResult = await createBorrower(account, userName);
+          console.log('Registration attempt result:', registerResult);
+          
+          // Wait a moment for the blockchain transaction to be processed
+          if (registerResult.success || registerResult.message.includes('already')) {
+            console.log('Registration successful or user already exists, waiting 2 seconds...');
+            await new Promise(resolve => setTimeout(resolve, 2000));
           } else {
-            console.log('User is already registered as borrower');
+            console.log('Registration failed, but continuing to check status...');
           }
           
-          // Use default values for duration (30 days) and interest rate (5%)
+          // Step 2: Verify registration status
+          console.log('Step 2: Verifying borrower registration...');
+          const isBorrowerRegistered = await isBorrower(account.address);
+          console.log('Is borrower registered after registration attempt:', isBorrowerRegistered);
+          
+          if (!isBorrowerRegistered) {
+            throw new Error('Failed to register as borrower. Please wait a moment and try again, or contact support.');
+          }
+          
+          // Step 3: Create loan application
+          console.log('Step 3: Creating loan application...');
           const duration = 30;
           const interestRate = 5;
           console.log('Creating loan application with:', { loanAmount, duration, interestRate });
           result = await createLoanApplication(account, duration, interestRate, loanAmount);
+          console.log('=== BORROW PROCESS COMPLETED ===');
           break;
         case 'repay':
           const [repayAmount] = args;
