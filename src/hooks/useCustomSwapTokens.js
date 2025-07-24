@@ -29,26 +29,25 @@ export const useCustomSwapTokens = () => {
     console.log('- EURX error:', eurxError);
   }, [bridgeTokens, userTokens, eurxBalance, eurxInfo, eurxError]);
 
-  // Create EURX token object (only if we have valid token info and no errors)
+  // Create EURX token object using contract data
   const eurxToken = useMemo(() => {
-    if (!activeAccount) return null;
+    if (!activeAccount || !eurxInfo) return null;
     
-    // Create a mock EURXr token for now since contract may not be deployed
     return {
-      address: '0x520c59c9CbD971431347f26B1Fe3657a73736110',
-      token_address: '0x520c59c9CbD971431347f26B1Fe3657a73736110',
+      address: eurxInfo.address,
+      token_address: eurxInfo.address,
       chainId: 80002, // Polygon Amoy
       chain_id: 80002,
-      symbol: 'EURXr',
-      name: 'EURXr Stable Coin',
-      decimals: 18,
+      symbol: eurxInfo.symbol,
+      name: eurxInfo.name,
+      decimals: eurxInfo.decimals,
       balance: eurxError ? 0 : parseFloat(eurxBalance || '0'),
       iconUri: null, // You can add a logo URL here
       priceUsd: '1.00', // Assuming it's a stablecoin pegged to 1 USD
       price_data: { price_usd: '1.00' },
       value: eurxError ? '0.00' : (parseFloat(eurxBalance || '0') * 1.0).toFixed(2)
     };
-  }, [eurxBalance, activeAccount, eurxError]);
+  }, [eurxBalance, eurxInfo, activeAccount, eurxError]);
 
   // Filter for only POL and USDT from bridge tokens
   const filteredBridgeTokens = useMemo(() => {
