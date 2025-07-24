@@ -227,7 +227,15 @@ export const createLoanApplication = async (account, duration, interestRate, cre
       throw new Error('Missing required parameters for loan application');
     }
     
+    console.log('Creating loan application with params:', {
+      duration,
+      interestRate,
+      creditAmount,
+      account: account.address
+    });
+    
     const amountWei = usdToWei(creditAmount.toString());
+    console.log('Amount in Wei:', amountWei.toString());
     
     const transaction = prepareContractCall({
       contract,
@@ -252,6 +260,15 @@ export const createLoanApplication = async (account, duration, interestRate, cre
     };
   } catch (error) {
     console.error('Error creating loan application:', error);
+    
+    // Provide more specific error messages
+    if (error.message.includes('execution reverted')) {
+      return {
+        success: false,
+        message: "Transaction rejected by contract. You may need to register as a borrower first or check minimum requirements."
+      };
+    }
+    
     return {
       success: false,
       message: error.message || "Failed to create loan application"
@@ -293,8 +310,21 @@ export const grantLoan = async (account, applicationId) => {
 export const repayLoan = async (account, amount, estimatedInterest, timeSinceLastPayment) => {
   try {
     const contract = getBlockLoanContract();
+    
+    console.log('Repaying loan with params:', {
+      amount,
+      estimatedInterest,
+      timeSinceLastPayment,
+      account: account.address
+    });
+    
     const amountWei = usdToWei(amount.toString());
     const interestWei = usdToWei(estimatedInterest.toString());
+    
+    console.log('Repay amounts in Wei:', {
+      amountWei: amountWei.toString(),
+      interestWei: interestWei.toString()
+    });
     
     const transaction = prepareContractCall({
       contract,
@@ -318,6 +348,15 @@ export const repayLoan = async (account, amount, estimatedInterest, timeSinceLas
     };
   } catch (error) {
     console.error('Error repaying loan:', error);
+    
+    // Provide more specific error messages
+    if (error.message.includes('execution reverted')) {
+      return {
+        success: false,
+        message: "Transaction rejected by contract. You may not have an active loan to repay or insufficient balance."
+      };
+    }
+    
     return {
       success: false,
       message: error.message || "Failed to repay loan"

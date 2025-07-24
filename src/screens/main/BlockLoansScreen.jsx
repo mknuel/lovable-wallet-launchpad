@@ -166,15 +166,31 @@ const BlockLoansScreen = () => {
           break;
         case 'borrow':
           const [loanAmount] = args;
+          
+          // Check if user is registered as borrower first
+          const isBorrowerRegistered = await isBorrower(account.address);
+          if (!isBorrowerRegistered) {
+            throw new Error('You must register as a borrower first. Please contact support.');
+          }
+          
           // Use default values for duration (30 days) and interest rate (5%)
           const duration = 30;
           const interestRate = 5;
+          console.log('Creating loan application with:', { loanAmount, duration, interestRate });
           result = await createLoanApplication(account, duration, interestRate, loanAmount);
           break;
         case 'repay':
           const [repayAmount] = args;
+          console.log('Attempting to repay loan with amount:', repayAmount);
+          
+          // Check if user has any loans to repay
+          const userBalance = await getUserBalance(account.address);
+          if (userBalance <= 0) {
+            throw new Error('No active loans found to repay.');
+          }
+          
           // For now, use simple repayment - in real app you'd calculate interest and time
-          result = await repayLoan(account, repayAmount, repayAmount * 1.05, 30);
+          result = await repayLoan(account, repayAmount, repayAmount * 0.05, 30);
           break;
         case 'register':
           const [borrowerName] = args;
