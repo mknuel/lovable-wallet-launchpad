@@ -61,6 +61,7 @@ const SwapCurrencyScreen = () => {
 	const [ownedTokens, setOwnedTokens] = useState([]);
 	// State for ALL tokens available to swap TO
 	const [swappableTokens, setSwappableTokens] = useState([]);
+	// Hook calls must be at the top level - before any early returns or conditional logic
 	const { tokens, isLoading: isGetting } = useGetBridgeTokens({
 		limit: 10,
 	});
@@ -70,7 +71,7 @@ const SwapCurrencyScreen = () => {
 
 	const { mutate: sendTransaction } = useSendTransaction();
 	const { mutate: sendAndConfirmTx } = useSendAndConfirmTransaction();
-	const [isLoading, setIsLoading] = useState(true);
+	
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
 	// Derive the active chain from the connected wallet or set a default
