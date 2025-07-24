@@ -1,4 +1,4 @@
-// aaveHelper.js – Sepolia ETH + Aave v3 + Thirdweb SDK (Polygon Amoy not available yet)
+// aaveHelper.js – Sepolia ETH + Aave v3 + Thirdweb SDK
 
 import {
   getContract,
@@ -10,7 +10,6 @@ import {
 import { sepolia } from "thirdweb/chains";
 
 // 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3
-// Note: Aave v3 is not yet deployed on Polygon Amoy testnet
 export const CONTRACTS = {
   AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
   WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D",
@@ -133,7 +132,7 @@ const safeToWei = (amount) => {
 const waitForTransaction = async (client, txHash) => {
   console.log(`⏳ Waiting for transaction confirmation: ${txHash}`);
   
-  // Use Sepolia RPC endpoint
+  // Use thirdweb's built-in method to wait for receipt
   const response = await fetch(`https://11155111.rpc.thirdweb.com/7038953a5d72063c56919f27ec00bbda`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
