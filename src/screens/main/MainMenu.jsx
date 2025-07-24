@@ -13,7 +13,6 @@ import {
 	selectWalletError,
 	invalidateWalletCache,
 } from "../../store/reducers/walletSlice";
-import { useERC20Token } from "../../hooks/useERC20";
 import CreatePinScreen from "./CreatePinScreen";
 import WalletScreen from "./WalletScreen";
 import { PATH_WALLET, PATH_BLOCKLOANS } from "../../context/paths";
@@ -29,9 +28,6 @@ const MainMenu = () => {
 	const walletData = useSelector(selectWalletData);
 	const walletLoading = useSelector(selectWalletLoading);
 	const walletError = useSelector(selectWalletError);
-	
-	// ERC20 token data
-	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
 	const navigate = useNavigate();
 
@@ -61,20 +57,26 @@ const MainMenu = () => {
 
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
-		return [
-			{ 
-				id: "erc20", 
-				value: erc20Loading ? "..." : formattedBalance, 
-				label: tokenInfo?.symbol || "EURX" 
-			},
-			{
-				id: "crypto",
-				value: walletData?.data?.balance || "0",
-				label: t("wallet.crypto"),
-			},
-			{ id: "loans", value: "0", label: t("wallet.loans") },
-		];
-	}, [walletData, t, erc20Loading, formattedBalance, tokenInfo]);
+		return walletData?.data
+			? [
+					{
+						id: "tokens",
+						value: walletData.data.token || "0",
+						label: t("wallet.tokens"),
+					},
+					{
+						id: "crypto",
+						value: walletData.data.balance || "0",
+						label: t("wallet.crypto"),
+					},
+					{ id: "loans", value: "0", label: t("wallet.loans") },
+			  ]
+			: [
+					{ id: "tokens", value: "0", label: t("wallet.tokens") },
+					{ id: "crypto", value: "0", label: t("wallet.crypto") },
+					{ id: "loans", value: "0", label: t("wallet.loans") },
+			  ];
+	}, [walletData, t]);
 
 	const handleWalletClick = () => {
 		 	if (!walletData?.data) return;

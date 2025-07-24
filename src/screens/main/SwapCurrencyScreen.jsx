@@ -30,7 +30,7 @@ import {
 	estimateGas,
 	estimateGasCost,
 } from "thirdweb";
-import { useSimpleBridgeTokens, useSimpleAccountTokens } from "../../hooks/useSimpleBridge";
+import { useGetAccountTokens, useGetBridgeTokens } from "../../hooks/useBridge";
 import { useTonWallet } from "@tonconnect/ui-react";
 import { balanceOf } from "thirdweb/extensions/erc20";
 import CommonButton from "../../components/Buttons/CommonButton";
@@ -61,17 +61,16 @@ const SwapCurrencyScreen = () => {
 	const [ownedTokens, setOwnedTokens] = useState([]);
 	// State for ALL tokens available to swap TO
 	const [swappableTokens, setSwappableTokens] = useState([]);
-	// Use simplified bridge hooks to avoid React instance conflicts
-	const { tokens, isLoading: isGetting } = useSimpleBridgeTokens({
+	const { tokens, isLoading: isGetting } = useGetBridgeTokens({
 		limit: 10,
 	});
 
 	const { tokens: userTokens, isLoading: isGettingTOkens } =
-		useSimpleAccountTokens(activeAccount?.address);
+		useGetAccountTokens(activeAccount?.address);
 
 	const { mutate: sendTransaction } = useSendTransaction();
 	const { mutate: sendAndConfirmTx } = useSendAndConfirmTransaction();
-	
+	const [isLoading, setIsLoading] = useState(true);
 	const activeWallet = useActiveWallet(); // <-- Get the active Wallet object here (useful for some wallet-specific methods)
 
 	// Derive the active chain from the connected wallet or set a default

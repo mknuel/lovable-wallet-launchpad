@@ -38,7 +38,7 @@ const WalletScreen = () => {
 			{ 
 				id: "erc20", 
 				value: erc20Loading ? "..." : formattedBalance, 
-				label: "Token" 
+				label: tokenInfo?.symbol || "HASC Tokens" 
 			},
 			{
 				id: "crypto",

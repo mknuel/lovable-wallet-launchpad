@@ -1,11 +1,11 @@
-import { getContract, readContract, sendTransaction, prepareContractCall } from "thirdweb";
+import { getContract, readContract } from "thirdweb";
 import { polygonAmoy } from "thirdweb/chains";
 import { client } from "../components/thirdweb/thirdwebClient";
 
 // EURX Stablecoin contract address
 const ERC20_CONTRACT_ADDRESS = "0x520c59c9CbD971431347f26B1Fe3657a73736110";
 
-// ERC20 ABI - includes mint function
+// ERC20 ABI - minimal ABI for balance checking
 const ERC20_ABI = [
   {
     "inputs": [{"name": "account", "type": "address"}],
@@ -40,16 +40,6 @@ const ERC20_ABI = [
     "name": "name",
     "outputs": [{"name": "", "type": "string"}],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"name": "to", "type": "address"},
-      {"name": "amount", "type": "uint256"}
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   }
 ];
@@ -162,59 +152,5 @@ export const hasTokenBalance = async (walletAddress) => {
   } catch (error) {
     console.error("❌ Error checking token balance:", error);
     return false;
-  }
-};
-
-/**
- * Mint EURX tokens to a specific address
- * @param {string} toAddress - The address to mint tokens to
- * @param {string} amount - The amount to mint (in human-readable format, e.g., "100" for 100 tokens)
- * @param {Object} account - The thirdweb account object for sending the transaction
- * @returns {Promise<string>} - Transaction hash
- */
-export const mintTokens = async (toAddress, amount, account) => {
-  try {
-    if (!toAddress || !amount || !account) {
-      throw new Error("Missing required parameters for minting");
-    }
-
-    console.log(`🪙 Minting ${amount} EURX tokens to ${toAddress}`);
-    
-    const contract = getERC20Contract();
-    
-    // Get decimals to format the amount correctly
-    const decimals = await readContract({
-      contract,
-      method: "decimals",
-      params: []
-    });
-
-    // Convert amount to wei (multiply by 10^decimals)
-    const amountWei = BigInt(parseFloat(amount) * Math.pow(10, Number(decimals)));
-    
-    console.log(`💰 Minting amount in wei: ${amountWei.toString()}`);
-    
-    // Prepare and send the mint transaction using thirdweb v5
-    const transaction = prepareContractCall({
-      contract,
-      method: "mint",
-      params: [toAddress, amountWei]
-    });
-    
-    const result = await sendTransaction({
-      transaction,
-      account
-    });
-    
-    console.log(`✅ Minting successful! Transaction hash: ${result.transactionHash}`);
-    
-    return result.transactionHash;
-    
-  } catch (error) {
-    console.error("❌ Error minting tokens:", error);
-    
-    // For now, simulate success since minting might require owner permissions
-    console.log("⚠️ Simulating mint success for demo purposes");
-    return "0x" + Math.random().toString(16).substr(2, 40); // Fake transaction hash
   }
 };

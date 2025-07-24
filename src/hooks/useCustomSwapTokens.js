@@ -4,15 +4,15 @@ import { useERC20Token } from './useERC20';
 import { useActiveAccount } from 'thirdweb/react';
 
 /**
- * Custom hook for swap tokens - now includes all owned tokens from Polygon mainnet and Amoy
+ * Custom hook for swap tokens - includes only EURX, POL, and USDT
  */
 export const useCustomSwapTokens = () => {
   const activeAccount = useActiveAccount();
   const { balance: eurxBalance, tokenInfo: eurxInfo, loading: eurxLoading, error: eurxError } = useERC20Token();
   
-  // Get all bridge tokens (no filtering)
+  // Get bridge tokens for filtering POL and USDT
   const { tokens: bridgeTokens, isLoading: bridgeLoading } = useGetBridgeTokens({
-    limit: 100, // Increased limit to show more tokens
+    limit: 50,
     metadata: true,
   });
 
@@ -49,58 +49,55 @@ export const useCustomSwapTokens = () => {
     };
   }, [eurxBalance, eurxInfo, activeAccount, eurxError]);
 
-  // Include all bridge tokens (no filtering)
-  const allBridgeTokens = useMemo(() => {
+  // Filter for only POL and USDT from bridge tokens
+  const filteredBridgeTokens = useMemo(() => {
     if (!bridgeTokens) return [];
     
-    console.log('🔍 All bridge tokens:', bridgeTokens);
-    return bridgeTokens;
+    const filtered = bridgeTokens.filter(token => {
+      const symbol = token.symbol?.toLowerCase();
+      return symbol === 'pol' || symbol === 'usdt' || symbol === 'matic';
+    });
+    
+    console.log('🔍 Filtered bridge tokens:', filtered);
+    return filtered;
   }, [bridgeTokens]);
 
-  // Include all user tokens + ensure EURX is available
-  const allUserTokens = useMemo(() => {
-    const tokens = [];
+  // Filter user tokens for POL, USDT, and EURX
+  const filteredUserTokens = useMemo(() => {
+    const filtered = [];
     
-    // Add ALL user tokens (no filtering)
+    // Add user tokens (POL, USDT, MATIC etc.)
     if (userTokens) {
-      // Filter out spam tokens or tokens with 0 balance if desired
-      const validTokens = userTokens.filter(token => {
-        // Keep tokens with positive balance or important tokens
-        return token.balance > 0 || 
-               token.symbol?.toLowerCase() === 'eurx' ||
-               token.token_address?.toLowerCase() === '0x520c59c9cbd971431347f26b1fe3657a73736110';
+      const userFiltered = userTokens.filter(token => {
+        const symbol = token.symbol?.toLowerCase();
+        const address = token.token_address?.toLowerCase();
+        
+        return (
+          symbol === 'pol' || 
+          symbol === 'usdt' || 
+          symbol === 'matic' ||
+          address === '0x520c59c9cbd971431347f26b1fe3657a73736110'
+        );
       });
-      tokens.push(...validTokens);
+      filtered.push(...userFiltered);
     }
 
     // Always add EURX token for display (even with 0 balance)
     if (eurxToken && eurxToken.address) {
-      const hasEurx = tokens.some(token => 
+      const hasEurx = filtered.some(token => 
         token.token_address?.toLowerCase() === eurxToken.address.toLowerCase()
       );
       
       if (!hasEurx) {
-        tokens.push(eurxToken);
+        filtered.push(eurxToken);
       }
     }
 
-    // Sort tokens by balance (highest first) and then by symbol
-    const sortedTokens = tokens.sort((a, b) => {
-      // First sort by balance (highest first)
-      const balanceA = a.balance || 0;
-      const balanceB = b.balance || 0;
-      if (balanceB !== balanceA) {
-        return balanceB - balanceA;
-      }
-      // Then sort alphabetically by symbol
-      return (a.symbol || '').localeCompare(b.symbol || '');
-    });
-
-    console.log('🔍 All user tokens (sorted):', sortedTokens);
-    return sortedTokens;
+    console.log('🔍 Filtered user tokens:', filtered);
+    return filtered;
   }, [userTokens, eurxToken]);
 
-  // Available tokens for "TO" selection (what you can swap to) - Only Polygon/Amoy + EURX
+  // Available tokens for "TO" selection (what you can swap to)
   const availableTokens = useMemo(() => {
     const tokens = [];
     
@@ -112,20 +109,15 @@ export const useCustomSwapTokens = () => {
       console.log('❌ EURX token not available:', { eurxInfo, eurxError, activeAccount: !!activeAccount });
     }
     
-    // Filter bridge tokens to only include Polygon mainnet (137) and Amoy (80002)
-    const polygonTokens = allBridgeTokens.filter(token => {
-      const chainId = token.chainId || token.chain_id;
-      return chainId === 137 || chainId === 80002; // Polygon mainnet and Amoy
-    });
+    // Add filtered bridge tokens
+    tokens.push(...filteredBridgeTokens);
     
-    tokens.push(...polygonTokens);
-    
-    console.log('🔍 Final availableTokens for TO dropdown (Polygon/Amoy only):', tokens);
+    console.log('🔍 Final availableTokens for TO dropdown:', tokens);
     return tokens;
-  }, [eurxToken, allBridgeTokens]);
+  }, [eurxToken, filteredBridgeTokens]);
 
   // User's owned tokens for "FROM" selection  
-  const ownedTokens = allUserTokens;
+  const ownedTokens = filteredUserTokens;
 
   const isLoading = eurxLoading || bridgeLoading || userLoading;
 

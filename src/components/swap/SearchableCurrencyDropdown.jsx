@@ -5,6 +5,7 @@ import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { useCustomSwapTokens } from "../../hooks/useCustomSwapTokens";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
+import { useActiveAccount } from "thirdweb/react";
 import Nodata from "../../assets/icons/cancel.svg";
 
 export const SearchableCurrencyDropdown = ({
@@ -16,7 +17,7 @@ export const SearchableCurrencyDropdown = ({
 	const dropdownRef = useRef(null);
 	const [search, setSearch] = useState("");
 	const debouncedSearchTerm = useDebounce(search, 300); // 300ms debounce
-	
+	const activeAccount = useActiveAccount();
 
 	const { availableTokens, isLoading } = useCustomSwapTokens();
 	

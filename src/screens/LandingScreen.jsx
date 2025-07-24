@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import { useConnect } from "thirdweb/react";
 import { inAppWallet } from "thirdweb/wallets";
 import { client } from "../components/thirdweb/thirdwebClient";
-import { useAutoMint } from "../hooks/useAutoMint";
 
 const role = {
 	id: "6061ac8b4c0fbf384c754ea0",
@@ -37,7 +36,6 @@ const LandingScreen = () => {
 	// --- thirdweb hooks ---
 	const { connect } = useConnect();
 	const wallet = inAppWallet();
-	const { mintOnLogin } = useAutoMint();
 
 	let data = {};
 
@@ -154,19 +152,6 @@ const LandingScreen = () => {
 				};
 				console.log(response);
 				login(response.token, userData);
-				
-				// Auto-mint tokens after successful login (non-blocking)
-				try {
-					console.log("🚀 Starting auto-mint process on landing...");
-					const mintResult = await mintOnLogin("100");
-					
-					if (mintResult && mintResult.success) {
-						console.log(`🎉 Auto-mint completed: ${mintResult.amount} EURX tokens minted`);
-					}
-				} catch (error) {
-					console.log("⚠️ Auto-mint failed, but login continues:", error.message);
-				}
-				
 				setIsLoading(false); // Clear loading before navigation
 				navigate(link);
 			} else {

@@ -35,18 +35,6 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 
 		return userTokens?.map((currency, i) => {
 			const { symbol, value, balance, chain_id, token_address } = currency;
-			
-			// Determine chain name for display
-			const getChainName = (chainId) => {
-				switch (chainId) {
-					case 137: return "Polygon";
-					case 80002: return "Amoy";
-					default: return `Chain ${chainId}`;
-				}
-			};
-
-			const chainName = getChainName(chain_id);
-			
 			return (
 				<motion.div
 					key={`${token_address}-${chain_id}`} // Use a truly unique key
@@ -62,10 +50,8 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 						className="w-full p-3 bg-white hover:bg-gray-50/80 transition-colors rounded-lg text-left">
 						<div className="flex justify-between items-center">
 							<div className="text-left">
-								<div className="flex items-center gap-2 mb-1">
-									<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
-										{symbol}
-									</div>
+								<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
+									{symbol}
 								</div>
 								<div className="text-gray-400 text-sm truncate w-40">
 									{token_address}
