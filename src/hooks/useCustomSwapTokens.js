@@ -31,7 +31,7 @@ export const useCustomSwapTokens = () => {
 
   // Create EURX token object using contract data
   const eurxToken = useMemo(() => {
-    if (!activeAccount || !eurxInfo) return null;
+    if (!activeAccount || !eurxInfo || !eurxInfo.address) return null;
     
     return {
       address: eurxInfo.address,
@@ -83,7 +83,7 @@ export const useCustomSwapTokens = () => {
     }
 
     // Always add EURX token for display (even with 0 balance)
-    if (eurxToken) {
+    if (eurxToken && eurxToken.address) {
       const hasEurx = filtered.some(token => 
         token.token_address?.toLowerCase() === eurxToken.address.toLowerCase()
       );
