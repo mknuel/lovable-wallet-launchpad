@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchWallet, selectWalletData, selectWalletLoading } from '../../store/reducers/walletSlice';
 import { PATH_WALLET, PATH_SEND_TOKENS, PATH_SWAP_CURRENCY, PATH_BLOCKLOANS } from "../../context/paths";
 import { useERC20Token } from "../../hooks/useERC20";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
 
 const WalletActionsScreen = () => {
   const { t } = useTranslation();
@@ -20,7 +21,8 @@ const WalletActionsScreen = () => {
   const walletData = useSelector(selectWalletData);
   const walletLoading = useSelector(selectWalletLoading);
   
-  // ERC20 token data
+  // Token balance from API and EURX (crypto) balance
+  const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
   const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
   // Fetch wallet data on component mount - only if not already loading/loaded
@@ -32,23 +34,25 @@ const WalletActionsScreen = () => {
 
   // Memoize stats data to prevent unnecessary recalculations
   const statsData = useMemo(() => {
-    // Format EURX balance to 1 decimal place
+    // Token balance from API
+    const tokenValue = tokenLoading ? "..." : formattedTokenBalance;
+    // EURX balance as crypto
     const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
     
     return [
       { 
-        id: "erc20", 
-        value: eurxValue, 
+        id: "token", 
+        value: tokenValue, 
         label: "Tokens" 
       },
       {
         id: "crypto",
-        value: walletData?.data?.balance || "0",
+        value: eurxValue,
         label: t("wallet.crypto"),
       },
       { id: "loans", value: "0", label: t("wallet.loans") },
     ];
-  }, [walletData, t, erc20Loading, erc20Balance]);
+  }, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
   // Memoize menu items to prevent unnecessary re-renders
   const menuItems = useMemo(() => [

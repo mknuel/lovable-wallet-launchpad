@@ -10,6 +10,7 @@ import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError }
 import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
 import { useERC20Token } from "../../hooks/useERC20";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
 
 const WalletScreen = () => {
 	const { t } = useTranslation();
@@ -21,7 +22,8 @@ const WalletScreen = () => {
 	const walletLoading = useSelector(selectWalletLoading);
 	const walletError = useSelector(selectWalletError);
 	
-	// ERC20 token data
+	// Token balance from API and EURX (crypto) balance
+	const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
 	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
 	// Fetch wallet data on component mount - only if not already loading/loaded
@@ -34,23 +36,25 @@ const WalletScreen = () => {
 
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
-		// Format EURX balance to 1 decimal place
+		// Token balance from API
+		const tokenValue = tokenLoading ? "..." : formattedTokenBalance;
+		// EURX balance as crypto
 		const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
 		
 		return [
 			{ 
-				id: "erc20", 
-				value: eurxValue, 
+				id: "token", 
+				value: tokenValue, 
 				label: "Tokens" 
 			},
 			{
 				id: "crypto",
-				value: walletData?.data?.balance || "0",
+				value: eurxValue,
 				label: t("wallet.crypto"),
 			},
 			{ id: "loans", value: "0", label: t("wallet.loans") },
 		];
-	}, [walletData, t, erc20Loading, erc20Balance]);
+	}, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
 	// Memoize wallet-specific menu items
 	const menuItems = useMemo(() => [
