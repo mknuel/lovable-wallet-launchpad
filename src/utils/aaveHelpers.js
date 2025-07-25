@@ -234,7 +234,7 @@ export const supplySepoliaETH = async (account, ethAmount) => {
     });
 
     console.log(`📊 SUPPLY: Account data after supply:`, data);
-    const totalCollateralETH = Number(data.totalCollateralETH) / 1e18;
+    const totalCollateralETH = Number(data.totalCollateralETH.toString()) / 1e18;
     console.log(`📊 SUPPLY: Total collateral ETH:`, totalCollateralETH);
 
     if (totalCollateralETH === 0) {
