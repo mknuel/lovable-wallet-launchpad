@@ -450,15 +450,23 @@ export const getUserAccountData = async (userAddress) => {
     console.log(`📊 GET_ACCOUNT_DATA: Raw contract response:`, data);
 
     // Handle tuple/array response format - Fix decimal conversion
+    console.log(`🔍 GET_ACCOUNT_DATA: Data array length:`, data.length);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[0] (totalCollateralETH):`, data[0]);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[1] (totalDebtETH):`, data[1]);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[2] (availableBorrowsETH):`, data[2]);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[3] (currentLiquidationThreshold):`, data[3]);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[4] (ltv):`, data[4]);
+    console.log(`🔍 GET_ACCOUNT_DATA: Raw data[5] (healthFactor):`, data[5]);
+    
     const accountData = {
-      totalCollateralETH: Number(data[0]) / 1e18,
-      totalDebtETH: Number(data[1]) / 1e18,
-      availableBorrowsETH: Number(data[2]) / 1e18,
-      currentLiquidationThreshold: Number(data[3]) / 100, // Convert basis points to percentage
-      ltv: Number(data[4]) / 100, // Convert basis points to percentage  
-      healthFactor: data[5] === "115792089237316195423570985008687907853269984665640564039457584007913129639935" 
+      totalCollateralETH: Number(data[0].toString()) / 1e18,
+      totalDebtETH: Number(data[1].toString()) / 1e18,
+      availableBorrowsETH: Number(data[2].toString()) / 1e18,
+      currentLiquidationThreshold: Number(data[3].toString()) / 100, // Convert basis points to percentage
+      ltv: Number(data[4].toString()) / 100, // Convert basis points to percentage  
+      healthFactor: data[5].toString() === "115792089237316195423570985008687907853269984665640564039457584007913129639935" 
         ? Infinity 
-        : Number(data[5]) / 1e18,
+        : Number(data[5].toString()) / 1e18,
     };
 
     console.log(`📊 GET_ACCOUNT_DATA: Processed account data:`, accountData);
