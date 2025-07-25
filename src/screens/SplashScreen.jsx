@@ -8,7 +8,17 @@ const SplashScreen = () => {
 
     useEffect(() => {
         setTimeout(() => {
-          navigate("/landing");
+          // Check if user is already authenticated
+          const token = localStorage.getItem("token");
+          const userData = localStorage.getItem("userData");
+          
+          if (token && userData) {
+            // User is authenticated, navigate to main
+            navigate("/main", { replace: true });
+          } else {
+            // User is not authenticated, navigate to landing
+            navigate("/landing", { replace: true });
+          }
         }, 1000);
       }, [navigate]);
 

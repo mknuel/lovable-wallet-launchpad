@@ -241,7 +241,7 @@ export const AaveConfirmationModal = ({
 
 								{/* Balance Display for Deposit */}
 								{actionType === 'deposit' && (
-									<div className="mb-3 text-right">
+									<div className="mb-3 text-left">
 										<span className="text-gray-500 text-sm">Balance: {ethBalance} ETH</span>
 									</div>
 								)}
