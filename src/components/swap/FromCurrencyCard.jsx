@@ -66,18 +66,27 @@ export const FromCurrencyCard = ({
 							/>
 						</div>
 
-						{/* --- Amount Input --- */}
-						<div className="flex flex-col items-end ml-4">
-							<input
-								type="number"
-								value={amount}
-								onChange={(e) => onAmountChange(e.target.value)}
-								placeholder="0.00"
-								className="text-right bg-transparent border-none outline-none w-28 font-['Sansation'] text-lg placeholder:text-gray-400"
-								step="0.0001"
-								min="0"
-							/>
-						</div>
+					{/* --- Amount Input --- */}
+					<div className="flex flex-col items-end ml-4">
+						<input
+							type="number"
+							value={amount}
+							onChange={(e) => {
+								const inputValue = e.target.value;
+								const balance = selectedCurrency?.balance || 0;
+								
+								// Prevent entering amount greater than balance
+								if (inputValue === "" || parseFloat(inputValue) <= balance) {
+									onAmountChange(inputValue);
+								}
+							}}
+							placeholder="0.00"
+							className="text-right bg-transparent border-none outline-none w-28 font-['Sansation'] text-lg placeholder:text-gray-400"
+							step="0.0001"
+							min="0"
+							max={selectedCurrency?.balance || undefined}
+						/>
+					</div>
 					</div>
 
 					{/* --- Balance and USD Value --- */}
