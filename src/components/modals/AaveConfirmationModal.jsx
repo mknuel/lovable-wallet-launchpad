@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useActiveWallet } from 'thirdweb/react';
 import CommonButton from '../Buttons/CommonButton';
 
 export const AaveConfirmationModal = ({ 
@@ -12,9 +13,46 @@ export const AaveConfirmationModal = ({
   maxBorrowAmount = 0,
   accountData = null
 }) => {
+  const activeWallet = useActiveWallet();
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [ethBalance, setEthBalance] = useState('0.0000');
+
+  // Fetch ETH balance when modal opens and wallet is connected
+  useEffect(() => {
+    const fetchEthBalance = async () => {
+      if (isOpen && activeWallet && actionType === 'deposit') {
+        try {
+          const account = activeWallet.getAccount();
+          if (account?.address) {
+            // Use thirdweb's RPC to get ETH balance
+            const { client } = await import('../../components/thirdweb/thirdwebClient.js');
+            const response = await fetch(`https://11155111.rpc.thirdweb.com/7038953a5d72063c56919f27ec00bbda`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                id: 1,
+                jsonrpc: '2.0',
+                method: 'eth_getBalance',
+                params: [account.address, 'latest']
+              })
+            });
+            const data = await response.json();
+            if (data.result) {
+              const ethValue = Number(data.result) / 1e18;
+              setEthBalance(ethValue.toFixed(4));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching ETH balance:', error);
+          setEthBalance('0.0000');
+        }
+      }
+    };
+
+    fetchEthBalance();
+  }, [isOpen, activeWallet, actionType]);
 
   // Animation variants for the modal backdrop
   const backdropVariants = {
@@ -200,6 +238,13 @@ export const AaveConfirmationModal = ({
 								<h3 className="text-lg font-bold text-black mb-6 text-center">
 									Enter The Amount You Wish To {getActionText()}.
 								</h3>
+
+								{/* Balance Display for Deposit */}
+								{actionType === 'deposit' && (
+									<div className="mb-3 text-right">
+										<span className="text-gray-500 text-sm">Balance: {ethBalance} ETH</span>
+									</div>
+								)}
 
 								{/* Amount Input */}
 								<div className="mb-6">
