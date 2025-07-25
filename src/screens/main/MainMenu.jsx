@@ -7,6 +7,7 @@ import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
 import { useERC20Token } from "../../hooks/useERC20";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
 import {
 	fetchWallet,
 	selectWalletData,
@@ -56,34 +57,31 @@ const MainMenu = () => {
 		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
 	}, [walletData, walletLoading]);
 
-	// Import the ERC20 token hook
-	const { balance: erc20Balance, tokenInfo, loading: erc20Loading } = useERC20Token();
+	// Token balance from API and EURX (crypto) balance
+	const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
+	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
-		// Format EURX balance to 1 decimal place
+		// Token balance from API
+		const tokenValue = tokenLoading ? "..." : formattedTokenBalance;
+		// EURX balance as crypto
 		const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
 		
-		return walletData?.data
-			? [
-					{
-						id: "tokens",
-						value: eurxValue,
-						label: "Tokens",
-					},
-					{
-						id: "crypto",
-						value: walletData.data.balance || "0",
-						label: t("wallet.crypto"),
-					},
-					{ id: "loans", value: "0", label: t("wallet.loans") },
-			  ]
-			: [
-					{ id: "tokens", value: eurxValue, label: "Tokens" },
-					{ id: "crypto", value: "0", label: t("wallet.crypto") },
-					{ id: "loans", value: "0", label: t("wallet.loans") },
-			  ];
-	}, [walletData, t, erc20Balance, erc20Loading]);
+		return [
+			{ 
+				id: "token", 
+				value: tokenValue, 
+				label: "Tokens" 
+			},
+			{
+				id: "crypto",
+				value: eurxValue,
+				label: t("wallet.crypto"),
+			},
+			{ id: "loans", value: "0", label: t("wallet.loans") },
+		];
+	}, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
 	const handleWalletClick = () => {
 		 	if (!walletData?.data) return;

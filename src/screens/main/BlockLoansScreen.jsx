@@ -9,6 +9,7 @@ import { AaveConfirmationModal } from '../../components/modals/AaveConfirmationM
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
 import { useERC20Token } from '../../hooks/useERC20';
+import { useTokenBalance } from '../../hooks/useTokenBalance';
 import {
   selectWalletData,
   selectWalletLoading,
@@ -59,38 +60,36 @@ const BlockLoansScreen = () => {
     loadAccountData();
   }, [activeWallet]);
 
-  // Import the ERC20 token hook
-  const { balance: erc20Balance, loading: erc20Loading } = useERC20Token();
+  // Token balance from API and EURX (crypto) balance
+  const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
+  const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
 
   // Use the same stats calculation as MainMenu but include real Aave data
   const statsData = useMemo(() => {
-    // Format EURX balance to 1 decimal place
+    // Token balance from API
+    const tokenValue = tokenLoading ? "..." : formattedTokenBalance;
+    // EURX balance as crypto
     const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
     
-    const baseStats = walletData?.data
-      ? [
-          {
-            id: "tokens",
-            value: eurxValue,
-            label: "Tokens",
-          },
-          {
-            id: "crypto", 
-            value: walletData.data.balance || "0",
-            label: t("wallet.crypto"),
-          }
-        ]
-      : [
-          { id: "tokens", value: eurxValue, label: "Tokens" },
-          { id: "crypto", value: "0", label: t("wallet.crypto") }
-        ];
+    const baseStats = [
+      { 
+        id: "token", 
+        value: tokenValue, 
+        label: "Tokens" 
+      },
+      {
+        id: "crypto",
+        value: eurxValue,
+        label: t("wallet.crypto"),
+      }
+    ];
 
     // Add real Aave loan data without units (integer format)
     const loansValue = accountData ? Math.round(accountData.totalDebtETH * 1.2).toString() : "0";
     baseStats.push({ id: "loans", value: loansValue, label: t("wallet.loans") });
 
     return baseStats;
-  }, [walletData, accountData, t, erc20Balance, erc20Loading]);
+  }, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, accountData, t]);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
