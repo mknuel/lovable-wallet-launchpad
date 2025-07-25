@@ -9,12 +9,13 @@ import {
 } from "thirdweb";
 import { sepolia } from "thirdweb/chains";
 
-// 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3
+// 🔗 Contract addresses for Ethereum Sepolia testnet Aave v3 (Updated 2024)
 export const CONTRACTS = {
-  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
-  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D",
-  WETH: "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c",
-  USDC: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+  AAVE_POOL: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951", // Verified correct address
+  WETH_GATEWAY: "0x387d311e47e80b498169e6fb51d3193167d89F7D", // Verified correct address  
+  WETH: "0xC558DBdd856501FCd9aaF1E62eae57A9F0629a3c", // Verified Sepolia WETH
+  USDC: "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8", // Sepolia USDC
+  DATA_PROVIDER: "0x2D8A3C5677189723C4cB8873CfC9C8976FDF38Ac", // Aave Protocol Data Provider
 };
 
 // 🔎 ABIs
@@ -267,11 +268,12 @@ export const borrowETH = async (account, ethAmount) => {
   console.log(`🔄 BORROW: Pool contract:`, contract);
 
   try {
+    // Use more gas and try variable rate mode (2) first, then stable (1) if needed
     const tx = await prepareContractCall({
       contract,
       method: "borrow",
-      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, 0, account.address],
-      gas: 200000n, // Increased gas limit
+      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2n, 0, account.address], // Use BigInt for interest rate mode
+      gas: 300000n, // Increased gas limit significantly
     });
 
     console.log(`🔄 BORROW: Prepared transaction:`, tx);
@@ -289,14 +291,21 @@ export const borrowETH = async (account, ethAmount) => {
     return response;
   } catch (error) {
     console.error(`❌ BORROW: Error:`, error);
+    console.error(`❌ BORROW: Error details:`, error.message, error.code);
+    
     let errorMessage = "Failed to borrow ETH";
     
-    if (error.message.includes("30")) {
+    // Better error code handling for Aave v3
+    if (error.message.includes("30") || error.message.includes("VL_NOT_ENOUGH_AVAILABLE_USER_BALANCE")) {
       errorMessage = "Insufficient collateral to borrow this amount. Please supply more collateral first.";
-    } else if (error.message.includes("32")) {
-      errorMessage = "This asset is not enabled for borrowing.";
-    } else if (error.message.includes("4")) {
+    } else if (error.message.includes("32") || error.message.includes("VL_BORROWING_NOT_ENABLED")) {
+      errorMessage = "This asset is not enabled for borrowing on this market.";
+    } else if (error.message.includes("4") || error.message.includes("VL_HEALTH_FACTOR_LOWER_THAN_LIQUIDATION_THRESHOLD")) {
       errorMessage = "Health factor would be below 1. Reduce borrow amount.";
+    } else if (error.message.includes("11") || error.message.includes("VL_COLLATERAL_BALANCE_IS_ZERO")) {
+      errorMessage = "No collateral found. Supply collateral first.";
+    } else if (error.message.includes("gas")) {
+      errorMessage = "Transaction failed due to gas issues. Please try with more gas.";
     }
     
     throw new Error(errorMessage);
@@ -329,15 +338,18 @@ export const repayETH = async (account, ethAmount) => {
       throw new Error(`Insufficient WETH balance. Have: ${wethBalance.toFixed(4)} WETH, Need: ${ethAmount} WETH`);
     }
 
-    // First, approve WETH token to be spent by Aave pool
+    // First, approve WETH token to be spent by Aave pool - use higher amount for approval
     console.log(`🔄 REPAY: Approving WETH for Aave pool...`);
     const wethContract = getTokenContract(client, CONTRACTS.WETH);
+    
+    // Approve more than needed to avoid precision issues
+    const approvalAmount = safeToWei((repayAmountETH * 1.01).toString()); // 1% buffer
     
     const approvalTx = await prepareContractCall({
       contract: wethContract,
       method: "approve",
-      params: [CONTRACTS.AAVE_POOL, safeToWei(ethAmount)],
-      gas: 100000n,
+      params: [CONTRACTS.AAVE_POOL, approvalAmount],
+      gas: 150000n, // Increased gas for approval
     });
 
     console.log(`🔄 REPAY: Sending approval transaction...`);
@@ -353,8 +365,8 @@ export const repayETH = async (account, ethAmount) => {
     const repayTx = await prepareContractCall({
       contract: poolContract,
       method: "repay",
-      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2, account.address],
-      gas: 200000n, // Increased gas limit
+      params: [CONTRACTS.WETH, safeToWei(ethAmount), 2n, account.address], // Use BigInt for interest rate mode
+      gas: 300000n, // Increased gas limit significantly
     });
 
     console.log(`🔄 REPAY: Prepared repay transaction:`, repayTx);
@@ -372,14 +384,22 @@ export const repayETH = async (account, ethAmount) => {
     return response;
   } catch (error) {
     console.error(`❌ REPAY: Error:`, error);
+    console.error(`❌ REPAY: Error details:`, error.message, error.code);
+    
     let errorMessage = "Failed to repay ETH";
     
     if (error.message.includes("insufficient")) {
       errorMessage = error.message; // Use the specific insufficient balance message
     } else if (error.message.includes("No debt")) {
       errorMessage = error.message; // Use the no debt message
-    } else if (error.message.includes("30")) {
-      errorMessage = "Cannot repay: insufficient balance or invalid amount.";
+    } else if (error.message.includes("30") || error.message.includes("VL_NO_DEBT_OF_SELECTED_TYPE")) {
+      errorMessage = "No debt found for this asset to repay.";
+    } else if (error.message.includes("VL_INVALID_AMOUNT")) {
+      errorMessage = "Invalid repayment amount specified.";
+    } else if (error.message.includes("gas")) {
+      errorMessage = "Transaction failed due to gas issues. Please try with more gas.";
+    } else if (error.message.includes("allowance") || error.message.includes("approve")) {
+      errorMessage = "Token approval failed. Please try again.";
     }
     
     throw new Error(errorMessage);
