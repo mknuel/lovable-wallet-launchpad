@@ -95,6 +95,16 @@ const AAVE_POOL_ABI = [
     ],
     stateMutability: "view",
   },
+  {
+    name: "setUserUseReserveAsCollateral",
+    type: "function",
+    inputs: [
+      { name: "asset", type: "address" },
+      { name: "useAsCollateral", type: "bool" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
 ];
 
 const WETH_GATEWAY_ABI = [
@@ -202,8 +212,21 @@ export const supplySepoliaETH = async (account, ethAmount) => {
     
     await checkTxSuccess(client, result, "Supply");
 
-    // 🔍 Validate if collateral registered
+    // ✅ Enable WETH as collateral after depositing
+    console.log(`🔄 SUPPLY: Enabling WETH as collateral...`);
     const poolContract = getPoolContract(client);
+    const collateralTx = await prepareContractCall({
+      contract: poolContract,
+      method: "setUserUseReserveAsCollateral",
+      params: [CONTRACTS.WETH, true],
+      gas: 100000n,
+    });
+    
+    const collateralResult = await sendTransaction({ transaction: collateralTx, account });
+    console.log(`✅ SUPPLY: Collateral enabled:`, collateralResult);
+    await checkTxSuccess(client, collateralResult, "Enable Collateral");
+
+    // 🔍 Validate if collateral registered
     const data = await readContract({
       contract: poolContract,
       method: "getUserAccountData", 
