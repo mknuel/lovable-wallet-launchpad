@@ -31,6 +31,8 @@ function App() {
 		};
 	}, [dispatch, navigate]);
 
+	console.log('App component loaded, current pathname:', window.location.pathname);
+
 	return (
 	<div className="app-container">
 		<AuthProvider>
@@ -48,6 +50,8 @@ function App() {
 						element={<ProtectedRoute>{route.element}</ProtectedRoute>}
 					/>
 				))}
+				{/* Catch-all route for unmatched paths */}
+				<Route path="*" element={<SplashScreen />} />
 			</Routes>
 		</AuthProvider>
 	</div>

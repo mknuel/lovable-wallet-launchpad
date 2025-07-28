@@ -11,6 +11,7 @@ import { wallets } from "../components/thirdweb/ThirdwebConnectButton";
 import LogoHorizontal from "../assets/images/Logo_Bloackloans_Horizontal.png";
 
 const SplashScreen = () => {
+    console.log('SplashScreen loaded, current pathname:', window.location.pathname);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [authChecked, setAuthChecked] = useState(false);
