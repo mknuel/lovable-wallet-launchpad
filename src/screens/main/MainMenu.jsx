@@ -44,17 +44,15 @@ const MainMenu = () => {
 		}
 	}, [dispatch, walletData, walletLoading]);
 
-	// Handle wallet data and PIN status - ONLY for first-time users who need to create a PIN
+	// Handle wallet data and PIN status - DISABLED PIN REQUIREMENT
 	useEffect(() => {
 		if (walletLoading || !walletData) return;
 
-		const hasPin = walletData?.data?.isPinCodeSet;
-
-		// Only redirect to create PIN if user doesn't have one yet
-		if (!hasPin) {
-			// setCurrentScreen("createPin");
-		}
-		// If user has PIN, stay on main menu - don't auto-redirect to PIN entry
+		// PIN functionality disabled - no longer checking PIN status
+		// const hasPin = walletData?.data?.isPinCodeSet;
+		// if (!hasPin) {
+		//   setCurrentScreen("createPin");
+		// }
 	}, [walletData, walletLoading]);
 
 	// Token balance from API and EURX (crypto) balance
@@ -84,11 +82,7 @@ const MainMenu = () => {
 	}, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
 	const handleWalletClick = () => {
-		 	if (!walletData?.data) return;
-
-			if (!walletData.data.isPinCodeSet) {
-				return setCurrentScreen("createPin");
-			} 
+		// PIN check disabled - direct navigation to wallet
 		navigate(PATH_WALLET);
 	};
 
