@@ -70,7 +70,7 @@ const MainMenu = () => {
 			{ 
 				id: "token", 
 				value: tokenValue, 
-				label: "Tokens" 
+				label: t("wallet.tokens")
 			},
 			{
 				id: "crypto",
