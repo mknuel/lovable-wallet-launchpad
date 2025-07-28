@@ -92,13 +92,20 @@ const SplashScreen = () => {
         
         const token = localStorage.getItem("token");
         const userData = localStorage.getItem("userData");
+        const currentPath = window.location.pathname;
         
         // Small delay to ensure smooth transition
         setTimeout(() => {
             if (token && userData) {
-                navigate("/main", { replace: true });
+                // Only navigate if not already on a protected route
+                if (currentPath === "/" || currentPath === "/landing") {
+                    navigate("/main", { replace: true });
+                }
             } else {
-                navigate("/landing", { replace: true });
+                // Only navigate if not already on landing
+                if (currentPath !== "/landing") {
+                    navigate("/landing", { replace: true });
+                }
             }
         }, 500);
         
