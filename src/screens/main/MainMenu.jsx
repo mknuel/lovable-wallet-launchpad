@@ -153,7 +153,7 @@ const MainMenu = () => {
 						</div>
 
 						<div className="w-full max-w-full mb-8">
-							<MenuSection menuItems={menuItems} />
+							<MenuSection menuItems={menuItems} uppercase={true} />
 						</div>
 
 						<div className="w-full max-w-full">

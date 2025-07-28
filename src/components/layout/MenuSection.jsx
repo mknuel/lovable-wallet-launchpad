@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-export const MenuSection = ({ menuItems, className }) => {
+export const MenuSection = ({ menuItems, className, uppercase = false }) => {
   return (
 		<div className={`flex flex-col gap-3 w-full max-w-full ${className || ""}`}>
 			{menuItems.map((item) => (
@@ -17,7 +17,7 @@ export const MenuSection = ({ menuItems, className }) => {
 					}}
 					role="menuitem">
 					<span 
-						className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-semibold text-[16px] leading-relaxed break-words whitespace-normal uppercase tracking-wide"
+						className={`bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-semibold text-[16px] leading-relaxed break-words whitespace-normal tracking-wide ${uppercase ? 'uppercase' : ''}`}
 						style={{
 							WebkitBackgroundClip: "text",
 							WebkitTextFillColor: "transparent",
