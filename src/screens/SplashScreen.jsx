@@ -111,11 +111,6 @@ const SplashScreen = () => {
             {/* Loading indicator */}
             <div className="mt-8 flex flex-col items-center">
                 <div className="w-8 h-8 border-2 border-gray-300 border-t-[#DC2366] rounded-full animate-spin"></div>
-                <p className="mt-4 text-sm text-gray-600 font-['Sansation']">
-                    {!authChecked ? "Checking authentication..." : 
-                     walletLoading ? "Connecting wallet..." : 
-                     "Loading..."}
-                </p>
             </div>
         </div>
     );
