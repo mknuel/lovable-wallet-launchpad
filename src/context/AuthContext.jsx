@@ -13,50 +13,28 @@ const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false); // Changed to false since splash handles initial loading
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const location = useLocation();
 
+	// Simplified auth check - no longer handles initial loading
 	useEffect(() => {
-		// Check if user is logged in on mount
-		const checkAuth = () => {
-			const token = localStorage.getItem("token");
-			const userData = localStorage.getItem("userData");
+		// Only handle route protection, not initial auth loading
+		const token = localStorage.getItem("token");
+		const userData = localStorage.getItem("userData");
 
-			if (token && userData) {
-				try {
-					const parsedUserData = JSON.parse(userData);
-					dispatch(setUser(parsedUserData));
-					dispatch(setAuth({ token }));
-
-					// If user is on auth pages but is authenticated, redirect to main
-					if (
-						location.pathname === PATH_AUTH ||
-						location.pathname === PATH_LOGIN ||
-						location.pathname === "/"
-					) {
-						navigate(PATH_MAIN, { replace: true });
-					}
-				} catch (error) {
-					console.error("Failed to parse user data:", error);
-					logout();
-				}
-			} else {
-				// If no auth data and not on auth pages, redirect to auth
-				if (
-					location.pathname !== PATH_AUTH &&
-					location.pathname !== PATH_LOGIN &&
-					location.pathname !== "/"
-				) {
-					navigate(PATH_LANDING, { replace: true });
-				}
+		if (!token || !userData) {
+			// If no auth data and not on public routes, redirect to landing
+			if (
+				location.pathname !== PATH_AUTH &&
+				location.pathname !== PATH_LOGIN &&
+				location.pathname !== "/" &&
+				location.pathname !== PATH_LANDING
+			) {
+				navigate(PATH_LANDING, { replace: true });
 			}
-
-			setIsLoading(false);
-		};
-
-		checkAuth();
+		}
 	}, [dispatch, navigate, location.pathname]);
 
 	const login = (token, userData) => {

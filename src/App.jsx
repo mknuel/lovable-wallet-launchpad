@@ -14,27 +14,10 @@ import { PATH_AUTH } from "./context/paths";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
 import "./App.css";
-import { useAutoConnect } from "thirdweb/react";
-import { wallets } from "./components/thirdweb/ThirdwebConnectButton.jsx";
-import { client } from "./components/thirdweb/thirdwebClient.js";
+
 function App() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	const {
-		data: autoConnected,
-		isLoading,
-		error,
-	} = useAutoConnect({
-		client,
-		wallets,
-		onConnect: (wallet) => {
-			console.log("Auto-connected to:", wallet?.getAccount()?.address);
-		},
-		onTimeout: () => {
-			console.log("Auto-connect timed out.");
-		},
-	});
 
 	// Listen for auth errors
 	useEffect(() => {
