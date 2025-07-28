@@ -5,7 +5,7 @@ import { useTelegram } from "./hooks/useTelegram";
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect } from "react";
 
-import MainScreen from "./screens/SplashScreen";
+import SplashScreen from "./screens/SplashScreen";
 import { PublicRouteArray } from "./context/PublicRouteArray";
 import { ProtectedRouteArray } from "./context/ProtectedRouteArray";
 import ProtectedRoute from "./context/ProtectedRoute";
@@ -36,7 +36,8 @@ function App() {
 		<AuthProvider>
 			<ScrollToTop />
 			<Routes>
-				<Route index element={<MainScreen />} />
+				<Route index element={<SplashScreen />} />
+				<Route path="/" element={<SplashScreen />} />
 				{PublicRouteArray.map((route) => (
 					<Route key={route.path} path={route.path} element={route.element} />
 				))}
