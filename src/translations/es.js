@@ -10,15 +10,62 @@ export default {
     message: "Mensaje",
     profile: "Perfil",
   },
-  setting: {
-    title: "Mi configuración",
-    editProfile: "Editar perfil",
-    notification: "Notificación",
-    language: "Idioma",
-    lightMode: "Modo claro",
-    privacyPolciy: "Política de privacidad",
-    walletAddress: "Dirección de billetera",
-  },
+	setting: {
+		title: "Mi configuración",
+		editProfile: "Editar perfil",
+		notification: "Notificación",
+		language: "Idioma",
+		lightMode: "Modo claro",
+		privacyPolciy: "Política de privacidad",
+		walletAddress: "Dirección de billetera",
+	},
+	wallet: {
+		title: "Mi Billetera",
+		tokens: "Tokens",
+		crypto: "Cripto",
+		loans: "Préstamos",
+		actions: {
+			send: "Envía tus tokens a otro miembro de la DAO o invita a alguien por teléfono para recibirlos",
+			exchange: "Intercambia tus tokens por EURX (€ Euro) u otra criptomoneda",
+			loan: "Solicita un préstamo con tus tokens"
+		}
+	},
+	mainMenu: {
+		title: "Menú Principal",
+		myWallet: "Mi Billetera",
+		settings: "Configuración",
+		blockloans: "BlockLoans",
+		next: "SIGUIENTE",
+		loading: "Cargando...",
+		pinCreated: "Éxito",
+		pinCreatedMessage: "¡Tu PIN ha sido creado exitosamente!"
+	},
+	pinEntry: {
+		title: "Introducir PIN",
+		subtitle: "Por favor introduce tu PIN de 4 dígitos para acceder a tu billetera",
+		forgotPin: "¿Olvidaste tu PIN?",
+		invalidPin: "PIN inválido. Por favor intenta de nuevo.",
+		createNewPin: "Crear Nuevo PIN"
+	},
+	createPin: {
+		title: "Crear PIN",
+		subtitle: "Crea un PIN de 4 dígitos para asegurar tu billetera",
+		confirmTitle: "Confirmar PIN",
+		confirmSubtitle: "Por favor vuelve a introducir tu PIN para confirmar",
+		pinMismatch: "Los PINs no coinciden. Por favor intenta de nuevo.",
+		creating: "Creando PIN..."
+	},
+	sendTokens: {
+		title: "Enviar Tokens",
+		recipientLabel: "Destinatario",
+		recipientPlaceholder: "Introduce dirección de billetera o número de teléfono",
+		amountLabel: "Cantidad",
+		amountPlaceholder: "Introduce cantidad a enviar",
+		send: "ENVIAR",
+		cancel: "CANCELAR",
+		success: "¡Tokens enviados exitosamente!",
+		error: "Error al enviar tokens. Por favor intenta de nuevo."
+	},
   wallet: {
     title: "Mi Billetera",
     tokens: "Tokens",

@@ -19,17 +19,53 @@ export default {
     privacyPolciy: "Politique de confidentialité",
     walletAddress: "Adresse du portefeuille",
   },
-  wallet: {
-    title: "Mon Portefeuille",
-    tokens: "Jetons",
-    crypto: "Crypto",
-    loans: "Prêts",
-    actions: {
-      send: "Envoyez vos jetons à un autre membre de la DAO ou invitez quelqu'un par téléphone pour les recevoir",
-      exchange: "Échangez vos jetons contre EURX (€ Euro) ou une autre cryptomonnaie",
-      loan: "Demander un prêt avec vos jetons"
-    }
-  },
+	wallet: {
+		title: "Mon Portefeuille",
+		tokens: "Jetons",
+		crypto: "Crypto",
+		loans: "Prêts",
+		actions: {
+			send: "Envoyez vos jetons à un autre membre de la DAO ou invitez quelqu'un par téléphone pour les recevoir",
+			exchange: "Échangez vos jetons contre EURX (€ Euro) ou une autre cryptomonnaie",
+			loan: "Demander un prêt avec vos jetons"
+		}
+	},
+	mainMenu: {
+		title: "Menu Principal",
+		myWallet: "Mon Portefeuille",
+		settings: "Paramètres",
+		blockloans: "BlockLoans",
+		next: "SUIVANT",
+		loading: "Chargement...",
+		pinCreated: "Succès",
+		pinCreatedMessage: "Votre PIN a été créé avec succès !"
+	},
+	pinEntry: {
+		title: "Entrer le PIN",
+		subtitle: "Veuillez entrer votre PIN à 4 chiffres pour accéder à votre portefeuille",
+		forgotPin: "PIN oublié ?",
+		invalidPin: "PIN invalide. Veuillez réessayer.",
+		createNewPin: "Créer un nouveau PIN"
+	},
+	createPin: {
+		title: "Créer un PIN",
+		subtitle: "Créez un PIN à 4 chiffres pour sécuriser votre portefeuille",
+		confirmTitle: "Confirmer le PIN",
+		confirmSubtitle: "Veuillez ressaisir votre PIN pour confirmer",
+		pinMismatch: "Les PINs ne correspondent pas. Veuillez réessayer.",
+		creating: "Création du PIN..."
+	},
+	sendTokens: {
+		title: "Envoyer des Jetons",
+		recipientLabel: "Destinataire",
+		recipientPlaceholder: "Entrez l'adresse du portefeuille ou le numéro de téléphone",
+		amountLabel: "Montant",
+		amountPlaceholder: "Entrez le montant à envoyer",
+		send: "ENVOYER",
+		cancel: "ANNULER",
+		success: "Jetons envoyés avec succès !",
+		error: "Échec de l'envoi des jetons. Veuillez réessayer."
+	},
   landing: {
     title_1: "La plus",
     title_2: "Fiable et sécurisée",

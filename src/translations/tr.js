@@ -10,15 +10,62 @@ export default {
     message: "Mesaj",
     profile: "Profil",
   },
-  setting: {
-    title: "Ayarlarım",
-    editProfile: "Profili düzenle",
-    notification: "Bildirim",
-    language: "Dil",
-    lightMode: "Işık Modu",
-    privacyPolciy: "Gizlilik politikası",
-    walletAddress: "Cüzdan Adresi",
-  },
+	setting: {
+		title: "Ayarlarım",
+		editProfile: "Profili düzenle",
+		notification: "Bildirim",
+		language: "Dil",
+		lightMode: "Işık Modu",
+		privacyPolciy: "Gizlilik politikası",
+		walletAddress: "Cüzdan Adresi",
+	},
+	wallet: {
+		title: "Cüzdanım",
+		tokens: "Token'lar",
+		crypto: "Kripto",
+		loans: "Krediler",
+		actions: {
+			send: "Token'larınızı başka bir DAO üyesine gönderin veya telefonla birini almaya davet edin",
+			exchange: "Token'larınızı EURX (€ Euro) veya başka bir kripto para birimiyle değiştirin",
+			loan: "Token'larınızla Kredi Talep Edin"
+		}
+	},
+	mainMenu: {
+		title: "Ana Menü",
+		myWallet: "Cüzdanım",
+		settings: "Ayarlar",
+		blockloans: "BlockLoans",
+		next: "SONRAKI",
+		loading: "Yükleniyor...",
+		pinCreated: "Başarılı",
+		pinCreatedMessage: "PIN'iniz başarıyla oluşturuldu!"
+	},
+	pinEntry: {
+		title: "PIN Girin",
+		subtitle: "Cüzdanınıza erişmek için lütfen 4 haneli PIN'inizi girin",
+		forgotPin: "PIN'i unuttunuz mu?",
+		invalidPin: "Geçersiz PIN. Lütfen tekrar deneyin.",
+		createNewPin: "Yeni PIN Oluştur"
+	},
+	createPin: {
+		title: "PIN Oluştur",
+		subtitle: "Cüzdanınızı güvence altına almak için 4 haneli bir PIN oluşturun",
+		confirmTitle: "PIN'i Onayla",
+		confirmSubtitle: "Onaylamak için lütfen PIN'inizi tekrar girin",
+		pinMismatch: "PIN'ler eşleşmiyor. Lütfen tekrar deneyin.",
+		creating: "PIN oluşturuluyor..."
+	},
+	sendTokens: {
+		title: "Token Gönder",
+		recipientLabel: "Alıcı",
+		recipientPlaceholder: "Cüzdan adresini veya telefon numarasını girin",
+		amountLabel: "Miktar",
+		amountPlaceholder: "Gönderilecek miktarı girin",
+		send: "GÖNDER",
+		cancel: "İPTAL",
+		success: "Token'lar başarıyla gönderildi!",
+		error: "Token gönderimi başarısız oldu. Lütfen tekrar deneyin."
+	},
   landing: {
     title_1: "En Çok",
     title_2: "Güvenilen ve Güvenli",

@@ -10,15 +10,62 @@ export default {
     message: "Mensagem",
     profile: "Perfil",
   },
-  setting: {
-    title: "Minhas configurações",
-    editProfile: "Editar perfil",
-    notification: "Notificação",
-    language: "Idioma",
-    lightMode: "Modo claro",
-    privacyPolciy: "Política de privacidade",
-    walletAddress: "Endereço da carteira",
-  },
+	setting: {
+		title: "Minhas configurações",
+		editProfile: "Editar perfil",
+		notification: "Notificação",
+		language: "Idioma",
+		lightMode: "Modo claro",
+		privacyPolciy: "Política de privacidade",
+		walletAddress: "Endereço da carteira",
+	},
+	wallet: {
+		title: "Minha Carteira",
+		tokens: "Tokens",
+		crypto: "Cripto",
+		loans: "Empréstimos",
+		actions: {
+			send: "Envie seus tokens para outro membro da DAO ou convide alguém por telefone para recebê-los",
+			exchange: "Troque seus tokens por EURX (€ Euro) ou outra criptomoeda",
+			loan: "Solicitar empréstimo com seus tokens"
+		}
+	},
+	mainMenu: {
+		title: "Menu Principal",
+		myWallet: "Minha Carteira",
+		settings: "Configurações",
+		blockloans: "BlockLoans",
+		next: "PRÓXIMO",
+		loading: "Carregando...",
+		pinCreated: "Sucesso",
+		pinCreatedMessage: "Seu PIN foi criado com sucesso!"
+	},
+	pinEntry: {
+		title: "Inserir PIN",
+		subtitle: "Por favor, insira seu PIN de 4 dígitos para acessar sua carteira",
+		forgotPin: "Esqueceu o PIN?",
+		invalidPin: "PIN inválido. Tente novamente.",
+		createNewPin: "Criar Novo PIN"
+	},
+	createPin: {
+		title: "Criar PIN",
+		subtitle: "Crie um PIN de 4 dígitos para proteger sua carteira",
+		confirmTitle: "Confirmar PIN",
+		confirmSubtitle: "Digite novamente seu PIN para confirmar",
+		pinMismatch: "PINs não coincidem. Tente novamente.",
+		creating: "Criando PIN..."
+	},
+	sendTokens: {
+		title: "Enviar Tokens",
+		recipientLabel: "Destinatário",
+		recipientPlaceholder: "Digite o endereço da carteira ou número de telefone",
+		amountLabel: "Quantidade",
+		amountPlaceholder: "Digite a quantidade a enviar",
+		send: "ENVIAR",
+		cancel: "CANCELAR",
+		success: "Tokens enviados com sucesso!",
+		error: "Falha ao enviar tokens. Tente novamente."
+	},
   landing: {
     title_1: "A mais",
     title_2: "Confiável e segura",

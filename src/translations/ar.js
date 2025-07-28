@@ -10,15 +10,62 @@ export default {
     message: "الرسالة",
     profile: "الملف الشخصي",
   },
-  setting: {
-    title: "إعداداتي",
-    editProfile: "تعديل الملف الشخصي",
-    notification: "الإشعارات",
-    language: "اللغة",
-    lightMode: "وضع الإضاءة",
-    privacyPolciy: "سياسة الخصوصية",
-    walletAddress: "عنوان المحفظة",
-  },
+	setting: {
+		title: "إعداداتي",
+		editProfile: "تعديل الملف الشخصي",
+		notification: "الإشعارات",
+		language: "اللغة",
+		lightMode: "وضع الإضاءة",
+		privacyPolciy: "سياسة الخصوصية",
+		walletAddress: "عنوان المحفظة",
+	},
+	wallet: {
+		title: "محفظتي",
+		tokens: "الرموز",
+		crypto: "العملة المشفرة",
+		loans: "القروض",
+		actions: {
+			send: "أرسل رموزك المميزة إلى عضو آخر في المنظمة أو ادع شخصًا عبر الهاتف لاستلامها",
+			exchange: "استبدل رموزك المميزة بـ EURX (€ Euro) أو عملة مشفرة أخرى",
+			loan: "طلب قرض برموزك المميزة"
+		}
+	},
+	mainMenu: {
+		title: "القائمة الرئيسية",
+		myWallet: "محفظتي",
+		settings: "الإعدادات",
+		blockloans: "القروض",
+		next: "التالي",
+		loading: "جاري التحميل...",
+		pinCreated: "نجح",
+		pinCreatedMessage: "تم إنشاء رمز PIN الخاص بك بنجاح!"
+	},
+	pinEntry: {
+		title: "أدخل رمز PIN",
+		subtitle: "يرجى إدخال رمز PIN المكون من 4 أرقام للوصول إلى محفظتك",
+		forgotPin: "نسيت رمز PIN؟",
+		invalidPin: "رمز PIN غير صحيح. يرجى المحاولة مرة أخرى.",
+		createNewPin: "إنشاء رمز PIN جديد"
+	},
+	createPin: {
+		title: "إنشاء رمز PIN",
+		subtitle: "قم بإنشاء رمز PIN مكون من 4 أرقام لتأمين محفظتك",
+		confirmTitle: "تأكيد رمز PIN",
+		confirmSubtitle: "يرجى إعادة إدخال رمز PIN للتأكيد",
+		pinMismatch: "رموز PIN غير متطابقة. يرجى المحاولة مرة أخرى.",
+		creating: "جاري إنشاء رمز PIN..."
+	},
+	sendTokens: {
+		title: "إرسال الرموز",
+		recipientLabel: "المستلم",
+		recipientPlaceholder: "أدخل عنوان المحفظة أو رقم الهاتف",
+		amountLabel: "المبلغ",
+		amountPlaceholder: "أدخل المبلغ المراد إرساله",
+		send: "إرسال",
+		cancel: "إلغاء",
+		success: "تم إرسال الرموز بنجاح!",
+		error: "فشل في إرسال الرموز. يرجى المحاولة مرة أخرى."
+	},
   landing: {
     title_1: "الأكثر",
     title_2: "موثوقية وأمانًا",

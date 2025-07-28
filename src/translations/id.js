@@ -10,15 +10,62 @@ export default {
     message: "Pesan",
     profile: "Profil",
   },
-  setting: {
-    title: "Pengaturan saya",
-    editProfile: "Edit profil",
-    notification: "Notifikasi",
-    language: "Bahasa",
-    lightMode: "Mode Cahaya",
-    privacyPolciy: "Kebijakan privasi",
-    walletAddress: "Alamat Dompet",
-  },
+	setting: {
+		title: "Pengaturan saya",
+		editProfile: "Edit profil",
+		notification: "Notifikasi",
+		language: "Bahasa",
+		lightMode: "Mode Cahaya",
+		privacyPolciy: "Kebijakan privasi",
+		walletAddress: "Alamat Dompet",
+	},
+	wallet: {
+		title: "Dompet Saya",
+		tokens: "Token",
+		crypto: "Kripto",
+		loans: "Pinjaman",
+		actions: {
+			send: "Kirim token Anda ke anggota DAO lain atau undang seseorang melalui telepon untuk menerimanya",
+			exchange: "Tukar token Anda dengan EURX (€ Euro) atau cryptocurrency lainnya",
+			loan: "Minta Pinjaman dengan token Anda"
+		}
+	},
+	mainMenu: {
+		title: "Menu Utama",
+		myWallet: "Dompet Saya",
+		settings: "Pengaturan",
+		blockloans: "BlockLoans",
+		next: "LANJUT",
+		loading: "Memuat...",
+		pinCreated: "Berhasil",
+		pinCreatedMessage: "PIN Anda telah berhasil dibuat!"
+	},
+	pinEntry: {
+		title: "Masukkan PIN",
+		subtitle: "Silakan masukkan PIN 4 digit Anda untuk mengakses dompet Anda",
+		forgotPin: "Lupa PIN?",
+		invalidPin: "PIN tidak valid. Silakan coba lagi.",
+		createNewPin: "Buat PIN Baru"
+	},
+	createPin: {
+		title: "Buat PIN",
+		subtitle: "Buat PIN 4 digit untuk mengamankan dompet Anda",
+		confirmTitle: "Konfirmasi PIN",
+		confirmSubtitle: "Silakan masukkan kembali PIN Anda untuk konfirmasi",
+		pinMismatch: "PIN tidak cocok. Silakan coba lagi.",
+		creating: "Membuat PIN..."
+	},
+	sendTokens: {
+		title: "Kirim Token",
+		recipientLabel: "Penerima",
+		recipientPlaceholder: "Masukkan alamat dompet atau nomor telepon",
+		amountLabel: "Jumlah",
+		amountPlaceholder: "Masukkan jumlah yang akan dikirim",
+		send: "KIRIM",
+		cancel: "BATAL",
+		success: "Token berhasil dikirim!",
+		error: "Gagal mengirim token. Silakan coba lagi."
+	},
   landing: {
     title_1: "Komunitas Kripto",
     title_2: "Paling Tepercaya",

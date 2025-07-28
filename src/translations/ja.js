@@ -10,15 +10,62 @@ export default {
     message: "メッセージ",
     profile: "プロフィール",
   },
-  setting: {
-    title: "設定",
-    editProfile: "プロフィール編集",
-    notification: "通知",
-    language: "言語",
-    lightMode: "ライトモード",
-    privacyPolciy: "プライバシーポリシー",
-    walletAddress: "ウォレットアドレス",
-  },
+	setting: {
+		title: "設定",
+		editProfile: "プロフィール編集",
+		notification: "通知",
+		language: "言語",
+		lightMode: "ライトモード",
+		privacyPolciy: "プライバシーポリシー",
+		walletAddress: "ウォレットアドレス",
+	},
+	wallet: {
+		title: "マイウォレット",
+		tokens: "トークン",
+		crypto: "クリプト",
+		loans: "ローン",
+		actions: {
+			send: "トークンを他のDAOメンバーに送信するか、電話で誰かを招待して受け取ってもらう",
+			exchange: "トークンをEURX（€ユーロ）または他の暗号通貨に交換する",
+			loan: "トークンでローンを申請する"
+		}
+	},
+	mainMenu: {
+		title: "メインメニュー",
+		myWallet: "マイウォレット",
+		settings: "設定",
+		blockloans: "ブロックローン",
+		next: "次へ",
+		loading: "読み込み中...",
+		pinCreated: "成功",
+		pinCreatedMessage: "PINが正常に作成されました！"
+	},
+	pinEntry: {
+		title: "PIN入力",
+		subtitle: "ウォレットにアクセスするために4桁のPINを入力してください",
+		forgotPin: "PINを忘れましたか？",
+		invalidPin: "無効なPIN。もう一度試してください。",
+		createNewPin: "新しいPINを作成"
+	},
+	createPin: {
+		title: "PIN作成",
+		subtitle: "ウォレットを保護するために4桁のPINを作成してください",
+		confirmTitle: "PIN確認",
+		confirmSubtitle: "確認のためにPINを再入力してください",
+		pinMismatch: "PINが一致しません。もう一度試してください。",
+		creating: "PINを作成中..."
+	},
+	sendTokens: {
+		title: "トークン送信",
+		recipientLabel: "受信者",
+		recipientPlaceholder: "ウォレットアドレスまたは電話番号を入力",
+		amountLabel: "金額",
+		amountPlaceholder: "送信する金額を入力",
+		send: "送信",
+		cancel: "キャンセル",
+		success: "トークンが正常に送信されました！",
+		error: "トークンの送信に失敗しました。もう一度試してください。"
+	},
   landing: {
     title_1: "最も",
     title_2: "信頼性と安全性の高い",

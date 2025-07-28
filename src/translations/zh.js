@@ -19,17 +19,53 @@ export default {
     privacyPolciy: "隐私政策",
     walletAddress: "钱包地址",
   },
-  wallet: {
-    title: "我的钱包",
-    tokens: "代币",
-    crypto: "加密货币",
-    loans: "贷款",
-    actions: {
-      send: "将您的代币发送给其他DAO成员或邀请他人通过电话接收",
-      exchange: "将您的代币兑换为EURX（€欧元）或其他加密货币",
-      loan: "用您的代币申请贷款"
-    }
-  },
+	wallet: {
+		title: "我的钱包",
+		tokens: "代币",
+		crypto: "加密货币",
+		loans: "贷款",
+		actions: {
+			send: "将您的代币发送给其他DAO成员或邀请他人通过电话接收",
+			exchange: "将您的代币兑换为EURX（€欧元）或其他加密货币",
+			loan: "用您的代币申请贷款"
+		}
+	},
+	mainMenu: {
+		title: "主菜单",
+		myWallet: "我的钱包",
+		settings: "设置",
+		blockloans: "区块贷款",
+		next: "下一步",
+		loading: "加载中...",
+		pinCreated: "成功",
+		pinCreatedMessage: "您的PIN已成功创建！"
+	},
+	pinEntry: {
+		title: "输入PIN",
+		subtitle: "请输入您的4位PIN码以访问您的钱包",
+		forgotPin: "忘记PIN？",
+		invalidPin: "PIN无效。请重试。",
+		createNewPin: "创建新PIN"
+	},
+	createPin: {
+		title: "创建PIN",
+		subtitle: "创建4位PIN码以保护您的钱包",
+		confirmTitle: "确认PIN",
+		confirmSubtitle: "请重新输入您的PIN以确认",
+		pinMismatch: "PIN不匹配。请重试。",
+		creating: "正在创建PIN..."
+	},
+	sendTokens: {
+		title: "发送代币",
+		recipientLabel: "接收者",
+		recipientPlaceholder: "输入钱包地址或电话号码",
+		amountLabel: "数量",
+		amountPlaceholder: "输入要发送的数量",
+		send: "发送",
+		cancel: "取消",
+		success: "代币发送成功！",
+		error: "发送代币失败。请重试。"
+	},
   landing: {
     title_1: "最",
     title_2: "值得信赖和安全的",

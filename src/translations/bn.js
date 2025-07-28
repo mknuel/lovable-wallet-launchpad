@@ -10,15 +10,62 @@ export default {
     message: "বার্তা",
     profile: "প্রোফাইল",
   },
-  setting: {
-    title: "আমার সেটিংস",
-    editProfile: "প্রোফাইল সম্পাদনা করুন",
-    notification: "বিজ্ঞপ্তি",
-    language: "ভাষা",
-    lightMode: "হালকা মোড",
-    privacyPolciy: "গোপনীয়তা নীতি",
-    walletAddress: "ওয়ালেট ঠিকানা",
-  },
+	setting: {
+		title: "আমার সেটিংস",
+		editProfile: "প্রোফাইল সম্পাদনা করুন",
+		notification: "বিজ্ঞপ্তি",
+		language: "ভাষা",
+		lightMode: "হালকা মোড",
+		privacyPolciy: "গোপনীয়তা নীতি",
+		walletAddress: "ওয়ালেট ঠিকানা",
+	},
+	wallet: {
+		title: "আমার ওয়ালেট",
+		tokens: "টোকেন",
+		crypto: "ক্রিপ্টো",
+		loans: "ঋণ",
+		actions: {
+			send: "আপনার টোকেন অন্য DAO সদস্যের কাছে পাঠান বা ফোনে কাউকে আমন্ত্রণ জানান",
+			exchange: "আপনার টোকেন EURX (€ Euro) বা অন্য ক্রিপ্টোকারেন্সিতে বিনিময় করুন",
+			loan: "আপনার টোকেন দিয়ে ঋণের জন্য অনুরোধ করুন"
+		}
+	},
+	mainMenu: {
+		title: "প্রধান মেনু",
+		myWallet: "আমার ওয়ালেট",
+		settings: "সেটিংস",
+		blockloans: "ব্লকলোন",
+		next: "পরবর্তী",
+		loading: "লোড হচ্ছে...",
+		pinCreated: "সফল",
+		pinCreatedMessage: "আপনার PIN সফলভাবে তৈরি হয়েছে!"
+	},
+	pinEntry: {
+		title: "PIN প্রবেশ করান",
+		subtitle: "আপনার ওয়ালেট অ্যাক্সেস করতে 4-সংখ্যার PIN প্রবেশ করান",
+		forgotPin: "PIN ভুলে গেছেন?",
+		invalidPin: "অবৈধ PIN। অনুগ্রহ করে আবার চেষ্টা করুন।",
+		createNewPin: "নতুন PIN তৈরি করুন"
+	},
+	createPin: {
+		title: "PIN তৈরি করুন",
+		subtitle: "আপনার ওয়ালেট সুরক্ষিত করতে 4-সংখ্যার PIN তৈরি করুন",
+		confirmTitle: "PIN নিশ্চিত করুন",
+		confirmSubtitle: "নিশ্চিত করতে আপনার PIN পুনরায় প্রবেশ করান",
+		pinMismatch: "PIN মিলছে না। অনুগ্রহ করে আবার চেষ্টা করুন।",
+		creating: "PIN তৈরি করা হচ্ছে..."
+	},
+	sendTokens: {
+		title: "টোকেন পাঠান",
+		recipientLabel: "প্রাপক",
+		recipientPlaceholder: "ওয়ালেট ঠিকানা বা ফোন নম্বর প্রবেশ করান",
+		amountLabel: "পরিমাণ",
+		amountPlaceholder: "পাঠানোর জন্য পরিমাণ প্রবেশ করান",
+		send: "পাঠান",
+		cancel: "বাতিল",
+		success: "টোকেন সফলভাবে পাঠানো হয়েছে!",
+		error: "টোকেন পাঠাতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।"
+	},
   landing: {
     title_1: "সবচেয়ে",
     title_2: "বিশ্বস্ত এবং নিরাপদ",
