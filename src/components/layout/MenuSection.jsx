@@ -17,7 +17,7 @@ export const MenuSection = ({ menuItems, className }) => {
 					}}
 					role="menuitem">
 					<span 
-						className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-semibold text-[16px] leading-relaxed break-words whitespace-normal"
+						className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-semibold text-[16px] leading-relaxed break-words whitespace-normal uppercase tracking-wide"
 						style={{
 							WebkitBackgroundClip: "text",
 							WebkitTextFillColor: "transparent",
