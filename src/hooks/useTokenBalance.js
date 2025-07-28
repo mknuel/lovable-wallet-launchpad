@@ -16,7 +16,7 @@ export const useTokenBalance = () => {
    */
   useEffect(() => {
     if (walletData) {
-      const tokenBalance = walletData.token || 0.0;
+      const tokenBalance = walletData.balance || 0.0;
       setBalance(tokenBalance.toString());
     } else {
       setBalance('0.0');
