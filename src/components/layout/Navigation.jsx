@@ -5,13 +5,19 @@ import GroupIcon from "@mui/icons-material/Group";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SecurityIcon from "@mui/icons-material/Security";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "../../hooks/useTranslation";
 import { PATH_MAIN, PATH_SETTING } from "../../context/paths";
 
 const Navigation = ({ nav }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
+  
+  // Determine if main menu should be active based on current route
+  const isMainMenuActive = location.pathname === "/main" || 
+                          location.pathname.startsWith("/wallet") || 
+                          location.pathname.startsWith("/blockloans");
   
   // Show swap-specific navigation for swap screen
   const isSwapScreen = nav === "Swap";
@@ -133,16 +139,15 @@ const Navigation = ({ nav }) => {
             sx={{
               width: 20,
               height: 20,
-              color: (nav === "Main Menu" || nav === "My Wallet" || nav === "BlockLoans") ? "#9C27B0" : "#837E7E",
+              color: isMainMenuActive ? "#9C27B0" : "#837E7E",
             }}
           />
           <div
             className="font-bold text-[14px] text-center"
             style={{
-              background:
-                (nav === "Main Menu" || nav === "My Wallet" || nav === "BlockLoans")
-                  ? "linear-gradient(to right, #DC2366, #4F5CAA)"
-                  : "#ACB1B5",
+              background: isMainMenuActive
+                ? "linear-gradient(to right, #DC2366, #4F5CAA)"
+                : "#ACB1B5",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
