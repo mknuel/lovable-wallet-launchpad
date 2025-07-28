@@ -35,8 +35,10 @@ const LanguageScreen = () => {
 	console.log(selectedLanguage);
 	return (
 		<div className="container">
-			<Header title={t("language.title") || "Language"}></Header>
-			<div className="body-container w-full h-[calc(100vh-300px)] pb-[38px] px-[8px] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+			<div className="sticky top-0 left-0 w-full z-40">
+				<Header title={t("language.title") || "Language"}></Header>
+			</div>
+			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-[8px] pb-[100px]">
 				{languageOptions.map((lang, index) => (
 					<div key={lang.code}>
 						<div
@@ -60,16 +62,21 @@ const LanguageScreen = () => {
 						</div>
 					</div>
 				))}
+				<div className="px-2 pb-4">
+					<CommonButton
+						width="100%"
+						height="42px"
+						onClick={handleSubmit}
+						// disabled={isLoading || !termsAgreed}
+					>
+						{t("language.submit") || "Submit"}
+					</CommonButton>
+				</div>
 			</div>
-			<CommonButton
-				width="310px"
-				height="42px"
-				onClick={handleSubmit}
-				// disabled={isLoading || !termsAgreed}
-			>
-				{t("language.submit") || "Submit"}
-			</CommonButton>
-			<Navigation nav="Profile"></Navigation>
+
+			<div className="sticky bottom-0 left-0 w-full z-40">
+				<Navigation nav="Profile"></Navigation>
+			</div>
 		</div>
 	);
 };
