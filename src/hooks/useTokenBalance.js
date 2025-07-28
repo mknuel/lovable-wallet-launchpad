@@ -1,50 +1,42 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useActiveAccount } from 'thirdweb/react';
-import api from '../utils/api';
+import { useSelector } from 'react-redux';
+import { selectWalletData } from '../store/reducers/walletSlice';
 
 /**
- * Custom hook for fetching token balance from the API
+ * Custom hook for getting token balance from wallet data
  */
 export const useTokenBalance = () => {
-  const account = useActiveAccount();
+  const walletData = useSelector(selectWalletData);
   const [balance, setBalance] = useState('0');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   /**
-   * Fetch token balance from API
+   * Update balance when wallet data changes
    */
-  const fetchTokenBalance = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await api.get('/questionnaire/reward');
-
-      if (response.success) {
-        setBalance(response.data?.balance || '0');
-      } else {
-        throw new Error(response.error || 'Failed to fetch token balance');
-      }
-    } catch (err) {
-      console.error('Error fetching token balance:', err);
-      setError(err.message);
-      setBalance('0');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Fetch balance when account changes
   useEffect(() => {
-    fetchTokenBalance();
-  }, [fetchTokenBalance]);
+    if (walletData) {
+      const tokenBalance = walletData.token || 0.0;
+      setBalance(tokenBalance.toString());
+    } else {
+      setBalance('0.0');
+    }
+  }, [walletData]);
+
+  /**
+   * Manual refresh function (for compatibility)
+   */
+  const refresh = useCallback(() => {
+    // This will trigger through wallet data updates
+    setLoading(true);
+    setTimeout(() => setLoading(false), 100);
+  }, []);
 
   return {
     balance,
     loading,
     error,
-    refresh: fetchTokenBalance,
+    refresh,
     formattedBalance: parseFloat(balance).toFixed(1)
   };
 };
