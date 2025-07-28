@@ -29,7 +29,11 @@ const SplashScreen = () => {
             setWalletChecked(true);
         },
         onTimeout: () => {
-            console.log("Auto-connect timed out.");
+            console.log("Auto-connect timed out - clearing auth and redirecting to landing");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userData");
+            dispatch(clearUser());
+            dispatch(clearAuth());
             setWalletChecked(true);
         },
     });
@@ -65,6 +69,18 @@ const SplashScreen = () => {
 
         checkAuth();
     }, [dispatch]);
+
+    // Handle wallet connection errors
+    useEffect(() => {
+        if (walletError) {
+            console.log("Wallet connection error - clearing auth and redirecting to landing");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userData");
+            dispatch(clearUser());
+            dispatch(clearAuth());
+            setWalletChecked(true);
+        }
+    }, [walletError, dispatch]);
 
     // Handle navigation once both auth and wallet checks are complete
     useEffect(() => {
