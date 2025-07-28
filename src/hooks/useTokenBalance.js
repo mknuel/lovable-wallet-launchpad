@@ -15,21 +15,14 @@ export const useTokenBalance = () => {
    * Fetch token balance from API
    */
   const fetchTokenBalance = useCallback(async () => {
-    if (!account?.address) {
-      setBalance('0');
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);
       
-      const response = await api.post('/infura/blockloans/viewbalance', {
-        address: account.address
-      });
+      const response = await api.get('/questionnaire/reward');
 
       if (response.success) {
-        setBalance(response.data || '0');
+        setBalance(response.data?.balance || '0');
       } else {
         throw new Error(response.error || 'Failed to fetch token balance');
       }
@@ -40,7 +33,7 @@ export const useTokenBalance = () => {
     } finally {
       setLoading(false);
     }
-  }, [account?.address]);
+  }, []);
 
   // Fetch balance when account changes
   useEffect(() => {
