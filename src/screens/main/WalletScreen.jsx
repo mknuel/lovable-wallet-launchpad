@@ -117,7 +117,7 @@ const WalletScreen = () => {
 							You can <strong>Send, Exchange and get</strong> a Loan with your
 							tokens!
 						</p>
-						<MenuSection menuItems={menuItems} />
+						<MenuSection menuItems={menuItems} uppercase />
 					</div>
 				)}
 

@@ -111,7 +111,7 @@ const WalletActionsScreen = () => {
         {/* Menu Section */}
         {!walletLoading && (
           <div className="w-full mb-8">
-            <MenuSection menuItems={menuItems} />
+            <MenuSection menuItems={menuItems} uppercase />
           </div>
         )}
 
