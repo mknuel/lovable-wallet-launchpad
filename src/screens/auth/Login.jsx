@@ -19,14 +19,14 @@ const LoginScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsSubmitting] = useState(false);
+  const [loginInfo, setLoginInfo] = useState("");
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginInfo("");
+    setIsSubmitting(true);
     try {
-      // Prepare login data
-      setIsSubmitting(true);
-
       const userName = "userName";
       const telegramId = "tg_id_1";
       const loginData = {
@@ -37,10 +37,12 @@ const LoginScreen = () => {
         username: userName,
         last_name: "formData.lastName",
       };
-      await api
-        .post("/ssoauth/tglogin", loginData)
-        .then((response) => {
-          console.log("Login response:", response);
+
+      const postOnce = async (attempt) => {
+        console.info(`[Login] /ssoauth/tglogin attempt ${attempt}`);
+        try {
+          const response = await api.post("/ssoauth/tglogin", loginData);
+          console.info(`[Login] tglogin response attempt ${attempt}:`, response);
           if (response && response.success) {
             const userData = {
               userId: response.user._id,
@@ -55,20 +57,26 @@ const LoginScreen = () => {
               gender: "male",
             };
             login(response.token, userData);
-            // Redirect to Main Menu after login - not wallet
             navigate(PATH_MAIN);
-          } else {
-            console.error("Login failed:", response.data);
+            return true;
           }
-        })
-        .catch((error) => {
-          console.error("Login error:", error);
-        });
+          console.warn(`[Login] unsuccessful attempt ${attempt}`, response?.data || response);
+          return false;
+        } catch (error) {
+          console.error(`[Login] error attempt ${attempt}`, error);
+          return false;
+        }
+      };
+
+      let ok = await postOnce(1);
+      if (!ok) {
+        setLoginInfo("Login hiccup, retrying once...");
+        await new Promise((r) => setTimeout(r, 700));
+        ok = await postOnce(2);
+        setLoginInfo("");
+      }
     } catch (error) {
-      // Handle error
-      const errorMessage =
-        error.response?.data?.message || "An error occurred during login";
-      console.error("Login error:", error);
+      console.error("Login error (pre-request):", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -96,6 +104,9 @@ const LoginScreen = () => {
               >
                 SIGN IN
               </CommonButton>
+              {loginInfo && (
+                <div className="text-[12px] mt-2 text-center">{loginInfo}</div>
+              )}
             </div>
           </div>
         </div>

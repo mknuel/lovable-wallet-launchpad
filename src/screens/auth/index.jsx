@@ -11,7 +11,7 @@ import {
 } from "@tonconnect/ui-react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CustomTonConnectButton from "../../components/Buttons/CustomTonConnectButton";
 import { isTMA } from "@telegram-apps/bridge";
 import { retrieveLaunchParams } from "@telegram-apps/sdk";
@@ -26,6 +26,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { connect } = useConnect();
   const { login } = useAuth();
+  const [authInfo, setAuthInfo] = useState("");
 
   useEffect(() => {
 		if (tonWallet) {
@@ -42,6 +43,7 @@ const Auth = () => {
 	};
 
 	const handleTelegramAuth = async () => {
+		setAuthInfo("");
 		try {
 			// Connect to in-app wallet (no modal)
 			const wallet = await connect(async () => {
@@ -56,7 +58,7 @@ const Auth = () => {
 			let data = {};
 
 			if (isTMA()) {
-				console.log("It's Telegram Mini Apps");
+				console.info("[Auth] TMA detected, preparing payload");
 				const initData = retrieveLaunchParams();
 				data = {
 					hash: initData.tgWebAppData.hash,
@@ -89,17 +91,34 @@ const Auth = () => {
 				};
 			}
 
-			// Register/login with Telegram data
-			const response = await api.post("/ssoauth/tgregister", data);
-			console.log("Register/Login Res==========>", response);
+			const postOnce = async (attempt) => {
+				console.info(`[Auth] /ssoauth/tgregister attempt ${attempt}`, { walletAddress: acct?.address });
+				try {
+					const response = await api.post("/ssoauth/tgregister", data);
+					console.info(`[Auth] tgregister response attempt ${attempt}:`, response);
+					if (response.status === 200 && response.data?.success) {
+						await login(response.data.data.token, response.data.data.user);
+						navigate(PATH_MAIN);
+						return true;
+					}
+					console.warn(`[Auth] tgregister unsuccessful attempt ${attempt}`, response?.data);
+					return false;
+				} catch (err) {
+					console.error(`[Auth] tgregister error attempt ${attempt}`, err);
+					return false;
+				}
+			};
 
-			if (response.status === 200 && response.data.success) {
-				// Store auth data and redirect
-				await login(response.data.data.token, response.data.data.user);
-				navigate(PATH_MAIN);
+			let ok = await postOnce(1);
+			if (!ok) {
+				setAuthInfo("Sign-in hiccup, retrying once...");
+				await new Promise((r) => setTimeout(r, 700));
+				ok = await postOnce(2);
+				setAuthInfo("");
 			}
 		} catch (error) {
-			console.error("Telegram auth error:", error);
+			console.error("Telegram auth error (pre-request):", error);
+			setAuthInfo("");
 		}
 	};
 
@@ -141,6 +160,9 @@ const Auth = () => {
         <CommonButton height="48px" width="312px" onClick={handleCreateWallet}>
           CREATE A NEW WALLET
         </CommonButton>
+        {authInfo && (
+          <div className="text-[12px] text-center mt-2">{authInfo}</div>
+        )}
       </div>
     </div>
   );
