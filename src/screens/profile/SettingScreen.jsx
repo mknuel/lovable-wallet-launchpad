@@ -87,14 +87,15 @@ const SettingScreen = () => {
 	};
 
 	return (
-		<div className="container">
+		<div className={`min-h-screen relative ${isDarkMode ? 'bg-transparent' : 'bg-transparent'}`}>
 			<div className="sticky top-0 left-0 w-full z-40">
 				<Header
 					title={t("setting.title") || "My settings"}
 					action={true}></Header>
 			</div>
-			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-5">
-				<div>
+			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-5 relative z-10"
+				style={{ background: 'transparent' }}>
+				<div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
 					<img
 						src={
 							isDarkMode
@@ -102,41 +103,43 @@ const SettingScreen = () => {
 								: ProfileRectangle // White
 						}
 						alt="Settings background"
-						className="absolute top-0 left-0 -z-10 w-screen h-[265px]"></img>
+						className="w-full h-auto object-cover"></img>
+				</div>
+				<div>
 					<div className="flex flex-col justify-center items-center relative bottom-0 pt-[90px]">
 						<img
 							src={userData.photo || Avatar}
 							alt="avatar"
 							className="w-[120px] h-[120px] pb-[5px]"></img>
-						<div className="font-bold text-[22px] text-center">
+						<div className={`font-bold text-[22px] text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 							{userData.firstName} {userData.lastName}
 						</div>
-						<div className="font-regular text-[14px]">{userData.phone}</div>
+						<div className={`font-regular text-[14px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{userData.phone}</div>
 					</div>
 				</div>
 				<div className="flex flex-col gap-2 w-full mt-[20px]">
-					<div className={`flex flex-col border-2 rounded-lg p-2 ${
+					<div className={`flex flex-col border-2 rounded-lg p-2 backdrop-blur-sm ${
 						isDarkMode 
-							? 'border-gray-600 bg-[#2a2a2a]' 
-							: 'border-[var(--border)] bg-[var(--surface)]'
+							? 'border-gray-600 bg-black/30' 
+							: 'border-[var(--border)] bg-white/70'
 					}`}>
 						<div
 							className="flex flex-row items-center gap-4 justify-between"
 							onClick={() => navigate("/edit-profile")}>
 							<div className="flex flex-row items-center gap-[13px]">
 								<PeopleIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-								<div className="font-regular text-[14px]">
+								<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 									{t("setting.editProfile") || "Edit profile"}
 								</div>
 							</div>
-							<ChevronRightIcon sx={{ width: 16, height: 16 }} />
+							<ChevronRightIcon sx={{ width: 16, height: 16, color: isDarkMode ? "#E0E0E0" : "#666666" }} />
 						</div>
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div className="flex flex-row items-center gap-[13px]">
 								<NotificationsActiveIcon
 									sx={{ width: 16, height: 16, color: "#837E7E" }}
 								/>
-								<div className="font-regular text-[14px]">
+								<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 									{t("setting.notification") || "Notifications"}
 								</div>
 							</div>
@@ -149,24 +152,24 @@ const SettingScreen = () => {
 								<LanguageIcon
 									sx={{ width: 16, height: 16, color: "#837E7E" }}
 								/>
-								<div className="font-regular text-[14px]">
+								<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 									{t("setting.language") || "Language"}
 								</div>
 							</div>
-							<div className="text-[14px]">{t("currentlang") || "English"}</div>
+							<div className={`text-[14px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t("currentlang") || "English"}</div>
 						</div>
 					</div>
-					<div className={`flex flex-col border-2 rounded-lg p-2 ${
+					<div className={`flex flex-col border-2 rounded-lg p-2 backdrop-blur-sm ${
 						isDarkMode 
-							? 'border-gray-600 bg-[#2a2a2a]' 
-							: 'border-[#EFEFEF] bg-white'
+							? 'border-gray-600 bg-black/30' 
+							: 'border-[#EFEFEF] bg-white/70'
 					}`}>
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div className="flex flex-row items-center gap-[13px]">
 								<NotificationsActiveIcon
 									sx={{ width: 16, height: 16, color: "#837E7E" }}
 								/>
-								<div className="font-regular text-[14px]">
+								<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 									{t("setting.lightMode") || "Light Mode"}
 								</div>
 							</div>
@@ -179,17 +182,17 @@ const SettingScreen = () => {
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div className="flex flex-row items-center gap-[13px]">
 								<LockIcon sx={{ width: 16, height: 16, color: "#837E7E" }} />
-								<div className="font-regular text-[14px]">
+								<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 									{t("setting.privacyPolciy") || "Privacy Policy"}
 								</div>
 							</div>
-							<ChevronRightIcon sx={{ width: 16, height: 16 }} />
+							<ChevronRightIcon sx={{ width: 16, height: 16, color: isDarkMode ? "#E0E0E0" : "#666666" }} />
 						</div>
 					</div>
-					<div className={`flex flex-col gap-4 border-2 rounded-lg p-2 ${
+					<div className={`flex flex-col gap-4 border-2 rounded-lg p-2 backdrop-blur-sm ${
 						isDarkMode 
-							? 'border-gray-600 bg-[#2a2a2a]' 
-							: 'border-[#EFEFEF] bg-white'
+							? 'border-gray-600 bg-black/30' 
+							: 'border-[#EFEFEF] bg-white/70'
 					}`}>
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div
@@ -204,7 +207,7 @@ const SettingScreen = () => {
 								}}>
 								<QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
 								<div className="flex flex-col">
-									<div className="font-regular text-[14px]">
+									<div className={`font-regular text-[14px] ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 										{t("setting.walletAddress") || "Wallet Address"}
 									</div>
 									<div className="wallet-address-container">
