@@ -3,7 +3,7 @@ import LandingBackground from "../assets/images/landing_background.png";
 import CommonButton from "../components/Buttons/CommonButton";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import api from "../utils/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { PATH_MAIN } from "../context/paths";
 import LanguageSelector from "../components/LanguageSelector";
 import { useTranslation } from "../hooks/useTranslation";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import OnboardingHeader from "../../components/layout/OnboardingHeader";
 import CommonButton from "../../components/Buttons/CommonButton";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import api from "../../utils/api";
 import { PATH_MAIN } from "../../context/paths";
 
