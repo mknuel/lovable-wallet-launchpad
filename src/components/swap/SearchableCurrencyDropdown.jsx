@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { usePolygonTokens } from "../../hooks/usePolygonTokens";
 import useDebounce from "../../hooks/useDebounce";
