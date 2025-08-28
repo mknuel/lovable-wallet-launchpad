@@ -93,8 +93,7 @@ const SettingScreen = () => {
 					title={t("setting.title") || "My settings"}
 					action={true}></Header>
 			</div>
-			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-5 relative z-10"
-				style={{ background: 'transparent' }}>
+			<div className="flex flex-col w-full h-[100dvh] overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-5 relative z-10">
 				<div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
 					<img
 						src={
