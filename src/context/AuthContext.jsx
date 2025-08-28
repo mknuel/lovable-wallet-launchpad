@@ -10,7 +10,7 @@ import { PATH_AUTH, PATH_MAIN, PATH_LOGIN, PATH_SPLASH, PATH_LANDING } from "./p
 
 const AuthContext = createContext(null);
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(false); // Changed to false since splash handles initial loading
