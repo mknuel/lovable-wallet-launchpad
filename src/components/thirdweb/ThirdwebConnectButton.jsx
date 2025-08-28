@@ -22,7 +22,6 @@ const ThirdwebConnectButton = ({ darkMode, path }) => {
 
   const handleConnect = (wallet) => {
     changeWalletAccount(wallet.getAccount().address);
-    console.log("address=======>", wallet.getAccount());
     if (path) {
       navigate(path);
     }

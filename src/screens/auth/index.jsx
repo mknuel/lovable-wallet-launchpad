@@ -1,5 +1,4 @@
 
-/* eslint-disable no-unused-vars */
 import LogoVertical from "../../assets/images/Logo - Blockloans.png";
 import CommonButton from "../../components/Buttons/CommonButton";
 import { PATH_MAIN } from "../../context/paths";
@@ -58,7 +57,6 @@ const Auth = () => {
 			let data = {};
 
 			if (isTMA()) {
-				console.info("[Auth] TMA detected, preparing payload");
 				const initData = retrieveLaunchParams();
 				data = {
 					hash: initData.tgWebAppData.hash,
@@ -92,19 +90,15 @@ const Auth = () => {
 			}
 
 			const postOnce = async (attempt) => {
-				console.info(`[Auth] /ssoauth/tgregister attempt ${attempt}`, { walletAddress: acct?.address });
 				try {
 					const response = await api.post("/ssoauth/tgregister", data);
-					console.info(`[Auth] tgregister response attempt ${attempt}:`, response);
 					if (response.status === 200 && response.data?.success) {
 						await login(response.data.data.token, response.data.data.user);
 						navigate(PATH_MAIN);
 						return true;
 					}
-					console.warn(`[Auth] tgregister unsuccessful attempt ${attempt}`, response?.data);
 					return false;
 				} catch (err) {
-					console.error(`[Auth] tgregister error attempt ${attempt}`, err);
 					return false;
 				}
 			};
@@ -117,7 +111,6 @@ const Auth = () => {
 				setAuthInfo("");
 			}
 		} catch (error) {
-			console.error("Telegram auth error (pre-request):", error);
 			setAuthInfo("");
 		}
 	};

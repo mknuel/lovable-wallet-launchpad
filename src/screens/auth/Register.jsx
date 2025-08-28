@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -109,9 +108,9 @@ const Register = () => {
           handleLogin(PATH_MAIN);
         }
       });
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
+	} catch (error) {
+		// Handle registration error silently
+	}
   };
 
   async function handleLogin(link) {
@@ -128,7 +127,7 @@ const Register = () => {
     await api
       .post("/ssoauth/tglogin", loginData)
       .then((response) => {
-        console.log("Login response:", response);
+        
         if (response && response.success) {
           const userData = {
             userId: response.user._id,
@@ -144,17 +143,14 @@ const Register = () => {
           };
           login(response.token, userData);
           navigate(link);
-        } else {
-          console.error("Login failed:", response.data);
-        }
+		}
       })
-      .catch((error) => {
-        console.error("Login error:", error);
-      });
+	.catch((error) => {
+		// Handle login error silently
+	});
   }
 
-  console.log("formData=======>", formData);
-  return (
+	return (
     <div className="container justify-between">
       <div className="flex flex-col">
         <OnboardingHeader step={1}></OnboardingHeader>

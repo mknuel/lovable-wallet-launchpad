@@ -1,5 +1,4 @@
 
-/* eslint-disable no-unused-vars */
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useTelegram } from "./hooks/useTelegram";
 import { useDispatch } from "react-redux";
@@ -23,7 +22,6 @@ function App() {
 	// Listen for auth errors
 	useEffect(() => {
 		const handleUnauthorized = () => {
-			console.log("Unauthorized function called");
 			navigate(PATH_AUTH); // Redirect to auth page, not login
 		};
 		window.addEventListener("auth:unauthorized", handleUnauthorized);
@@ -31,8 +29,6 @@ function App() {
 			window.removeEventListener("auth:unauthorized", handleUnauthorized);
 		};
 	}, [dispatch, navigate]);
-
-	console.log('App component loaded, current pathname:', window.location.pathname);
 
 	return (
 	<div className="app-container">

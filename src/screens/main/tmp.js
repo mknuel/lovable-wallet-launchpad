@@ -9,18 +9,13 @@ import { FromCurrencyCard } from "../../components/swap/FromCurrencyCard";
 import {
 	defineChain,
 	getContract,
-	NATIVE_TOKEN_ADDRESS,
-	toWei,
 } from "thirdweb";
 import { client } from "../../components/thirdweb/thirdwebClient";
 import {
 	useActiveAccount,
-	useEstimateGas,
 	useEstimateGasCost,
 	useSendTransaction,
 } from "thirdweb/react";
-import { prepareTransaction } from "thirdweb/transaction";
-import { getChainMetadata } from "thirdweb/chains"; // To get chain info
 import { transfer } from "thirdweb/extensions/erc20";
 function formatTokenBalance(token) {
 	if (
@@ -58,14 +53,8 @@ const SendTokensScreen = () => {
 	const activeRequest = useRef(null);
 	const lastSearchQuery = useRef("");
 
-	/* const {
-        mutate: estimateGasCost,
-        data: gasCost,
-        isLoading: isEstimatingGas,
-    } = useEstimateGas();
- */
 
-	const { mutate: estimateGasCost, data: gasCost } = useEstimateGasCost();
+	const { mutate: estimateGasCost } = useEstimateGasCost();
 	function debounce(func, wait) {
 		let timeout;
 		return function executedFunction(...args) {
@@ -226,7 +215,6 @@ const SendTokensScreen = () => {
         } */
 
 		try {
-			console.log(fromCurrency?.chain_id);
 			const chain = defineChain({ id: fromCurrency?.chain_id });
 			// const chain = await getChainMetadata(fromCurrency.chain_id);
 
@@ -266,6 +254,7 @@ const SendTokensScreen = () => {
 		selectedUser,
 		navigate,
 		sendTransaction,
+		preparedTx,
 	]);
 
 	const handleBackClick = () => {
@@ -278,15 +267,7 @@ const SendTokensScreen = () => {
 		}
 	};
 
-	useEffect(() => {
-		console.log(fromCurrency, "from cutrr");
-	}, [fromCurrency]);
-	useEffect(() => {
-		console.log(preparedTx, "prep tx");
-	}, [preparedTx]);
-	useEffect(() => {
-		console.log(gasCost, "getGas info");
-	}, [gasCost]);
+	// Debug logging removed for production
 
 	useEffect(() => {
 		const prepare = async () => {
@@ -301,7 +282,6 @@ const SendTokensScreen = () => {
 				// selectedUser.walletAddress
 			) {
 				try {
-					console.log("trying");
 
 					const chain = defineChain({ id: fromCurrency?.chain_id });
 					const contract = getContract({
@@ -317,8 +297,7 @@ const SendTokensScreen = () => {
 					});
 
 					setPreparedTx(tx);
-					const dt = await estimateGasCost(tx);
-					console.log(dt, "get gas info data");
+					await estimateGasCost(tx);
 				} catch (e) {
 					console.error("Error preparing transaction for estimation:", e);
 					setPreparedTx(null);
@@ -329,7 +308,7 @@ const SendTokensScreen = () => {
 		};
 
 		prepare();
-	}, [amount, fromCurrency, selectedUser, activeAccount]);
+	}, [amount, fromCurrency, selectedUser, activeAccount, estimateGasCost]);
 
 	return (
 		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">

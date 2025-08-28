@@ -1,5 +1,4 @@
 
-/* eslint-disable no-unused-vars */
 import React from "react";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useLanguage } from "../../context/LanguageContext";

@@ -41,7 +41,6 @@ const LandingScreen = () => {
 
 	useEffect(() => {
 		setSelectedLanguage(currentLanguage);
-		console.log("Current Language:", currentLanguage);
 	}, [currentLanguage]);
 
 	const handleLanguageChange = (langCode) => {
@@ -56,8 +55,6 @@ const LandingScreen = () => {
 			let acct;
 			
 			if (isTMA()) {
-				console.log("It's Telegram Mini Apps");
-				
 				// Use guest mode for TMA to avoid popup issues
 				const res = await connect(async () => {
 					await wallet.connect({
@@ -66,10 +63,8 @@ const LandingScreen = () => {
 					});
 					return wallet;
 				});
-				console.log("res===>", res);
 
 				acct = wallet.getAccount();
-				console.log(acct, "walletAccount");
 				const initData = retrieveLaunchParams();
 				data = {
 					hash: initData.tgWebAppData.hash,
@@ -82,9 +77,7 @@ const LandingScreen = () => {
 					deviceId: "Apple",
 					walletAddress: acct?.address,
 				};
-				console.log("data==========>", data);
 			} else {
-				console.log("It's not Telegram Mini Apps");
 				const res = await connect(async () => {
 					await wallet.connect({
 						client,
@@ -92,10 +85,8 @@ const LandingScreen = () => {
 					});
 					return wallet;
 				});
-				console.log("res===>", res);
 
 				acct = wallet.getAccount();
-				console.log(acct, "walletAccount");
 
 				// initData in Web mode
 				data = {
@@ -113,11 +104,9 @@ const LandingScreen = () => {
 			}
 
 			// --- The rest of your registration logic ---
-			const registerRes = await api.post("/ssoauth/tgregister", data);
-			console.log("Register Res==========>", registerRes);
+			await api.post("/ssoauth/tgregister", data);
 			await handleLogin(PATH_MAIN);
 		} catch (error) {
-			console.error("Unexpected error:", error);
 			setIsLoading(false);
 		}
 	};
@@ -134,7 +123,6 @@ const LandingScreen = () => {
 			};
 			
 			const response = await api.post("/ssoauth/tglogin", loginData);
-			console.log("Login response:", response);
 			
 			if (response && response.success) {
 				const userData = {
@@ -150,16 +138,13 @@ const LandingScreen = () => {
 					gender: "male",
 					walletAddress: response?.user?.walletAddress,
 				};
-				console.log(response);
 				login(response.token, userData);
 				setIsLoading(false); // Clear loading before navigation
 				navigate(link);
 			} else {
-				console.error("Login failed:", response.data);
 				setIsLoading(false);
 			}
 		} catch (error) {
-			console.error("Login error:", error);
 			setIsLoading(false);
 		}
 	}

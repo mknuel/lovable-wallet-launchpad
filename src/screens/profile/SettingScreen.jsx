@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TonConnectButton, useTonAddress } from "@tonconnect/ui-react";
@@ -86,7 +83,6 @@ const SettingScreen = () => {
 	}, []);
 
 	const handleDarkModeToggle = () => {
-		console.log("Dark Mode toggled");
 		toggleTheme();
 	};
 

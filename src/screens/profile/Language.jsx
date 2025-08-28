@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +33,6 @@ const LanguageScreen = () => {
 		navigate(PATH_SETTING);
 	};
 
-	console.log(selectedLanguage);
 	return (
 		<div className={`container ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
 			<div className="sticky top-0 left-0 w-full z-40">

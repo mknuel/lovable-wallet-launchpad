@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/MainHeader";
@@ -83,7 +82,6 @@ const EditProfile = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log(formData);
 
 		await api.put(`/profile/${profileId}`, formData).then((res) => {
 			navigate(PATH_SETTING);

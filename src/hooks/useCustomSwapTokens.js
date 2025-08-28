@@ -19,15 +19,7 @@ export const useCustomSwapTokens = () => {
   // Get user's account tokens
   const { tokens: userTokens, isLoading: userLoading } = useGetAccountTokens(activeAccount?.address);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('🔍 Debug Custom Swap Tokens:');
-    console.log('- Bridge tokens:', bridgeTokens?.length || 0, bridgeTokens);
-    console.log('- User tokens:', userTokens?.length || 0, userTokens);
-    console.log('- EURX balance:', eurxBalance);
-    console.log('- EURX info:', eurxInfo);
-    console.log('- EURX error:', eurxError);
-  }, [bridgeTokens, userTokens, eurxBalance, eurxInfo, eurxError]);
+  // Debug logging removed for production
 
   // Create EURX token object using contract data
   const eurxToken = useMemo(() => {
@@ -58,7 +50,6 @@ export const useCustomSwapTokens = () => {
       return symbol === 'pol' || symbol === 'usdt' || symbol === 'matic';
     });
     
-    console.log('🔍 Filtered bridge tokens:', filtered);
     return filtered;
   }, [bridgeTokens]);
 
@@ -93,7 +84,6 @@ export const useCustomSwapTokens = () => {
       }
     }
 
-    console.log('🔍 Filtered user tokens:', filtered);
     return filtered;
   }, [userTokens, eurxToken]);
 
@@ -104,15 +94,11 @@ export const useCustomSwapTokens = () => {
     // Always include EURX token
     if (eurxToken) {
       tokens.push(eurxToken);
-      console.log('✅ EURX token added to availableTokens:', eurxToken);
-    } else {
-      console.log('❌ EURX token not available:', { eurxInfo, eurxError, activeAccount: !!activeAccount });
     }
     
     // Add filtered bridge tokens
     tokens.push(...filteredBridgeTokens);
     
-    console.log('🔍 Final availableTokens for TO dropdown:', tokens);
     return tokens;
   }, [eurxToken, filteredBridgeTokens]);
 
