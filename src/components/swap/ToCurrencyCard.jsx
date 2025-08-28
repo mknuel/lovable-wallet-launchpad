@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { SearchableCurrencyDropdown } from "./SearchableCurrencyDropdown";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import WalletIcon from "../../assets/icons/wallet-icon.svg";
+import { useTheme } from "../../context/ThemeContext";
 
 export const ToCurrencyCard = ({
 	selectedCurrency,
@@ -13,6 +14,7 @@ export const ToCurrencyCard = ({
 	const [searchTerm, setSearchTerm] = useState("");
 	const dropdownRef = useRef(null);
 	useOutsideClick(dropdownRef, () => setIsDropdownOpen(false));
+	const { isDarkMode } = useTheme();
 
 	const handleCurrencySelection = (currency) => {
 		onCurrencySelect(currency);
@@ -26,8 +28,8 @@ export const ToCurrencyCard = ({
 	return (
 		<div ref={dropdownRef} className="relative">
 			<div className="relative p-[1px] mt-3 rounded-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
-				<div className="bg-white rounded-lg p-4 w-full flex flex-col">
-					<label className="text-[rgba(60, 60, 67, 0.60)] text-sm font-['Sansation'] mb-2">
+				<div className={`rounded-lg p-4 w-full flex flex-col ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+					<label className={`text-sm font-['Sansation'] mb-2 ${isDarkMode ? 'text-gray-300' : 'text-[rgba(60, 60, 67, 0.60)]'}`}>
 						To
 					</label>
 
@@ -36,7 +38,7 @@ export const ToCurrencyCard = ({
 						<div className="flex flex-col">
 							<div className="flex items-center gap-2">
 								<button
-									className="flex items-center gap-2 font-['Sansation']"
+									className={`flex items-center gap-2 font-['Sansation'] ${isDarkMode ? 'text-white' : 'text-black'}`}
 									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
 									aria-expanded={isDropdownOpen}>
 									<div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
@@ -75,7 +77,7 @@ export const ToCurrencyCard = ({
 
 							{/* --- Balance and USD Value --- */}
 							<div className="flex justify-between items-center mt-2 pl-12">
-								<span className="text-gray-400 bg-clip-text text-sm">
+								<span className={`bg-clip-text text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
 									{isLoading ? "Loading tokens..." : "Select currency"}
 								</span>
 							</div>
@@ -83,7 +85,7 @@ export const ToCurrencyCard = ({
 
 						{/* --- Output Amount Display --- */}
 						<div className="flex flex-col items-end ml-4">
-							<span className="text-right font-bold font-['Sansation'] text-lg">
+							<span className={`text-right font-bold font-['Sansation'] text-lg ${isDarkMode ? 'text-white' : 'text-black'}`}>
 								{displayedAmount}
 							</span>
 						</div>

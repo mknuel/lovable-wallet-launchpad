@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../../components/layout/Header";
 import { StatsCard } from "../../components/layout/StatsCard";
@@ -12,7 +12,6 @@ import {
 	fetchWallet,
 	selectWalletData,
 	selectWalletLoading,
-	selectWalletError,
 	invalidateWalletCache,
 } from "../../store/reducers/walletSlice";
 import CreatePinScreen from "./CreatePinScreen";
@@ -20,16 +19,16 @@ import WalletScreen from "./WalletScreen";
 import { PATH_WALLET, PATH_BLOCKLOANS } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
 import Success from "../../assets/icons/pin-success.svg";
+import { useTheme } from "../../context/ThemeContext";
 
 const MainMenu = () => {
 	const { t } = useTranslation();
 	const dispatch = useDispatch();
-	const userData = useSelector((state) => state.user);
+	const { isDarkMode } = useTheme();
 
 	// Use optimized selectors
 	const walletData = useSelector(selectWalletData);
 	const walletLoading = useSelector(selectWalletLoading);
-	const walletError = useSelector(selectWalletError);
 
 	const navigate = useNavigate();
 
@@ -56,8 +55,8 @@ const MainMenu = () => {
 	}, [walletData, walletLoading]);
 
 	// Token balance from API and EURX (crypto) balance
-	const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
-	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
+	const { loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
+	const { balance: erc20Balance, loading: erc20Loading } = useERC20Token();
 
 	// Memoize stats data to prevent unnecessary recalculations
 	const statsData = useMemo(() => {
@@ -81,10 +80,10 @@ const MainMenu = () => {
 		];
 	}, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
-	const handleWalletClick = () => {
+	const handleWalletClick = useCallback(() => {
 		// PIN check disabled - direct navigation to wallet
 		navigate(PATH_WALLET);
-	};
+	}, [navigate]);
 
 	// Memoize menu items to prevent unnecessary re-renders
 	const menuItems = useMemo(
@@ -138,8 +137,8 @@ const MainMenu = () => {
 
 		default:
 			return (
-				<div className="flex items-center flex-col min-h-screen w-full max-w-full ">
-					<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+				<div className={`flex items-center flex-col min-h-screen w-full max-w-full ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
+					<div className={`w-full sticky top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 						<Header
 							onMenuClick={() => console.log("Menu clicked")}
 							onNotificationClick={() => console.log("Notifications clicked")}
@@ -147,7 +146,7 @@ const MainMenu = () => {
 						/>
 					</div>
 
-					<div className="relative w-full max-w-full overflow-y-auto overflow-x-hidden px-6 pt-6 mb-[40px]">
+					<div className="relative w-full max-w-full overflow-y-auto overflow-x-hidden px-6 pt-6 pb-20">
 						<div className="w-full max-w-full mb-6">
 							<StatsCard stats={statsData} />
 						</div>
@@ -166,21 +165,21 @@ const MainMenu = () => {
 						</div>
 					</div>
 
-					<div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+					<div className={`w-full fixed bottom-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 						<Navigation nav={t("navigation.mainMenu")} />
 					</div>
 
 					{/* PIN Confirmation Modal - Fixed z-index */}
 					{showPinConfirmation && (
 						<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-							<div className="bg-white rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center">
+							<div className={`rounded-xl p-4 pt-8 mx-4 max-w-sm w-full text-center ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 								<div className="flex justify-center mb-3">
 									<img src={Success} alt="Success" />
 								</div>
-								<h2 className="text-[20px] font-['Sansation'] font-bold text-black mb-2">
+								<h2 className={`text-[20px] font-['Sansation'] font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-black'}`}>
 									{t("mainMenu.pinCreated")}
 								</h2>
-								<p className="text-[16px] font-['Sansation'] text-[#616161] mb-8 w-[80%] mx-auto">
+								<p className={`text-[16px] font-['Sansation'] mb-8 w-[80%] mx-auto ${isDarkMode ? 'text-gray-300' : 'text-[#616161]'}`}>
 									{t("mainMenu.pinCreatedMessage")}
 								</p>
 								<button

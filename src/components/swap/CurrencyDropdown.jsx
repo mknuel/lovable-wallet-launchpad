@@ -1,13 +1,14 @@
-import React, { useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useRef } from "react";
+import { AnimatePresence } from "framer-motion";
 import { usePolygonTokens } from "../../hooks/usePolygonTokens";
-import { useActiveAccount } from "thirdweb/react";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { useTheme } from "../../context/ThemeContext";
 
 export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 	const dropdownRef = useRef(null);
 	useOutsideClick(dropdownRef, onClose);
-	const activeAccount = useActiveAccount();
+
+	const { isDarkMode } = useTheme();
 
 	const { ownedTokens: userTokens, isLoading: isGettingTokens } = usePolygonTokens();
 
@@ -26,11 +27,11 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 
 	const renderTokenList = () => {
 		if (isGettingTokens) {
-			return <p className="text-gray-400 text-center p-4">Loading tokens...</p>;
+			return <p className={`text-center p-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Loading tokens...</p>;
 		}
 
 		if (!userTokens || userTokens.length === 0) {
-			return <p className="text-gray-400 text-center p-4">No tokens found.</p>;
+			return <p className={`text-center p-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>No tokens found.</p>;
 		}
 
 		return userTokens?.map((currency, i) => {
@@ -47,13 +48,17 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 					className="relative p-[1px] mb-2 rounded-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
 					<button
 						onClick={() => onSelect(currency)}
-						className="w-full p-3 bg-white hover:bg-gray-50/80 transition-colors rounded-lg text-left">
+						className={`w-full p-3 transition-colors rounded-lg text-left ${
+							isDarkMode 
+								? 'bg-[#1a1a1a] hover:bg-[#2a2a2a]' 
+								: 'bg-white hover:bg-gray-50/80'
+						}`}>
 						<div className="flex justify-between items-center">
 							<div className="text-left">
 								<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
 									{symbol}
 								</div>
-								<div className="text-gray-400 text-sm truncate w-40">
+								<div className={`text-sm truncate w-40 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
 									{token_address}
 								</div>
 							</div>
@@ -65,7 +70,7 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 										? `${Number(value).toFixed(2)} $`
 										: "-"}
 								</div>
-								<div className="text-gray-400 text-sm">
+								<div className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
 									{balance ? Number(balance).toFixed(4) : "0.0000"}
 								</div>
 							</div>
@@ -101,9 +106,9 @@ export const CurrencyDropdown = ({ isOpen, onClose, onSelect }) => {
 					className="absolute top-3/4 left-0 right-0 mt-2 z-20 mb-10 shadow-xl"
 					ref={dropdownRef}>
 					<div className="relative p-[1px] rounded-[10px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
-						<div className="bg-white p-4 rounded-[9px] backdrop-blur-sm bg-opacity-90">
+						<div className={`p-4 rounded-[9px] backdrop-blur-sm bg-opacity-90 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 							<motion.p
-								className="text-gray-400 text-sm mb-3"
+								className={`text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1, transition: { delay: 0.1 } }}>
 								Select currency

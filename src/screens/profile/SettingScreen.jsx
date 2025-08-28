@@ -16,6 +16,7 @@ import { copyToClipboard, formatAddress } from "../../utils/utils";
 import { PATH_LANGUAGE } from "../../context/paths";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useWalletAccount } from "../../context/WalletAccountContext";
+import { useTheme } from "../../context/ThemeContext";
 import ThirdwebConnectButton from "../../components/thirdweb/ThirdwebConnectButton";
 import CustomTonConnectButton from "../../components/Buttons/CustomTonConnectButton";
 
@@ -47,6 +48,7 @@ const SettingScreen = () => {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const { currentWalletAccount } = useWalletAccount();
+	const { isDarkMode, toggleTheme } = useTheme();
 	const userTonAddress = useTonAddress();
 	const activeAccount = useActiveAccount();
 
@@ -59,20 +61,8 @@ const SettingScreen = () => {
 		walletAddress: "0x32de343894f8e0124dC4fEe",
 	});
 
-	const [darkMode, setDarkMode] = useState(
-		document.body.classList.contains("dark-mode")
-	);
 	const [copied, setCopied] = useState(false);
 	const [profileId, setProfileId] = useState(null);
-
-	useEffect(() => {
-		if (darkMode) {
-			if (!document.body.classList.contains("dark-mode"))
-				document.body.classList.add("dark-mode");
-		} else {
-			document.body.classList.remove("dark-mode");
-		}
-	}, [darkMode]);
 
 	useEffect(() => {
 		async function fetch() {
@@ -97,7 +87,7 @@ const SettingScreen = () => {
 
 	const handleDarkModeToggle = () => {
 		console.log("Dark Mode toggled");
-		setDarkMode(!darkMode);
+		toggleTheme();
 	};
 
 	return (
@@ -111,7 +101,7 @@ const SettingScreen = () => {
 				<div>
 					<img
 						src={
-							darkMode
+							isDarkMode
 								? DarkProfileRectangle // Dark
 								: ProfileRectangle // White
 						}
@@ -129,7 +119,11 @@ const SettingScreen = () => {
 					</div>
 				</div>
 				<div className="flex flex-col gap-2 w-full mt-[20px]">
-					<div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+					<div className={`flex flex-col border-2 rounded-lg p-2 ${
+						isDarkMode 
+							? 'border-gray-600 bg-[#2a2a2a]' 
+							: 'border-[var(--border)] bg-[var(--surface)]'
+					}`}>
 						<div
 							className="flex flex-row items-center gap-4 justify-between"
 							onClick={() => navigate("/edit-profile")}>
@@ -166,7 +160,11 @@ const SettingScreen = () => {
 							<div className="text-[14px]">{t("currentlang") || "English"}</div>
 						</div>
 					</div>
-					<div className="flex flex-col border-2 border-[#EFEFEF] rounded-lg p-2">
+					<div className={`flex flex-col border-2 rounded-lg p-2 ${
+						isDarkMode 
+							? 'border-gray-600 bg-[#2a2a2a]' 
+							: 'border-[#EFEFEF] bg-white'
+					}`}>
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div className="flex flex-row items-center gap-[13px]">
 								<NotificationsActiveIcon
@@ -178,7 +176,7 @@ const SettingScreen = () => {
 							</div>
 							<PinkSwitch
 								edge="end"
-								checked={!darkMode}
+								checked={!isDarkMode}
 								onChange={handleDarkModeToggle}
 							/>
 						</div>
@@ -192,12 +190,20 @@ const SettingScreen = () => {
 							<ChevronRightIcon sx={{ width: 16, height: 16 }} />
 						</div>
 					</div>
-					<div className="flex flex-col gap-4 border-2 border-[#EFEFEF] rounded-lg p-2">
+					<div className={`flex flex-col gap-4 border-2 rounded-lg p-2 ${
+						isDarkMode 
+							? 'border-gray-600 bg-[#2a2a2a]' 
+							: 'border-[#EFEFEF] bg-white'
+					}`}>
 						<div className="flex flex-row items-center gap-4 justify-between">
 							<div
 								className="flex flex-row items-center gap-[13px]"
 								onClick={() => {
-									const addressToCopy = userTonAddress || activeAccount?.address || currentWalletAccount || userData.walletAddress;
+									const addressToCopy =
+										userTonAddress ||
+										activeAccount?.address ||
+										currentWalletAccount ||
+										userData.walletAddress;
 									copyToClipboard(addressToCopy, setCopied);
 								}}>
 								<QrCodeIcon sx={{ width: 32, height: 32, color: "#837E7E" }} />
@@ -225,7 +231,7 @@ const SettingScreen = () => {
 							</div>
 						</div>
 					</div>
-					<ThirdwebConnectButton darkMode={darkMode} path={null} />
+					<ThirdwebConnectButton darkMode={isDarkMode} path={null} />
 					<div className="flex w-full justify-center items-center">
 						<CustomTonConnectButton />
 					</div>

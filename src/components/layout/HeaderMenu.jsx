@@ -1,9 +1,9 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PATH_SETTING } from "../../context/paths";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../context/ThemeContext"; // Import the theme context
 
 // Icons
 import BlockMed from "../../assets/icons/add.svg";
@@ -22,6 +22,7 @@ import LogoHorizontal from "../../assets/images/Logo_Bloackloans_Horizontal.png"
 const HeaderMenu = ({ isOpen, onClose, className }) => {
 	const navigate = useNavigate();
 	const { logout } = useAuth();
+	const { isDarkMode } = useTheme(); // Use the theme context
 
 	const handleMyProfile = () => {
 		navigate(PATH_SETTING);
@@ -51,100 +52,130 @@ const HeaderMenu = ({ isOpen, onClose, className }) => {
 		},
 	];
 
+	// Dynamic classes based on theme
+	const menuClasses = `fixed top-0 right-0 h-[100dvh] w-[70%] z-[9999] shadow-2xl rounded-l-2xl flex flex-col ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	} ${className || ""}`;
+
+	const closeButtonClasses = `p-2 rounded-md transition-colors ${
+		isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+	}`;
+
+	const menuItemClasses = (item) =>
+		`w-full flex items-center gap-3 px-2 py-1 text-left rounded-lg transition-colors ${
+			item.disabled
+				? "cursor-not-allowed opacity-50"
+				: isDarkMode
+				? "text-white cursor-pointer hover:bg-gray-700"
+				: "text-black cursor-pointer hover:bg-gray-50"
+		}`;
+
+	const logoutButtonClasses = `w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+		isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"
+	}`;
+
+	const closeIconStroke = isDarkMode ? "#E0E0E0" : "#666666";
+
 	return (
-      <div className="z-[100]">
-		<AnimatePresence>
-			{isOpen && (
-				<>
-					{/* Backdrop */}
-					<motion.div
-						className="fixed top-0 inset-0 h-[100dvh] bg-black/20 z-[9998]"
-						onClick={onClose}
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.2 }}
-					/>
+		<div className="z-[100]">
+			<AnimatePresence>
+				{isOpen && (
+					<>
+						{/* Backdrop */}
+						<motion.div
+							className="fixed top-0 inset-0 h-[100dvh] bg-black/20 z-[9998]"
+							onClick={onClose}
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.2 }}
+						/>
 
-					{/* Sliding Menu */}
-					<motion.div
-						initial={{ x: "70%", opacity: "0" }}
-						animate={{ x: 0, opacity: 1 }}
-						exit={{ x: "100%", opacity: 0 }}
-						transition={{ duration: 0.3 }}
-						className={`fixed top-0 right-0 h-[100dvh] w-[70%] bg-white z-[9999] shadow-2xl rounded-l-2xl flex flex-col ${
-							className || ""
-						}`}>
-						{/* Header */}
-						<div className="flex items-center justify-between p-4 pl-5">
-							<div className="flex items-center gap-3">
-								<img
-									src={LogoHorizontal}
-									alt="BlockLoans Logo"
-									className="h-6"
-								/>
-							</div>
-							<button
-								onClick={onClose}
-								className="p-2 rounded-md hover:bg-gray-100 transition-colors"
-								aria-label="Close menu">
-								<svg
-									width="20"
-									height="20"
-									viewBox="0 0 20 20"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg">
-									<path
-										d="M15 5L5 15M5 5L15 15"
-										stroke="#666666"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
+						{/* Sliding Menu */}
+						<motion.div
+							initial={{ x: "70%", opacity: "0" }}
+							animate={{ x: 0, opacity: 1 }}
+							exit={{ x: "100%", opacity: 0 }}
+							transition={{ duration: 0.3 }}
+							className={menuClasses}>
+							{/* Header */}
+							<div className="flex items-center justify-between p-4 pl-5">
+								<div className="flex items-center gap-3">
+									<img
+										src={LogoHorizontal}
+										alt="BlockLoans Logo"
+										className="h-6"
 									/>
-								</svg>
-							</button>
-						</div>
-
-						{/* Menu Content */}
-						<div className="flex-1 overflow-y-auto px-4 pb-2">
-							<div className="space-y-3">
-								{menuItems.map((item) => (
-									<button
-										key={item.id}
-										onClick={item.onClick}
-										disabled={item.disabled}
-										className={`w-full flex items-center gap-3 px-2 py-1 text-left rounded-lg transition-colors ${
-											item.disabled
-												? "cursor-not-allowed opacity-50"
-												: "text-black cursor-pointer hover:bg-gray-50"
-										}`}>
-										<span className="w-8">
-											<img src={item.icon} alt={item.label} />
-										</span>
-										<span className="text-sm uppercase font-medium font-['Sansation']">
-											{item.label}
-										</span>
-									</button>
-								))}
+								</div>
+								<button
+									onClick={onClose}
+									className={closeButtonClasses}
+									aria-label="Close menu">
+									<svg
+										width="20"
+										height="20"
+										viewBox="0 0 20 20"
+										fill="none"
+										xmlns="http://www.w3.org/2000/svg">
+										<path
+											d="M15 5L5 15M5 5L15 15"
+											stroke={closeIconStroke}
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+									</svg>
+								</button>
 							</div>
-						</div>
 
-						{/* Logout Button */}
-						<div className="border-gray-200 p-4">
-							<button
-								onClick={handleLogout}
-								className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors">
-								<img src={Logout} alt="Logout" className="w-5 h-5" />
-								<span className="text-sm font-['Sansation'] text-red-600 font-bold">
-									LOGOUT
-								</span>
-							</button>
-						</div>
-					</motion.div>
-				</>
-			)}
-		</AnimatePresence>
-        </div>
+							{/* Menu Content */}
+							<div className="flex-1 overflow-y-auto px-4 pb-2">
+								<div className="space-y-3">
+									{menuItems.map((item) => (
+										<button
+											key={item.id}
+											onClick={item.onClick}
+											disabled={item.disabled}
+											className={menuItemClasses(item)}>
+											<span className="w-8">
+												<img
+													src={item.icon}
+													alt={item.label}
+													className={
+														isDarkMode && !item.disabled
+															? "filter brightness-0 invert"
+															: ""
+													}
+												/>
+											</span>
+											<span className="text-sm uppercase font-medium font-['Sansation']">
+												{item.label}
+											</span>
+										</button>
+									))}
+								</div>
+							</div>
+
+							{/* Logout Button */}
+							<div className="border-gray-200 p-4">
+								<button onClick={handleLogout} className={logoutButtonClasses}>
+									<img
+										src={Logout}
+										alt="Logout"
+										className={`w-5 h-5 ${
+											isDarkMode ? "filter brightness-0 invert" : ""
+										}`}
+									/>
+									<span className="text-sm font-['Sansation'] text-red-600 font-bold">
+										LOGOUT
+									</span>
+								</button>
+							</div>
+						</motion.div>
+					</>
+				)}
+			</AnimatePresence>
+		</div>
 	);
 };
 

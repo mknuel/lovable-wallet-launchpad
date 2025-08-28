@@ -6,25 +6,37 @@ import { MenuSection } from "../../components/layout/MenuSection";
 import Navigation from "../../components/layout/Navigation";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchWallet, selectWalletData, selectWalletLoading, selectWalletError } from '../../store/reducers/walletSlice';
+import {
+	fetchWallet,
+	selectWalletData,
+	selectWalletLoading,
+	selectWalletError,
+} from "../../store/reducers/walletSlice";
 import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import CommonButton from "../../components/Buttons/CommonButton";
 import { useERC20Token } from "../../hooks/useERC20";
 import { useTokenBalance } from "../../hooks/useTokenBalance";
+import { useTheme } from "../../context/ThemeContext"; // Import the theme context
 
 const WalletScreen = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	
+	const { isDarkMode } = useTheme(); // Use the theme context
+
 	// Use optimized selectors
 	const walletData = useSelector(selectWalletData);
 	const walletLoading = useSelector(selectWalletLoading);
-	const walletError = useSelector(selectWalletError);
-	
+
 	// Token balance from API and EURX (crypto) balance
-	const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
-	const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
+	const {
+		loading: tokenLoading,
+		formattedBalance: formattedTokenBalance,
+	} = useTokenBalance();
+	const {
+		balance: erc20Balance,
+		loading: erc20Loading,
+	} = useERC20Token();
 
 	// Fetch wallet data on component mount - only if not already loading/loaded
 	useEffect(() => {
@@ -39,13 +51,15 @@ const WalletScreen = () => {
 		// Token balance from API
 		const tokenValue = tokenLoading ? "..." : formattedTokenBalance;
 		// EURX balance as crypto
-		const eurxValue = erc20Loading ? "..." : parseFloat(erc20Balance || '0').toFixed(1);
-		
+		const eurxValue = erc20Loading
+			? "..."
+			: parseFloat(erc20Balance || "0").toFixed(1);
+
 		return [
-			{ 
-				id: "token", 
-				value: tokenValue, 
-				label: "Tokens" 
+			{
+				id: "token",
+				value: tokenValue,
+				label: "Tokens",
 			},
 			{
 				id: "crypto",
@@ -57,23 +71,26 @@ const WalletScreen = () => {
 	}, [tokenLoading, formattedTokenBalance, erc20Loading, erc20Balance, t]);
 
 	// Memoize wallet-specific menu items
-	const menuItems = useMemo(() => [
-		{
-			id: "send",
-			label: "Send tokens",
-			onClick: () => console.log("Send tokens clicked"),
-		},
-		{
-			id: "exchange",
-			label: "Exchange tokens",
-			onClick: () => console.log("Exchange tokens clicked"),
-		},
-		{
-			id: "loan",
-			label: "Request Loan with your tokens",
-			onClick: () => console.log("Request loan clicked"),
-		},
-	], []);
+	const menuItems = useMemo(
+		() => [
+			{
+				id: "send",
+				label: "Send tokens",
+				onClick: () => console.log("Send tokens clicked"),
+			},
+			{
+				id: "exchange",
+				label: "Exchange tokens",
+				onClick: () => console.log("Exchange tokens clicked"),
+			},
+			{
+				id: "loan",
+				label: "Request Loan with your tokens",
+				onClick: () => console.log("Request loan clicked"),
+			},
+		],
+		[]
+	);
 
 	const handleNextClick = () => {
 		navigate(PATH_WALLET_ACTIONS);
@@ -83,10 +100,31 @@ const WalletScreen = () => {
 		navigate(PATH_MAIN);
 	};
 
+	// Dynamic classes based on theme
+	const containerClasses = `flex flex-col min-h-screen w-full max-w-full ${
+		isDarkMode ? "bg-[#1a1a1a] text-white" : "bg-white text-black"
+	}`;
+
+	const headerClasses = `w-full sticky top-0 left-0 right-0 z-50 ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	}`;
+
+	const navigationClasses = `w-full sticky bottom-0 left-0 right-0 z-50 ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	}`;
+
+	const loadingSpinnerClasses = `animate-spin rounded-full h-8 w-8 border-b-2 ${
+		isDarkMode ? "border-pink-400" : "border-pink-600"
+	}`;
+
+	const descriptionTextClasses = `text-center mb-3 break-words ${
+		isDarkMode ? "text-gray-200" : "text-black"
+	}`;
+
 	return (
-		<div className="flex flex-col min-h-screen w-full max-w-full bg-white ">
+		<div className={containerClasses}>
 			{/* Header - Fixed positioning */}
-			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
+			<div className={headerClasses}>
 				<Header
 					title={t("wallet.title")}
 					action={true}
@@ -99,7 +137,7 @@ const WalletScreen = () => {
 				{/* Loading State */}
 				{walletLoading && (
 					<div className="flex justify-center items-center py-8">
-						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+						<div className={loadingSpinnerClasses}></div>
 					</div>
 				)}
 
@@ -113,7 +151,7 @@ const WalletScreen = () => {
 				{/* Menu Section */}
 				{!walletLoading && (
 					<div className="w-full mb-8">
-						<p className="text-center mb-3 break-words">
+						<p className={descriptionTextClasses}>
 							You can <strong>Send, Exchange and get</strong> a Loan with your
 							tokens!
 						</p>
@@ -137,7 +175,7 @@ const WalletScreen = () => {
 			</div>
 
 			{/* Navigation - Fixed positioning */}
-			<div className="w-full sticky bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1a]">
+			<div className={navigationClasses}>
 				<Navigation nav={t("wallet.title")} />
 			</div>
 		</div>

@@ -4,7 +4,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { componentTagger } from "lovable-tagger";
 import path from "path";
+import { fileURLToPath } from "url";
 import svgr from "vite-plugin-svgr";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({

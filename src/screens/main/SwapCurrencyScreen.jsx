@@ -6,6 +6,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 import { SwapForm } from "../../components/swap/SwapForm";
 import { SecurityMessage } from "../../components/swap/SecurityMessage";
 import { PATH_WALLET_ACTIONS } from "../../context/paths";
+import { useTheme } from "../../context/ThemeContext";
 
 import { TransactionDetails } from "../../components/swap/TransactionDetails";
 import {
@@ -42,6 +43,7 @@ const SwapCurrencyScreen = () => {
 	const { t } = useTranslation();
 	const activeAccount = useActiveAccount(); // <-- Get the active Account object here
 	const navigate = useNavigate();
+	const { isDarkMode } = useTheme();
 	// State for the swap form
 	const [step, setStep] = useState(1);
 	const [progressStep, setProgressStep] = useState(1); // For navigation progress
@@ -266,9 +268,9 @@ const SwapCurrencyScreen = () => {
 	}, [quote]);
 
 	return (
-		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
+		<div className={`flex flex-col min-h-screen w-full max-w-full ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
 			{/* Header - Fixed positioning */}
-			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
+			<div className={`w-full sticky top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 				<Header title="Swap" action={true} onBack={handleBackClick} />
 			</div>
 
@@ -295,7 +297,7 @@ const SwapCurrencyScreen = () => {
 					/>
 				)}
 				{error && (
-					<p className="text-red-500 bg-red-100 w-full rounded p-3 text-sm text-center mt-2">
+					<p className={`text-red-500 w-full rounded p-3 text-sm text-center mt-2 ${isDarkMode ? 'bg-red-900/20' : 'bg-red-100'}`}>
 						{error}
 					</p>
 				)}
@@ -332,7 +334,7 @@ const SwapCurrencyScreen = () => {
 			/>
 
 			{/* Progress Navigation - Fixed to bottom */}
-			<div className="sticky w-full bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
+			<div className={`sticky w-full bottom-0 left-0 right-0 z-50 border-t ${isDarkMode ? 'bg-[#1a1a1a] border-gray-600' : 'bg-white border-gray-200'}`}>
 				<SwapProgressNavigation
 					currentStep={progressStep}
 					onStepClick={(stepId) => {

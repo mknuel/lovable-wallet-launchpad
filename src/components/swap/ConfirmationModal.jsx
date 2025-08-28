@@ -1,47 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CommonButton from "../Buttons/CommonButton";
-/* 
-{
-    "originAmount": "77774736346048003009000000",
-    "destinationAmount": "1000000000000000000",
-    "blockNumber": "73485103",
-    "timestamp": 1751456804428,
-    "estimatedExecutionTimeMs": 12500,
-    "steps": [
-        {
-            "originToken": {
-                "chainId": 137,
-                "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-                "symbol": "POL",
-                "name": "POL",
-                "decimals": 18,
-                "priceUsd": 0.181714,
-                "iconUri": "https://assets.coingecko.com/coins/images/4713/thumb/matic-token-icon.png?1624446912"
-            },
-            "destinationToken": {
-                "chainId": 1,
-                "address": "0x4507cEf57C46789eF8d1a19EA45f4216bae2B528",
-                "symbol": "TOKEN",
-                "name": "TokenFi",
-                "decimals": 9,
-                "priceUsd": 0.0126021988770277,
-                "iconUri": "https://coin-images.coingecko.com/coins/images/32507/large/MAIN_TokenFi_logo_icon.png?1698918427"
-            },
-            "originAmount": "77774736346048003009000000",
-            "destinationAmount": "1000000000000000000",
-            "estimatedExecutionTimeMs": 12500
-        }
-    ],
-    "intent": {
-        "originChainId": 137,
-        "originTokenAddress": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        "destinationChainId": 1,
-        "destinationTokenAddress": "0x4507cEf57C46789eF8d1a19EA45f4216bae2B528",
-        "amount": "1000000000000000000",
-        "maxSteps": 3
-    }
-} */
+import { useTheme } from "../../context/ThemeContext"; // Import the theme context
 
 export const ConfirmationModal = ({
 	isOpen,
@@ -49,6 +9,8 @@ export const ConfirmationModal = ({
 	onConfirm,
 	isLoading,
 }) => {
+	const { isDarkMode } = useTheme(); // Use the theme context
+
 	// Animation variants for the modal backdrop
 	const backdropVariants = {
 		hidden: { opacity: 0 },
@@ -72,6 +34,29 @@ export const ConfirmationModal = ({
 		},
 	};
 
+	// Dynamic classes based on theme
+	const modalContentClasses = `relative w-full max-w-sm p-6 rounded-2xl shadow-xl ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	}`;
+
+	const titleClasses = `text-xl font-bold text-center mb-2 ${
+		isDarkMode ? "text-white" : "text-gray-900"
+	}`;
+
+	const descriptionClasses = `text-center mb-6 px-4 ${
+		isDarkMode ? "text-gray-300" : "text-gray-600"
+	}`;
+
+	const dividerClasses = `border-t -mx-6 ${
+		isDarkMode ? "border-gray-600" : "border-gray-200"
+	}`;
+
+	const spinnerClasses = `w-4 h-4 border-2 rounded-full animate-spin ${
+		isDarkMode
+			? "border-gray-600 border-t-pink-400"
+			: "border-gray-300 border-t-pink-500"
+	}`;
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -88,21 +73,17 @@ export const ConfirmationModal = ({
 					></motion.div>
 
 					{/* Modal Content */}
-					<motion.div
-						className="relative bg-white w-full max-w-sm p-6 rounded-2xl shadow-xl"
-						variants={modalVariants}>
+					<motion.div className={modalContentClasses} variants={modalVariants}>
 						{/* Title */}
-						<h3 className="text-xl font-bold text-center text-gray-900 mb-2">
-							Swap Confirmation
-						</h3>
+						<h3 className={titleClasses}>Swap Confirmation</h3>
 
 						{/* Description */}
-						<p className="text-center text-gray-600 mb-6 px-4">
+						<p className={descriptionClasses}>
 							Confirm the amount and the Coin that you want to Swap
 						</p>
 
 						{/* Divider */}
-						<div className="border-t border-gray-200 -mx-6"></div>
+						<div className={dividerClasses}></div>
 
 						{/* Action Button */}
 						<div className="mt-6">
@@ -112,7 +93,7 @@ export const ConfirmationModal = ({
 								className="w-full py-3 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all">
 								{isLoading ? (
 									<div className="flex items-center justify-center gap-2">
-										<div className="w-4 h-4 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin"></div>
+										<div className={spinnerClasses}></div>
 										<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
 											Processing...
 										</span>
@@ -136,8 +117,9 @@ export const TransactionSuccessModal = ({
 	onClose,
 	onConfirm,
 	title = "Success",
-	isLoading,
 }) => {
+	const { isDarkMode } = useTheme(); // Use the theme context
+
 	// Animation variants for the modal backdrop
 	const backdropVariants = {
 		hidden: { opacity: 0 },
@@ -161,6 +143,23 @@ export const TransactionSuccessModal = ({
 		},
 	};
 
+	// Dynamic classes based on theme
+	const modalContentClasses = `relative w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	}`;
+
+	const titleClasses = `text-xl font-bold text-center mb-2 ${
+		isDarkMode ? "text-white" : "text-gray-900"
+	}`;
+
+	const descriptionClasses = `text-center mb-6 px-4 ${
+		isDarkMode ? "text-gray-300" : "text-gray-600"
+	}`;
+
+	const dividerClasses = `border-t -mx-6 ${
+		isDarkMode ? "border-gray-600" : "border-gray-200"
+	}`;
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -177,21 +176,17 @@ export const TransactionSuccessModal = ({
 					></motion.div>
 
 					{/* Modal Content */}
-					<motion.div
-						className="relative bg-white w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl"
-						variants={modalVariants}>
+					<motion.div className={modalContentClasses} variants={modalVariants}>
 						{/* Title */}
-						<h3 className="text-xl font-bold text-center text-gray-900 mb-2">
-							{title}
-						</h3>
+						<h3 className={titleClasses}>{title}</h3>
 
 						{/* Description */}
-						<p className="text-center text-gray-600 mb-6 px-4">
+						<p className={descriptionClasses}>
 							Your transaction has been sent and would be completed soon
 						</p>
 
 						{/* Divider */}
-						<div className="border-t border-gray-200 -mx-6"></div>
+						<div className={dividerClasses}></div>
 
 						{/* Action Button */}
 						<button
@@ -207,12 +202,14 @@ export const TransactionSuccessModal = ({
 		</AnimatePresence>
 	);
 };
+
 export const SendConfirmationModal = ({
 	isOpen,
 	onClose,
 	onConfirm,
-	isLoading,
 }) => {
+	const { isDarkMode } = useTheme(); // Use the theme context
+
 	// Animation variants for the modal backdrop
 	const backdropVariants = {
 		hidden: { opacity: 0 },
@@ -236,6 +233,23 @@ export const SendConfirmationModal = ({
 		},
 	};
 
+	// Dynamic classes based on theme
+	const modalContentClasses = `relative w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl ${
+		isDarkMode ? "bg-[#1a1a1a]" : "bg-white"
+	}`;
+
+	const titleClasses = `text-xl font-bold text-center mb-2 ${
+		isDarkMode ? "text-white" : "text-gray-900"
+	}`;
+
+	const descriptionClasses = `text-center mb-3 px-2 ${
+		isDarkMode ? "text-gray-300" : "text-gray-600"
+	}`;
+
+	const dividerClasses = `border-t -mx-6 ${
+		isDarkMode ? "border-gray-600" : "border-gray-200"
+	}`;
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -252,21 +266,17 @@ export const SendConfirmationModal = ({
 					></motion.div>
 
 					{/* Modal Content */}
-					<motion.div
-						className="relative bg-white w-full max-w-sm p-3 pt-4 rounded-2xl shadow-xl"
-						variants={modalVariants}>
+					<motion.div className={modalContentClasses} variants={modalVariants}>
 						{/* Title */}
-						<h3 className="text-xl font-bold text-center text-gray-900 mb-2">
-							Send Confirmation
-						</h3>
+						<h3 className={titleClasses}>Send Confirmation</h3>
 
 						{/* Description */}
-						<p className="text-center text-gray-600 mb-3 px-2">
+						<p className={descriptionClasses}>
 							Confirm the amount and the fees for the transaction{" "}
 						</p>
 
 						{/* Divider */}
-						<div className="border-t border-gray-200 -mx-6"></div>
+						<div className={dividerClasses}></div>
 
 						{/* Action Button */}
 						<div className="mt-0">

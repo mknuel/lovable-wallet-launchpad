@@ -7,6 +7,7 @@ import { PATH_MAIN, PATH_WALLET_ACTIONS } from "../../context/paths";
 import api from "../../utils/api";
 import Header from "../../components/layout/MainHeader";
 import SearchIcon from "../../assets/icons/Search.svg";
+import { useTheme } from "../../context/ThemeContext";
 import { FromCurrencyCard } from "../../components/swap/FromCurrencyCard";
 import {
 	defineChain,
@@ -70,6 +71,7 @@ const SendTokensScreen = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const currentUser = useSelector(selectUser);
+	const { isDarkMode } = useTheme();
 	const [users, setUsers] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [amount, setAmount] = useState("");
@@ -351,8 +353,8 @@ const SendTokensScreen = () => {
 		!amount || isLoading || !preparedTx || operationStatus == "estimating";
 
 	return (
-		<div className="flex flex-col min-h-screen w-full max-w-full bg-white">
-			<div className="w-full sticky top-0 left-0 right-0 z-50 bg-white">
+		<div className={`flex flex-col min-h-screen w-full max-w-full ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
+			<div className={`w-full sticky top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 				<Header
 					title={t("wallet.title") || "My Wallet"}
 					action={true}
@@ -386,7 +388,11 @@ const SendTokensScreen = () => {
 									placeholder="Search by name..."
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
-									className="w-full py-3 px-4 pl-12 border border-gray-300 rounded-xl bg-gray-50 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent"
+									className={`w-full py-3 px-4 pl-12 border rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent ${
+										isDarkMode 
+											? 'border-gray-600 bg-[#2a2a2a] text-white placeholder-gray-400' 
+											: 'border-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400'
+									}`}
 								/>
 								<div className="absolute left-4 top-1/2 transform -translate-y-1/2">
 									<img src={SearchIcon} alt="Search" />
@@ -404,7 +410,7 @@ const SendTokensScreen = () => {
 							(operationStatus == "loading" && users.length === 0) ? (
 								<div className="text-center py-8">Loading users...</div>
 							) : users.length === 0 ? (
-								<div className="text-center py-8 text-gray-500">
+								<div className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
 									{searchQuery
 										? "No active users found matching your search"
 										: "No active users available"}
@@ -415,7 +421,11 @@ const SendTokensScreen = () => {
 										<button
 											key={user.id}
 											onClick={() => handleUserSelect(user)}
-											className="w-full flex items-center py-2 px-1 bg-white hover:bg-gray-50 transition-colors text-left border-b border-gray-100">
+											className={`w-full flex items-center py-2 px-1 transition-colors text-left border-b ${
+												isDarkMode 
+													? 'bg-[#1a1a1a] hover:bg-[#2a2a2a] border-gray-600' 
+													: 'bg-white hover:bg-gray-50 border-gray-100'
+											}`}>
 											<img
 												src={user.avatar || "/default-avatar.png"}
 												alt={user.name}
@@ -425,12 +435,12 @@ const SendTokensScreen = () => {
 												}}
 											/>
 											<div className="flex-1">
-												<h3 className="text-lg capitalize font-semibold text-gray-900">
+												<h3 className={`text-lg capitalize font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 													{user.name}
 												</h3>
-												<p className="text-sm text-gray-500">Contact</p>
+												<p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Contact</p>
 											</div>
-											<div className="text-gray-400">
+											<div className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
 												<svg
 													className="w-6 h-6"
 													fill="none"
@@ -487,8 +497,12 @@ const SendTokensScreen = () => {
 							onCurrencySelect={setFromCurrency}
 						/>
 
-						<div className="w-full mb-6 mt-5 py-2 px-4 bg-white border border-gray-300 rounded-2xl">
-							<div className="text-gray-400">Send To:</div>
+						<div className={`w-full mb-6 mt-5 py-2 px-4 border rounded-2xl ${
+							isDarkMode 
+								? 'bg-[#2a2a2a] border-gray-600' 
+								: 'bg-white border-gray-300'
+						}`}>
+							<div className={isDarkMode ? 'text-gray-300' : 'text-gray-400'}>Send To:</div>
 							<div className="flex items-center">
 								<img
 									src={selectedUser.avatar || "/default-avatar.png"}
@@ -499,10 +513,10 @@ const SendTokensScreen = () => {
 									}}
 								/>
 								<div>
-									<h3 className="text-lg font-semibold text-gray-900">
+									<h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 										{selectedUser.name}
 									</h3>
-									<p className="text-sm text-gray-400 font-normal">
+									<p className={`text-sm font-normal ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>
 										Selected recipient
 									</p>
 								</div>

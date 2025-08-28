@@ -113,12 +113,46 @@ body {
   --border: #e5e7eb;
   --muted: #9ca3af;
   --card: #f9fafb;
-  --dark-background: #1a1a1a;
-  --dark-foreground: #f3f4f6;
-  --dark-border: #374151;
-  --dark-card: #111827;
-  --dark-muted: #6b7280;
+  --input-bg: #ffffff;
+  --input-border: #e5e7eb;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --surface: #ffffff;
+  --surface-hover: #f9fafb;
   --radius: 8px;
+}
+
+[data-theme="dark"] {
+  --background: #1a1a1a;
+  --foreground: #f3f4f6;
+  --secondary: #374151;
+  --border: #4b5563;
+  --muted: #6b7280;
+  --card: #2a2a2a;
+  --input-bg: #2a2a2a;
+  --input-border: #4b5563;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --surface: #2a2a2a;
+  --surface-hover: #374151;
+}
+
+body.dark-mode {
+  --background: #1a1a1a;
+  --foreground: #f3f4f6;
+  --secondary: #374151;
+  --border: #4b5563;
+  --muted: #6b7280;
+  --card: #2a2a2a;
+  --input-bg: #2a2a2a;
+  --input-border: #4b5563;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --surface: #2a2a2a;
+  --surface-hover: #374151;
 }
 
 body {
@@ -126,11 +160,19 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body.dark-mode {
-  background-color: var(--dark-background);
-  color: var(--dark-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Ensure all containers inherit proper background */
+.container {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
+  const { isDarkMode } = useTheme();
   const steps = [
     { id: 1, label: 'From', description: 'Select sending currency' },
     { id: 2, label: 'To', description: 'Select receiving currency' },
@@ -16,7 +18,6 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
   };
 
   const getIconUrl = (stepId) => {
-    const status = getStepStatus(stepId);
     
     switch (stepId) {
       case 1: return "https://cdn.builder.io/api/v1/image/assets/cef62af9e6194c2a8a099d6136b96a5a/ce980df59d2e45dfb2487bd1a267aa68c36d3c53?placeholderIfAbsent=true";
@@ -30,7 +31,9 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
 
   return (
     <nav
-      className="bg-white shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h- w-full flex-col items-center justify-center px-5 py-[23px] mt-0"
+      className={`shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex min-h- w-full flex-col items-center justify-center px-5 py-[23px] mt-0 ${
+        isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'
+      }`}
       aria-label="Swap progress navigation"
     >
       <ul className="flex max-w-full w-80 items-center justify-between">
@@ -47,32 +50,33 @@ const SwapProgressNavigation = ({ currentStep, onStepClick }) => {
               <button
                 onClick={() => onStepClick && onStepClick(step.id)}
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 ${
-                  isActive 
-                    ? 'scale-110' 
-                    : isCompleted 
-                      ? 'hover:bg-gray-100' 
-                      : 'hover:bg-gray-100'
+                  isCompleted 
+                    ? isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+                    : isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
                 }`}
                 aria-label={`${step.label}: ${step.description}`}
                 disabled={status === 'upcoming'}
               >
-                <img
-                  src={getIconUrl(step.id)}
-                  alt=""
-                  className={`aspect-[1] object-contain transition-all duration-200 ${
-                    step.id === 3 ? "w-4" : "w-5"
-                  } ${
-                    isActive ? 'filter brightness-150 contrast-150' : 
-                    isCompleted ? 'filter brightness-110' : 
-                    status === 'upcoming' ? 'filter grayscale opacity-50' : ''
-                  }`}
-                  style={isActive ? {
-                    filter: 'brightness(1.2) contrast(1.1) hue-rotate(315deg) saturate(1.5)'
-                  } : {}}
-                />
-                {isActive && (
-                  <div className="w-1 h-1 bg-pink-purple-gradient rounded-full mt-1"></div>
-                )}
+                <div className="relative w-5 h-5">
+                  <img
+                    src={getIconUrl(step.id)}
+                    alt=""
+                    className={`aspect-[1] object-contain transition-all duration-200 w-full h-full ${
+                      isActive ? 'opacity-0' :
+                      isCompleted ? 'filter grayscale opacity-50' : 
+                      status === 'upcoming' ? 'filter grayscale opacity-50' : ''
+                    }`}
+                  />
+                  {isActive && (
+                    <div 
+                      className="absolute inset-0 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]"
+                      style={{
+                        WebkitMask: `url(${getIconUrl(step.id)}) center/contain no-repeat`,
+                        mask: `url(${getIconUrl(step.id)}) center/contain no-repeat`
+                      }}
+                    />
+                  )}
+                </div>
               </button>
             </li>
           );

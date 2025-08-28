@@ -7,6 +7,7 @@ import CommonButton from "../../components/Buttons/CommonButton";
 import api from "../../utils/api";
 import { PATH_SETTING } from "../../context/paths";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useTheme } from "../../context/ThemeContext";
 
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -37,6 +38,7 @@ const EditProfile = () => {
 	const [profileId, setProfileId] = useState(null);
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	const { isDarkMode } = useTheme();
 
 	const handleMouseDownPassword = (event) => {
 		event.preventDefault();
@@ -89,14 +91,14 @@ const EditProfile = () => {
 	};
 	// console.log(formData);
 	return (
-		<div className="container h-[100dvh]">
+		<div className={`container h-[100dvh] ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
 			<div className="sticky top-0 left-0 w-full z-40">
 				<Header title={t("editProfile.title") || "Edit Profile"}></Header>
 			</div>
 			<div className="flex h-full flex-col w-full gap-[24px] pt-[35px] pb-[40px] px-5 justify-between">
 				<div className="flex flex-col gap-6">
 					<div>
-						<div className="text-[12px]">
+						<div className={`text-[12px] ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
 							{t("editProfile.firstName.label") || "First Name"}
 						</div>
 						<FormControl sx={{ width: "100%" }} variant="standard">
@@ -110,7 +112,7 @@ const EditProfile = () => {
 						</FormControl>
 					</div>
 					<div>
-						<div className="text-[12px]">
+						<div className={`text-[12px] ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
 							{t("editProfile.lastName.label") || "Last Name"}
 						</div>
 						<FormControl sx={{ width: "100%" }} variant="standard">
@@ -136,7 +138,7 @@ const EditProfile = () => {
           </FormControl>
         </div> */}
 					<div>
-						<div className="text-[12px]">
+						<div className={`text-[12px] ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
 							{t("editProfile.country.lable") || "Country"}
 						</div>
 						<FormControl variant="standard" fullWidth>
@@ -166,7 +168,7 @@ const EditProfile = () => {
 						</FormControl>
 					</div>
 					<div>
-						<div className="text-[12px]">
+						<div className={`text-[12px] ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
 							{t("editProfile.password.label") || "Password"}
 						</div>
 						<FormControl sx={{ width: "100%" }} variant="standard">

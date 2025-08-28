@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { CurrencyDropdown } from "./CurrencyDropdown";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { useTheme } from "../../context/ThemeContext";
 
 export const FromCurrencyCard = ({
 	selectedCurrency,
@@ -11,6 +12,7 @@ export const FromCurrencyCard = ({
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef(null);
 	useOutsideClick(dropdownRef, () => setIsDropdownOpen(false));
+	const { isDarkMode } = useTheme();
 
 	const handleCurrencySelection = (currency) => {
 		onCurrencySelect(currency);
@@ -30,8 +32,8 @@ export const FromCurrencyCard = ({
 	return (
 		<div ref={dropdownRef} className="relative">
 			<div className="relative p-[1px] mt-3 rounded-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
-				<div className="bg-white rounded-lg p-4 w-full flex flex-col">
-					<label className="text-[rgba(60, 60, 67, 0.60)] text-sm font-['Sansation'] mb-2">
+				<div className={`rounded-lg p-4 w-full flex flex-col ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+					<label className={`text-sm font-['Sansation'] mb-2 ${isDarkMode ? 'text-gray-300' : 'text-[rgba(60, 60, 67, 0.60)]'}`}>
 						From
 					</label>
 
@@ -39,7 +41,7 @@ export const FromCurrencyCard = ({
 						{/* --- Currency Selector --- */}
 						<div className="flex items-center gap-2 w-full">
 							<button
-								className="flex items-center gap-2 font-['Sansation']"
+								className={`flex items-center gap-2 font-['Sansation'] ${isDarkMode ? 'text-white' : 'text-black'}`}
 								onClick={() => setIsDropdownOpen(!isDropdownOpen)}
 								aria-expanded={isDropdownOpen}>
 								<div className="w-10 h-10 bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] rounded-full flex items-center justify-center text-white font-bold">
@@ -81,7 +83,7 @@ export const FromCurrencyCard = ({
 								}
 							}}
 							placeholder="0.00"
-							className="text-right bg-transparent border-none outline-none w-28 font-['Sansation'] text-lg placeholder:text-gray-400"
+							className={`text-right bg-transparent border-none outline-none w-28 font-['Sansation'] text-lg ${isDarkMode ? 'text-white placeholder:text-gray-500' : 'text-black placeholder:text-gray-400'}`}
 							step="0.0001"
 							min="0"
 							max={selectedCurrency?.balance || undefined}
@@ -94,7 +96,7 @@ export const FromCurrencyCard = ({
 						<span className="bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent font-bold">
 							Available: {selectedCurrency?.balance?.toFixed(4) ?? "0.0000"}
 						</span>
-						<span className="text-gray-400">
+						<span className={isDarkMode ? 'text-gray-500' : 'text-gray-400'}>
 							≈ ${calculateUsdValue(amount)}
 						</span>
 					</div>

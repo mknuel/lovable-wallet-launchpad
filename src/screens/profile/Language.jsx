@@ -9,6 +9,7 @@ import { PATH_SETTING } from "../../context/paths";
 import { languageOptions } from "../../utils/constants";
 import { useTranslation } from "../../hooks/useTranslation";
 import CommonButton from "../../components/Buttons/CommonButton";
+import { useTheme } from "../../context/ThemeContext";
 import "./onboarding.css";
 
 const LanguageScreen = () => {
@@ -16,6 +17,7 @@ const LanguageScreen = () => {
 	const { currentLanguage, changeLanguage } = useLanguage();
 	const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
 	const { t } = useTranslation();
+	const { isDarkMode } = useTheme();
 
 	// Update selected language when currentLanguage changes
 	useEffect(() => {
@@ -34,7 +36,7 @@ const LanguageScreen = () => {
 
 	console.log(selectedLanguage);
 	return (
-		<div className="container">
+		<div className={`container ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black'}`}>
 			<div className="sticky top-0 left-0 w-full z-40">
 				<Header title={t("language.title") || "Language"}></Header>
 			</div>

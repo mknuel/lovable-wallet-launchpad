@@ -1,23 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { usePolygonTokens } from "../../hooks/usePolygonTokens";
 import useDebounce from "../../hooks/useDebounce";
 import Search from "../../assets/icons/Search.svg";
-import { useActiveAccount } from "thirdweb/react";
 import Nodata from "../../assets/icons/cancel.svg";
+import { useTheme } from "../../context/ThemeContext";
 
 export const SearchableCurrencyDropdown = ({
 	isOpen,
 	onClose,
 	onSelect,
-	chainId, // Pass chainId as a prop to search on a specific chain
 }) => {
 	const dropdownRef = useRef(null);
 	const [search, setSearch] = useState("");
 	const debouncedSearchTerm = useDebounce(search, 300); // 300ms debounce
-	const activeAccount = useActiveAccount();
+	const { isDarkMode } = useTheme();
 
 	const { availableTokens, isLoading } = usePolygonTokens();
 	
@@ -88,8 +86,8 @@ export const SearchableCurrencyDropdown = ({
 					className="absolute top-3/4 left-0 right-0 mt-2 z-20 mb-10 shadow-xl"
 					ref={dropdownRef}>
 					<div className="relative p-[1px] w-full rounded-[8px] bg-gradient-to-r from-[#DC2366] to-[#4F5CAA]">
-						<div className="bg-white p-4 rounded-[8px] backdrop-blur-sm bg-opacity-90">
-							<p className="text-gray-400 text-sm mb-3">Select currency</p>
+						<div className={`p-4 rounded-[8px] backdrop-blur-sm bg-opacity-90 ${isDarkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+							<p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}>Select currency</p>
 
 							{/* Search input */}
 							<div className="relative mb-4">
@@ -101,13 +99,17 @@ export const SearchableCurrencyDropdown = ({
 									value={search} // Bind to the immediate search state
 									onChange={(e) => setSearch(e.target.value)} // Update the immediate state
 									placeholder="Search name or symbol"
-									className="w-full pl-10 pr-3 py-3 border border-gray-200 bg-gray-50 text-gray-700 placeholder-gray-400 outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 rounded-lg transition-all"
+									className={`w-full pl-10 pr-3 py-3 border outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 rounded-lg transition-all ${
+										isDarkMode 
+											? 'border-gray-600 bg-[#2a2a2a] text-white placeholder-gray-500' 
+											: 'border-gray-200 bg-gray-50 text-gray-700 placeholder-gray-400'
+									}`}
 								/>
 							</div>
 
 							<div className="max-h-60 overflow-y-auto">
 								{isLoading && (
-									<div className="text-center py-4 text-gray-500">
+									<div className={`text-center py-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
 										Searching...
 									</div>
 								)}
@@ -135,7 +137,11 @@ export const SearchableCurrencyDropdown = ({
 														onSelect(token);
 														onClose();
 													}}
-													className="w-full p-3 bg-white hover:bg-gray-50 transition-colors rounded-lg text-left">
+													className={`w-full p-3 transition-colors rounded-lg text-left ${
+														isDarkMode 
+															? 'bg-[#1a1a1a] hover:bg-[#2a2a2a]' 
+															: 'bg-white hover:bg-gray-50'
+													}`}>
 													<div className="flex justify-between items-center">
 														<div className="flex items-center gap-3">
 															{token.iconUri && (
@@ -149,7 +155,7 @@ export const SearchableCurrencyDropdown = ({
 																<div className="font-bold text-lg bg-gradient-to-r from-[#DC2366] to-[#4F5CAA] bg-clip-text text-transparent">
 																	{token.symbol}
 																</div>
-																<div className="text-gray-500 text-sm">
+																<div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
 																	{token.name}
 																</div>
 															</div>
@@ -157,7 +163,7 @@ export const SearchableCurrencyDropdown = ({
 
 														{/* Display the price from the API if it exists */}
 														{token.priceUsd && (
-															<div className="text-right font-medium text-gray-600">
+															<div className={`text-right font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
 																${Number(token.priceUsd).toFixed(2)}
 															</div>
 														)}
@@ -172,7 +178,7 @@ export const SearchableCurrencyDropdown = ({
 											animate="visible"
 											className="flex flex-col items-center justify-center py-4">
 											<img src={Nodata} />
-											<div className="text-gray-500 text-sm">
+											<div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
 												No tokens found
 											</div>
 										</motion.div>

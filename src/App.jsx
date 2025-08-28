@@ -10,6 +10,7 @@ import { PublicRouteArray } from "./context/PublicRouteArray";
 import { ProtectedRouteArray } from "./context/ProtectedRouteArray";
 import ProtectedRoute from "./context/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { PATH_AUTH } from "./context/paths";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
@@ -35,23 +36,25 @@ function App() {
 
 	return (
 	<div className="app-container">
-		<AuthProvider>
-			<ScrollToTop />
-			<Routes>
-				<Route index element={<SplashScreen />} />
-				<Route path="/" element={<SplashScreen />} />
-				{PublicRouteArray.map((route) => (
-					<Route key={route.path} path={route.path} element={route.element} />
-				))}
-				{ProtectedRouteArray.map((route) => (
-					<Route
-						key={route.path}
-						path={route.path}
-						element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-					/>
-				))}
-			</Routes>
-		</AuthProvider>
+		<ThemeProvider>
+			<AuthProvider>
+				<ScrollToTop />
+				<Routes>
+					<Route index element={<SplashScreen />} />
+					<Route path="/" element={<SplashScreen />} />
+					{PublicRouteArray.map((route) => (
+						<Route key={route.path} path={route.path} element={route.element} />
+					))}
+					{ProtectedRouteArray.map((route) => (
+						<Route
+							key={route.path}
+							path={route.path}
+							element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+						/>
+					))}
+				</Routes>
+			</AuthProvider>
+		</ThemeProvider>
 	</div>
 	);
 }

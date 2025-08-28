@@ -10,22 +10,21 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { useSelector } from 'react-redux';
 import { useERC20Token } from '../../hooks/useERC20';
 import { useTokenBalance } from '../../hooks/useTokenBalance';
+import { useTheme } from '../../context/ThemeContext';
 import {
   selectWalletData,
   selectWalletLoading,
   selectWalletError,
 } from '../../store/reducers/walletSlice';
-import { supplySepoliaETH, borrowETH, repayETH, getUserAccountData, getTokenBalance, getTestDAIInfo, CONTRACTS } from '../../utils/aaveHelpers';
+import { supplySepoliaETH, borrowETH, repayETH, getUserAccountData } from '../../utils/aaveHelpers';
 
 const BlockLoansScreen = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const activeWallet = useActiveWallet();
+  const { isDarkMode } = useTheme();
   
-  // Use the same wallet data as MainMenu
-  const walletData = useSelector(selectWalletData);
-  const walletLoading = useSelector(selectWalletLoading);
-  const walletError = useSelector(selectWalletError);
+
 
   // Modal states
   const [modalConfig, setModalConfig] = useState({
@@ -61,8 +60,8 @@ const BlockLoansScreen = () => {
   }, [activeWallet]);
 
   // Token balance from API and EURX (crypto) balance
-  const { balance: tokenBalance, loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
-  const { balance: erc20Balance, tokenInfo, loading: erc20Loading, formattedBalance } = useERC20Token();
+  const { loading: tokenLoading, formattedBalance: formattedTokenBalance } = useTokenBalance();
+  const { balance: erc20Balance, loading: erc20Loading } = useERC20Token();
 
   // Use the same stats calculation as MainMenu but include real Aave data
   const statsData = useMemo(() => {
@@ -186,7 +185,7 @@ const BlockLoansScreen = () => {
   };
 
   return (
-		<div className="min-h-screen bg-gray-50 flex flex-col">
+		<div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-[#1a1a1a] text-white' : 'bg-gray-50 text-black'}`}>
 			{/* Header */}
 			<MainHeader title="BlockLoans" action={true} onBack={handleBackClick} />
 
@@ -195,10 +194,10 @@ const BlockLoansScreen = () => {
 				<div
 					className={`mx-4 mt-4 p-3 rounded-lg text-sm ${
 						notification.type === "success"
-							? "bg-green-100 text-green-800"
+							? isDarkMode ? "bg-green-900/20 text-green-400" : "bg-green-100 text-green-800"
 							: notification.type === "error"
-							? "bg-red-100 text-red-800"
-							: "bg-blue-100 text-blue-800"
+							? isDarkMode ? "bg-red-900/20 text-red-400" : "bg-red-100 text-red-800"
+							: isDarkMode ? "bg-blue-900/20 text-blue-400" : "bg-blue-100 text-blue-800"
 					}`}>
 					{notification.message}
 				</div>
@@ -222,7 +221,7 @@ const BlockLoansScreen = () => {
 
 				{/* Active Tokens Section */}
 				<div className="w-full max-w-sm mt-6">
-					<h2 className="text-lg font-bold text-gray-900 mb-4">
+					<h2 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
 						ACTIVE TOKENS
 					</h2>
 					{/* Add token list here */}

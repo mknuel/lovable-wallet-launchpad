@@ -1,5 +1,5 @@
 
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
